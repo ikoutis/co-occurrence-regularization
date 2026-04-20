@@ -11,6 +11,7 @@ from dataset import load_dataset
 from data_utils import eval_acc, eval_rocauc, load_fixed_splits, class_rand_splits
 from eval import *
 from parse import parse_method, parser_add_main_args
+from regularization import estimate_cooccurrence_matrix, edge_loss
 
 def fix_seed(seed=42):
     random.seed(seed)
@@ -102,7 +103,18 @@ for run in range(args.runs):
     if args.save_model:
         save_model(args, model, optimizer, run)
 
+    penalty_matrix = None
+
     for epoch in range(args.epochs):
+        
+        if args.use_reg and epoch >= args.reg_start_epoch and (epoch - args.reg_start_epoch) % args.reg_update_freq == 0:
+            with torch.no_grad():
+                model.eval()
+                current_out = model(dataset.graph['node_feat'], dataset.graph['edge_index'])
+                preds = torch.sigmoid(current_out) if args.dataset == 'questions' else torch.exp(F.log_softmax(current_out, dim=1))
+                co_matrix = estimate_cooccurrence_matrix(preds, dataset.graph['edge_index'], c, device)
+                penalty_matrix = -torch.log(co_matrix + 1e-6)
+
         model.train()
         optimizer.zero_grad()
 
@@ -118,6 +130,15 @@ for run in range(args.runs):
             out = F.log_softmax(out, dim=1)
             loss = criterion(
                 out[train_idx], dataset.label.squeeze(1)[train_idx])
+                
+        if args.use_reg and penalty_matrix is not None:
+            if args.dataset == 'questions':
+                node_probs = torch.sigmoid(out)
+            else:
+                node_probs = torch.exp(out)
+            reg_loss = edge_loss(node_probs, dataset.graph['edge_index'], penalty_matrix)
+            loss = loss + args.lambda_val * reg_loss
+                
         loss.backward()
         optimizer.step()
 

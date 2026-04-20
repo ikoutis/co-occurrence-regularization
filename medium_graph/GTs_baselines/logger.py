@@ -99,13 +99,14 @@ def save_result(args, results):
         filename = f'results/{args.dataset}/{args.model}.csv'
     print(f"Saving results to {filename}")
     with open(f"{filename}", 'a+') as write_obj:
+        reg_info = f"REG: {args.lambda_val} " if getattr(args, 'use_reg', False) else "REG: False "
         if(args.model=='MPNN'):
             write_obj.write(
                 f"{args.model} " + f"{args.lr} " + f"{args.hidden_channels} " + f"{args.local_layers} " + f"{args.dropout} " + f"{args.ln} " + \
-                f"{args.bn} " + f"{args.res} " + \
+                f"{args.bn} " + f"{args.res} " + reg_info + \
                 f"{results.mean():.2f} $\pm$ {results.std():.2f} \n")
         else:
             write_obj.write(
-                f"{args.model} " + f"{args.lr} " + \
+                f"{args.model} " + f"{args.lr} " + reg_info + \
                 f"{results.mean():.2f} $\pm$ {results.std():.2f} \n")
 
