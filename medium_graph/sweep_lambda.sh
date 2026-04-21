@@ -21,7 +21,7 @@ echo "Running Baseline (REG: False)..."
 eval $BASE_COMMAND
 
 # Run the lambda sweep
-for lambda_val in 0.1 0.5 1.0 2.0 5.0
+for lambda_val in 0.01 0.05 0.1 0.5 1.0
 do
     echo ""
     echo "Running with Dynamic Regularization (lambda=$lambda_val)..."
