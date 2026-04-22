@@ -12,6 +12,7 @@ from data_utils import eval_acc, eval_rocauc, load_fixed_splits, class_rand_spli
 from eval import *
 from parse import parse_method, parser_add_main_args
 from regularization import estimate_cooccurrence_matrix, edge_loss
+from model import MLP
 
 def fix_seed(seed=42):
     random.seed(seed)
@@ -105,9 +106,39 @@ for run in range(args.runs):
 
     penalty_matrix = None
 
+    if args.use_reg and getattr(args, 'mlp_reg', False):
+        print(f"Pre-training MLP for {args.mlp_epochs} epochs to generate co-occurrence matrix...")
+        mlp = MLP(d, args.hidden_channels, c, num_layers=max(2, args.local_layers), dropout=args.dropout).to(device)
+        mlp_optimizer = torch.optim.Adam(mlp.parameters(), weight_decay=args.weight_decay, lr=args.lr)
+        
+        for mlp_epoch in range(args.mlp_epochs):
+            mlp.train()
+            mlp_optimizer.zero_grad()
+            out = mlp(dataset.graph['node_feat'])
+            
+            if args.dataset in ('questions'):
+                if dataset.label.shape[1] == 1:
+                    true_label = F.one_hot(dataset.label, dataset.label.max() + 1).squeeze(1)
+                else:
+                    true_label = dataset.label
+                loss = criterion(out[train_idx], true_label.squeeze(1)[train_idx].to(torch.float))
+            else:
+                out_log_softmax = F.log_softmax(out, dim=1)
+                loss = criterion(out_log_softmax[train_idx], dataset.label.squeeze(1)[train_idx])
+            loss.backward()
+            mlp_optimizer.step()
+            
+        with torch.no_grad():
+            mlp.eval()
+            current_out = mlp(dataset.graph['node_feat'])
+            preds = torch.sigmoid(current_out) if args.dataset == 'questions' else torch.exp(F.log_softmax(current_out, dim=1))
+            co_matrix = estimate_cooccurrence_matrix(preds, dataset.graph['edge_index'], c, device)
+            penalty_matrix = -torch.log(co_matrix + 1e-6)
+        print("MLP pre-training complete. Penalty matrix frozen.")
+
     for epoch in range(args.epochs):
         
-        if args.use_reg and epoch >= args.reg_start_epoch and (epoch - args.reg_start_epoch) % args.reg_update_freq == 0:
+        if args.use_reg and not getattr(args, 'mlp_reg', False) and epoch >= args.reg_start_epoch and (epoch - args.reg_start_epoch) % args.reg_update_freq == 0:
             with torch.no_grad():
                 model.eval()
                 current_out = model(dataset.graph['node_feat'], dataset.graph['edge_index'])

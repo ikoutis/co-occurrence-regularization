@@ -66,6 +66,7 @@ def parser_add_main_args(parser):
     parser.add_argument('--lambda_val', type=float, default=0.5, help='regularization weight')
     parser.add_argument('--reg_start_epoch', type=int, default=10, help='epoch to start applying regularization')
     parser.add_argument('--reg_update_freq', type=int, default=5, help='how often to update the penalty matrix')
-
-
-
+    
+    # mlp inference variant
+    parser.add_argument('--mlp_reg', action='store_true', help='enable static structure-aware regularization from pre-trained MLP')
+    parser.add_argument('--mlp_epochs', type=int, default=500, help='number of epochs to pre-train MLP')
