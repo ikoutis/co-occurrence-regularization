@@ -105,6 +105,8 @@ for run in range(args.runs):
         save_model(args, model, optimizer, run)
 
     penalty_matrix = None
+    ema_task_loss = None
+    ema_reg_loss = None
 
     if args.use_reg and getattr(args, 'mlp_reg', False):
         print(f"Pre-training MLP for {args.mlp_epochs} epochs to generate co-occurrence matrix...")
@@ -168,7 +170,15 @@ for run in range(args.runs):
             else:
                 node_probs = torch.exp(out)
             reg_loss = edge_loss(node_probs, dataset.graph['edge_index'], penalty_matrix)
-            loss = loss + args.lambda_val * reg_loss
+            task_val = loss.detach().item()
+            reg_val = reg_loss.detach().abs().item()
+            if ema_task_loss is None:
+                ema_task_loss, ema_reg_loss = task_val, reg_val
+            else:
+                ema_task_loss = 0.95 * ema_task_loss + 0.05 * task_val
+                ema_reg_loss = 0.95 * ema_reg_loss + 0.05 * reg_val
+            scale = ema_task_loss / (ema_reg_loss + 1e-8)
+            loss = loss + args.lambda_val * scale * reg_loss
                 
         loss.backward()
         optimizer.step()
