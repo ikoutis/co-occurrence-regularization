@@ -39,44 +39,44 @@ python -c "import torch; print(torch.__version__); print(torch.cuda.is_available
 
 case $DATASET in
   amazon-computer)
-    ./sweep_lambda_mlp.sh "python main.py --gnn gcn  --dataset amazon-computer --hidden_channels 512 --epochs 1000 --lr 0.001 --runs 3 --local_layers 3 --weight_decay 5e-5 --dropout 0.5 --device $DEVICE --ln"
-    ./sweep_lambda_mlp.sh "python main.py --gnn sage --dataset amazon-computer --hidden_channels 64  --epochs 1000 --lr 0.001 --runs 3 --local_layers 4 --weight_decay 5e-5 --dropout 0.3 --device $DEVICE --ln"
-    ./sweep_lambda_mlp.sh "python main.py --gnn gat  --dataset amazon-computer --hidden_channels 64  --epochs 1000 --lr 0.001 --runs 3 --local_layers 2 --weight_decay 5e-5 --dropout 0.5 --device $DEVICE --ln"
+    ./sweep_lambda_mlp_homo.sh "python main.py --gnn gcn  --dataset amazon-computer --hidden_channels 512 --epochs 1000 --lr 0.001 --runs 3 --local_layers 3 --weight_decay 5e-5 --dropout 0.5 --device $DEVICE --ln"
+    ./sweep_lambda_mlp_homo.sh "python main.py --gnn sage --dataset amazon-computer --hidden_channels 64  --epochs 1000 --lr 0.001 --runs 3 --local_layers 4 --weight_decay 5e-5 --dropout 0.3 --device $DEVICE --ln"
+    ./sweep_lambda_mlp_homo.sh "python main.py --gnn gat  --dataset amazon-computer --hidden_channels 64  --epochs 1000 --lr 0.001 --runs 3 --local_layers 2 --weight_decay 5e-5 --dropout 0.5 --device $DEVICE --ln"
     ;;
   amazon-photo)
-    ./sweep_lambda_mlp.sh "python main.py --gnn gcn  --dataset amazon-photo --hidden_channels 256 --epochs 1000 --lr 0.001 --runs 3 --local_layers 6 --weight_decay 5e-5 --dropout 0.5 --device $DEVICE --ln --res"
-    ./sweep_lambda_mlp.sh "python main.py --gnn sage --dataset amazon-photo --hidden_channels 64  --epochs 1000 --lr 0.001 --runs 3 --local_layers 6 --weight_decay 5e-5 --dropout 0.2 --device $DEVICE --ln --res"
-    ./sweep_lambda_mlp.sh "python main.py --gnn gat  --dataset amazon-photo --hidden_channels 64  --epochs 1000 --lr 0.001 --runs 3 --local_layers 3 --weight_decay 5e-5 --dropout 0.5 --device $DEVICE --ln --res"
+    ./sweep_lambda_mlp_homo.sh "python main.py --gnn gcn  --dataset amazon-photo --hidden_channels 256 --epochs 1000 --lr 0.001 --runs 3 --local_layers 6 --weight_decay 5e-5 --dropout 0.5 --device $DEVICE --ln --res"
+    ./sweep_lambda_mlp_homo.sh "python main.py --gnn sage --dataset amazon-photo --hidden_channels 64  --epochs 1000 --lr 0.001 --runs 3 --local_layers 6 --weight_decay 5e-5 --dropout 0.2 --device $DEVICE --ln --res"
+    ./sweep_lambda_mlp_homo.sh "python main.py --gnn gat  --dataset amazon-photo --hidden_channels 64  --epochs 1000 --lr 0.001 --runs 3 --local_layers 3 --weight_decay 5e-5 --dropout 0.5 --device $DEVICE --ln --res"
     ;;
   coauthor-cs)
-    ./sweep_lambda_mlp.sh "python main.py --gnn gcn  --dataset coauthor-cs --hidden_channels 512 --epochs 1500 --lr 0.001 --runs 3 --local_layers 2 --weight_decay 5e-4 --dropout 0.3 --device $DEVICE --ln --res"
-    ./sweep_lambda_mlp.sh "python main.py --gnn sage --dataset coauthor-cs --hidden_channels 512 --epochs 1500 --lr 0.001 --runs 3 --local_layers 2 --weight_decay 5e-4 --dropout 0.5 --device $DEVICE --ln --res"
-    ./sweep_lambda_mlp.sh "python main.py --gnn gat  --dataset coauthor-cs --hidden_channels 256 --epochs 1500 --lr 0.001 --runs 3 --local_layers 1 --weight_decay 5e-4 --dropout 0.3 --device $DEVICE --ln --res"
+    ./sweep_lambda_mlp_homo.sh "python main.py --gnn gcn  --dataset coauthor-cs --hidden_channels 512 --epochs 1500 --lr 0.001 --runs 3 --local_layers 2 --weight_decay 5e-4 --dropout 0.3 --device $DEVICE --ln --res"
+    ./sweep_lambda_mlp_homo.sh "python main.py --gnn sage --dataset coauthor-cs --hidden_channels 512 --epochs 1500 --lr 0.001 --runs 3 --local_layers 2 --weight_decay 5e-4 --dropout 0.5 --device $DEVICE --ln --res"
+    ./sweep_lambda_mlp_homo.sh "python main.py --gnn gat  --dataset coauthor-cs --hidden_channels 256 --epochs 1500 --lr 0.001 --runs 3 --local_layers 1 --weight_decay 5e-4 --dropout 0.3 --device $DEVICE --ln --res"
     ;;
   coauthor-physics)
-    ./sweep_lambda_mlp.sh "python main.py --gnn gcn  --dataset coauthor-physics --hidden_channels 64  --epochs 1500 --lr 0.001 --runs 3 --local_layers 2 --weight_decay 5e-4 --dropout 0.3 --device $DEVICE --ln --res"
-    ./sweep_lambda_mlp.sh "python main.py --gnn sage --dataset coauthor-physics --hidden_channels 64  --epochs 1500 --lr 0.001 --runs 3 --local_layers 2 --weight_decay 5e-4 --dropout 0.7 --device $DEVICE --bn --res"
-    ./sweep_lambda_mlp.sh "python main.py --gnn gat  --dataset coauthor-physics --hidden_channels 256 --epochs 1500 --lr 0.001 --runs 3 --local_layers 2 --weight_decay 5e-4 --dropout 0.7 --device $DEVICE --bn --res"
+    ./sweep_lambda_mlp_homo.sh "python main.py --gnn gcn  --dataset coauthor-physics --hidden_channels 64  --epochs 1500 --lr 0.001 --runs 3 --local_layers 2 --weight_decay 5e-4 --dropout 0.3 --device $DEVICE --ln --res"
+    ./sweep_lambda_mlp_homo.sh "python main.py --gnn sage --dataset coauthor-physics --hidden_channels 64  --epochs 1500 --lr 0.001 --runs 3 --local_layers 2 --weight_decay 5e-4 --dropout 0.7 --device $DEVICE --bn --res"
+    ./sweep_lambda_mlp_homo.sh "python main.py --gnn gat  --dataset coauthor-physics --hidden_channels 256 --epochs 1500 --lr 0.001 --runs 3 --local_layers 2 --weight_decay 5e-4 --dropout 0.7 --device $DEVICE --bn --res"
     ;;
   wikics)
-    ./sweep_lambda_mlp.sh "python main.py --gnn gcn  --dataset wikics --hidden_channels 256 --epochs 1000 --lr 0.001 --runs 3 --local_layers 3 --weight_decay 0.0 --dropout 0.5 --device $DEVICE --ln"
-    ./sweep_lambda_mlp.sh "python main.py --gnn sage --dataset wikics --hidden_channels 256 --epochs 1000 --lr 0.001 --runs 3 --local_layers 2 --weight_decay 0.0 --dropout 0.7 --device $DEVICE --ln"
-    ./sweep_lambda_mlp.sh "python main.py --gnn gat  --dataset wikics --hidden_channels 512 --epochs 1000 --lr 0.001 --runs 3 --local_layers 2 --weight_decay 0.0 --dropout 0.7 --device $DEVICE --ln --res"
+    ./sweep_lambda_mlp_homo.sh "python main.py --gnn gcn  --dataset wikics --hidden_channels 256 --epochs 1000 --lr 0.001 --runs 3 --local_layers 3 --weight_decay 0.0 --dropout 0.5 --device $DEVICE --ln"
+    ./sweep_lambda_mlp_homo.sh "python main.py --gnn sage --dataset wikics --hidden_channels 256 --epochs 1000 --lr 0.001 --runs 3 --local_layers 2 --weight_decay 0.0 --dropout 0.7 --device $DEVICE --ln"
+    ./sweep_lambda_mlp_homo.sh "python main.py --gnn gat  --dataset wikics --hidden_channels 512 --epochs 1000 --lr 0.001 --runs 3 --local_layers 2 --weight_decay 0.0 --dropout 0.7 --device $DEVICE --ln --res"
     ;;
   cora)
-    ./sweep_lambda_mlp.sh "python main.py --gnn gcn  --dataset cora --hidden_channels 512 --lr 0.001 --runs 5 --local_layers 3 --weight_decay 5e-4 --dropout 0.7 --rand_split_class --valid_num 500 --test_num 1000 --seed 123 --device $DEVICE"
-    ./sweep_lambda_mlp.sh "python main.py --gnn sage --dataset cora --hidden_channels 256 --lr 0.001 --runs 5 --local_layers 3 --weight_decay 5e-4 --dropout 0.7 --rand_split_class --valid_num 500 --test_num 1000 --seed 123 --device $DEVICE"
-    ./sweep_lambda_mlp.sh "python main.py --gnn gat  --dataset cora --hidden_channels 512 --lr 0.001 --runs 5 --local_layers 3 --weight_decay 5e-4 --dropout 0.2 --rand_split_class --valid_num 500 --test_num 1000 --seed 123 --device $DEVICE --res"
+    ./sweep_lambda_mlp_homo.sh "python main.py --gnn gcn  --dataset cora --hidden_channels 512 --lr 0.001 --runs 5 --local_layers 3 --weight_decay 5e-4 --dropout 0.7 --rand_split_class --valid_num 500 --test_num 1000 --seed 123 --device $DEVICE"
+    ./sweep_lambda_mlp_homo.sh "python main.py --gnn sage --dataset cora --hidden_channels 256 --lr 0.001 --runs 5 --local_layers 3 --weight_decay 5e-4 --dropout 0.7 --rand_split_class --valid_num 500 --test_num 1000 --seed 123 --device $DEVICE"
+    ./sweep_lambda_mlp_homo.sh "python main.py --gnn gat  --dataset cora --hidden_channels 512 --lr 0.001 --runs 5 --local_layers 3 --weight_decay 5e-4 --dropout 0.2 --rand_split_class --valid_num 500 --test_num 1000 --seed 123 --device $DEVICE --res"
     ;;
   citeseer)
-    ./sweep_lambda_mlp.sh "python main.py --gnn gcn  --dataset citeseer --hidden_channels 512 --lr 0.001 --runs 5 --local_layers 2 --weight_decay 0.01 --dropout 0.5 --rand_split_class --valid_num 500 --test_num 1000 --seed 123 --device $DEVICE"
-    ./sweep_lambda_mlp.sh "python main.py --gnn sage --dataset citeseer --hidden_channels 512 --lr 0.001 --runs 5 --local_layers 3 --weight_decay 0.01 --dropout 0.2 --rand_split_class --valid_num 500 --test_num 1000 --seed 123 --device $DEVICE"
-    ./sweep_lambda_mlp.sh "python main.py --gnn gat  --dataset citeseer --hidden_channels 256 --lr 0.001 --runs 5 --local_layers 3 --weight_decay 0.01 --dropout 0.5 --rand_split_class --valid_num 500 --test_num 1000 --seed 123 --device $DEVICE --res"
+    ./sweep_lambda_mlp_homo.sh "python main.py --gnn gcn  --dataset citeseer --hidden_channels 512 --lr 0.001 --runs 5 --local_layers 2 --weight_decay 0.01 --dropout 0.5 --rand_split_class --valid_num 500 --test_num 1000 --seed 123 --device $DEVICE"
+    ./sweep_lambda_mlp_homo.sh "python main.py --gnn sage --dataset citeseer --hidden_channels 512 --lr 0.001 --runs 5 --local_layers 3 --weight_decay 0.01 --dropout 0.2 --rand_split_class --valid_num 500 --test_num 1000 --seed 123 --device $DEVICE"
+    ./sweep_lambda_mlp_homo.sh "python main.py --gnn gat  --dataset citeseer --hidden_channels 256 --lr 0.001 --runs 5 --local_layers 3 --weight_decay 0.01 --dropout 0.5 --rand_split_class --valid_num 500 --test_num 1000 --seed 123 --device $DEVICE --res"
     ;;
   pubmed)
-    ./sweep_lambda_mlp.sh "python main.py --gnn gcn  --dataset pubmed --hidden_channels 256 --lr 0.005 --runs 5 --local_layers 2 --weight_decay 5e-4 --dropout 0.7 --rand_split_class --valid_num 500 --test_num 1000 --seed 123 --device $DEVICE"
-    ./sweep_lambda_mlp.sh "python main.py --gnn sage --dataset pubmed --hidden_channels 512 --lr 0.005 --runs 5 --local_layers 4 --weight_decay 5e-4 --dropout 0.7 --rand_split_class --valid_num 500 --test_num 1000 --seed 123 --device $DEVICE"
-    ./sweep_lambda_mlp.sh "python main.py --gnn gat  --dataset pubmed --hidden_channels 512 --lr 0.01  --runs 5 --local_layers 2 --weight_decay 5e-4 --dropout 0.5 --rand_split_class --valid_num 500 --test_num 1000 --seed 123 --device $DEVICE"
+    ./sweep_lambda_mlp_homo.sh "python main.py --gnn gcn  --dataset pubmed --hidden_channels 256 --lr 0.005 --runs 5 --local_layers 2 --weight_decay 5e-4 --dropout 0.7 --rand_split_class --valid_num 500 --test_num 1000 --seed 123 --device $DEVICE"
+    ./sweep_lambda_mlp_homo.sh "python main.py --gnn sage --dataset pubmed --hidden_channels 512 --lr 0.005 --runs 5 --local_layers 4 --weight_decay 5e-4 --dropout 0.7 --rand_split_class --valid_num 500 --test_num 1000 --seed 123 --device $DEVICE"
+    ./sweep_lambda_mlp_homo.sh "python main.py --gnn gat  --dataset pubmed --hidden_channels 512 --lr 0.01  --runs 5 --local_layers 2 --weight_decay 5e-4 --dropout 0.5 --rand_split_class --valid_num 500 --test_num 1000 --seed 123 --device $DEVICE"
     ;;
 esac
 
