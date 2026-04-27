@@ -2,7 +2,7 @@
 
 # GNN sweep for the mlp_gnn regularization method.
 # Runs GNN baseline (no reg) then lambda = 0.01, 0.1, 0.2, 0.4.
-# MLP baseline is run separately in the sbatch script (once per dataset).
+# MLP baseline is run separately (see submit_sweep_mlp_gnn.sbatch).
 # Usage: ./sweep_mlp_gnn.sh "python main.py --gnn gcn --dataset ... [HYPERPARAMS]"
 
 if [ -z "$1" ]; then
