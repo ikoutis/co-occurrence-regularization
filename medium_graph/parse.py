@@ -1,10 +1,13 @@
-from model import MPNNs
+from model import MPNNs, MLP
 
 def parse_method(args, n, c, d, device):
-    
-    model = MPNNs(d, args.hidden_channels, c, local_layers=args.local_layers, dropout=args.dropout, 
-    heads=args.num_heads, pre_ln=args.pre_ln, pre_linear=args.pre_linear, res=args.res, ln=args.ln, bn=args.bn, jk=args.jk, gnn = args.gnn).to(device)
-    
+    if args.model == 'MLP':
+        model = MLP(d, args.hidden_channels, c,
+                    num_layers=args.local_layers, dropout=args.dropout).to(device)
+    else:
+        model = MPNNs(d, args.hidden_channels, c, local_layers=args.local_layers, dropout=args.dropout,
+                      heads=args.num_heads, pre_ln=args.pre_ln, pre_linear=args.pre_linear,
+                      res=args.res, ln=args.ln, bn=args.bn, jk=args.jk, gnn=args.gnn).to(device)
     return model
         
 
@@ -38,6 +41,7 @@ def parser_add_main_args(parser):
     parser.add_argument('--metric', type=str, default='acc', choices=['acc', 'rocauc'],
                         help='evaluation metric')
     parser.add_argument('--model', type=str, default='MPNN')
+    parser.add_argument('--result_dir', type=str, default='results')
     # GNN
     parser.add_argument('--gnn', type=str, default='gcn')
     parser.add_argument('--hidden_channels', type=int, default=256)
