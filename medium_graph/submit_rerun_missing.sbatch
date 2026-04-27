@@ -9,7 +9,7 @@
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=32G
-#SBATCH --gres=gpu:a100_10g:1
+#SBATCH --gres=gpu:a100_20g:1
 #SBATCH --time=48:00:00
 #SBATCH --array=0-9
 #SBATCH --requeue
