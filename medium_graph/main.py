@@ -106,6 +106,16 @@ for run in range(args.runs):
 
     penalty_matrix = None
 
+    if args.use_reg and getattr(args, 'oracle_reg', False):
+        print("Computing oracle penalty matrix from true labels...")
+        if args.dataset == 'questions' and dataset.label.shape[1] > 1:
+            true_probs = dataset.label.float()
+        else:
+            true_probs = F.one_hot(dataset.label.squeeze(1), c).float()
+        co_matrix = estimate_cooccurrence_matrix(true_probs, dataset.graph['edge_index'], c, device)
+        penalty_matrix = -torch.log(co_matrix + 1e-6)
+        print("Oracle penalty matrix frozen.")
+
     if args.use_reg and getattr(args, 'mlp_reg', False):
         print(f"Pre-training MLP for {args.mlp_epochs} epochs to generate co-occurrence matrix...")
         mlp = MLP(d, args.hidden_channels, c, num_layers=max(2, args.local_layers), dropout=args.dropout).to(device)
@@ -138,7 +148,7 @@ for run in range(args.runs):
 
     for epoch in range(args.epochs):
         
-        if args.use_reg and not getattr(args, 'mlp_reg', False) and epoch >= args.reg_start_epoch and (epoch - args.reg_start_epoch) % args.reg_update_freq == 0:
+        if args.use_reg and not getattr(args, 'mlp_reg', False) and not getattr(args, 'oracle_reg', False) and epoch >= args.reg_start_epoch and (epoch - args.reg_start_epoch) % args.reg_update_freq == 0:
             with torch.no_grad():
                 model.eval()
                 current_out = model(dataset.graph['node_feat'], dataset.graph['edge_index'])

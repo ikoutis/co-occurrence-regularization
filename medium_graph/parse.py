@@ -74,3 +74,6 @@ def parser_add_main_args(parser):
     # mlp inference variant
     parser.add_argument('--mlp_reg', action='store_true', help='enable static structure-aware regularization from pre-trained MLP')
     parser.add_argument('--mlp_epochs', type=int, default=500, help='number of epochs to pre-train MLP')
+
+    # oracle variant: penalty matrix computed from true labels (upper-bound experiment)
+    parser.add_argument('--oracle_reg', action='store_true', help='enable oracle regularization (penalty matrix from true labels)')

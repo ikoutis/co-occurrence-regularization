@@ -101,7 +101,9 @@ def save_result(args, results):
     with open(f"{filename}", 'a+') as write_obj:
         reg_info = "REG: False "
         if getattr(args, 'use_reg', False):
-            if getattr(args, 'mlp_reg', False):
+            if getattr(args, 'oracle_reg', False):
+                reg_info = f"ORACLE_REG: {args.lambda_val} "
+            elif getattr(args, 'mlp_reg', False):
                 reg_info = f"MLP_REG: {args.lambda_val} "
             elif getattr(args, 'reg_start_epoch', 10) >= 500:
                 reg_info = f"DELAY_REG: {args.lambda_val} "
