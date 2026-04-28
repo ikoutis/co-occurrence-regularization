@@ -243,12 +243,73 @@ The benefit of co-occurrence regularization is **not** "GTs vs GNNs" — it is
   is redundant → **hurt at every λ**.
 - **GCN/GAT/SAGE** propagate labels via local MP → modest gains.
 
-**Hypothesis:** The gain from co-occurrence regularization scales inversely
-with the strength of local message-passing components in the model.
+**Hypothesis (revised after full sweep):** GTs consistently benefit more
+from co-occurrence regularization than GNNs, particularly on datasets where
+well-tuned GNNs have already saturated. The "local MP vs no local MP" framing
+from the pilot is too simple — SGFormer also benefits substantially on most
+datasets.
 
-This is a testable, falsifiable claim. NodeFormer (global kernel attention,
-no local MP) should gain substantially. The full 14-dataset × 3-model sweep
-(⏳ pending) will confirm or reject this.
+---
+
+## 6b. Graph Transformer Full Sweep (12 datasets × Polynormer + SGFormer)
+
+> NodeFormer missing (needs torch_sparse). Chameleon, squirrel missing
+> (likely geom-gcn data path issue in GTs_baselines). Results from
+> `mlp_gt/results_full/`.
+
+### Results table
+
+| Dataset | Poly Δ | λ* | SGF Δ | λ* | GNN best Δ | GT > GNN? |
+|---|---|---|---|---|---|---|
+| amazon-computer | **+3.94** | 0.2 | +1.50 | 0.4 | +0.10 | **YES** |
+| pubmed | **+2.44** | 0.01 | +1.48 | 0.2 | +0.50 | **YES** |
+| citeseer | **+1.90** | 0.2 | +1.46 | 0.2 | +1.26 | **YES** |
+| coauthor-cs | **+1.42** | 0.4 | +0.94 | 0.1 | +0.05 | **YES** |
+| cora | +1.24 | 0.4 | **+1.86** | 0.4 | +1.04 | **YES** |
+| questions | +0.83 | 0.4 | **+1.37** | 0.01 | 0.00 | **YES** |
+| amazon-ratings | **+0.84** | 0.2 | +0.40 | 0.4 | +0.91 | NO |
+| coauthor-physics | +0.70 | 0.1 | **+1.22** | 0.4 | +0.03 | **YES** |
+| amazon-photo | **+0.60** | 0.4 | +0.26 | 0.4 | +0.13 | **YES** |
+| roman-empire | **+0.56** | 0.1 | −0.16 | — | +0.79 | NO |
+| wikics | **+0.33** | 0.01 | −0.01 | — | +0.22 | YES |
+| minesweeper | −0.04 | — | +0.13 | 0.1 | +0.31 | NO |
+
+**9/12 datasets: best GT Δ exceeds best GNN Δ.**
+
+### Key observations
+
+1. **GTs gain dramatically where GNNs plateau.** The most striking cases:
+   - coauthor-cs: GNN +0.05 → GT up to **+1.42** (28× more)
+   - coauthor-physics: GNN +0.03 → GT up to **+1.22** (40× more)
+   - amazon-computer: GNN +0.10 → GT up to **+3.94** (39× more)
+   - pubmed: GNN +0.50 → GT up to **+2.44** (5× more)
+
+2. **Questions dataset:** GNNs are degenerate/flat; GTs learn properly
+   (74–76% accuracy) and gain +0.83–1.37. The penalty helps GTs where
+   GNNs completely fail.
+
+3. **Polynormer wins on 8/12 datasets; SGFormer on 4.** Both benefit
+   broadly — the pilot finding that "SGFormer is always hurt" was
+   specific to a single cora run with high variance (std 3.45%). In the
+   full sweep, SGFormer gains +1.86 on cora.
+
+4. **GNNs still outperform GTs absolutely on saturated datasets** (GCN
+   reaches 94.55% on coauthor-cs; Polynormer reaches 90.06%). The GT
+   default hyperparameters are not tuned per-dataset. The delta comparison
+   is within-model improvement, not cross-model.
+
+5. **GTs with default hyperparameters have more room to improve.** The
+   penalty injects structural label knowledge that tuned GNNs already
+   absorb via local aggregation; GTs haven't converged to the same local
+   structure so they gain more.
+
+### The revised GT narrative
+
+The co-occurrence penalty is an efficient substitute for local label
+structure. GNNs with well-tuned local aggregation already internalize this
+structure and gain little. GTs — particularly with default hyperparameters —
+have not yet absorbed it, so the penalty consistently delivers larger gains.
+This holds for both pure-attention (Polynormer) and hybrid (SGFormer) GTs.
 
 ---
 
@@ -256,11 +317,11 @@ no local MP) should gain substantially. The full 14-dataset × 3-model sweep
 
 | Experiment | Status | What's missing |
 |---|---|---|
-| roman-empire/GAT rerun | ⏳ running | mlp_gnn, oracle, gnn_gnn (correct config with --res) |
-| gnn_gnn roman-empire/GAT λ=0.4 | ⏳ running | last lambda preempted |
+| roman-empire/GAT rerun | ⏳ running | mlp_gnn, oracle, gnn_gnn (correct config --res) |
 | oracle coauthor-cs/SAGE | ⏳ incomplete | λ=0.4 missing |
 | oracle coauthor-physics/SAGE | ⏳ missing | entire file |
-| GT full sweep (42 tasks) | ⏳ running | 14 datasets × polynormer/nodeformer/sgformer |
+| GT NodeFormer | ⏳ blocked | torch_sparse not installed |
+| GT chameleon/squirrel | ⏳ missing | geom-gcn data path in GTs_baselines |
 
 ---
 
@@ -274,49 +335,43 @@ no local MP) should gain substantially. The full 14-dataset × 3-model sweep
    amazon-ratings/SAGE +0.91, roman-empire/GCN +0.79.
 
 2. **A poor MLP still produces a useful penalty.** On cora, MLP accuracy
-   is ~56% but yields +1.04 for GAT. The aggregation over many edges
-   averages out per-node noise, producing a reliable class-level
-   co-occurrence matrix (law of large numbers argument).
+   is ~56% but yields +1.04 for GAT. Edge aggregation averages out
+   per-node noise, producing a reliable class-level co-occurrence matrix.
 
 3. **Per-step normalization makes λ dataset-agnostic.** The same λ range
-   {0.01–0.4} works across datasets spanning 47% to 97% accuracy. Without
-   normalization, the optimal λ would need to be tuned per dataset.
+   {0.01–0.4} works across datasets spanning 47% to 97% accuracy.
 
-4. **Graph Transformers without local MP benefit more than GNNs.**
-   Polynormer +2.20 vs best GNN +1.04 on cora. The penalty compensates for
-   the missing local label-coherence inductive bias.
+4. **GTs benefit more from co-occurrence regularization than GNNs on 9/12
+   datasets.** The gains are largest where GNNs plateau — coauthor-cs,
+   coauthor-physics, amazon-computer, pubmed show GT gains 5–40× larger
+   than GNN gains.
 
 ### What does not work
 
 5. **Saturated GNNs gain nothing.** coauthor-cs/physics, amazon-photo,
-   amazon-computer show near-zero gains. The GNN already encodes label
-   coherence via local aggregation.
+   amazon-computer show near-zero gains for well-tuned GNNs.
 
 6. **Dynamic self-update (gnn_gnn) does not reliably beat static MLP
-   penalty.** Neither variant dominates. The simplest approach (mlp_gnn)
-   is recommended.
+   penalty.** Neither variant dominates. mlp_gnn is simpler and competitive.
 
-7. **The oracle ceiling is low (~2% absolute).** Even with a perfect penalty
-   matrix, most GNNs gain ≤2%. This bounds the maximum value of any
-   improvement to the penalty estimation strategy.
+7. **The oracle ceiling is low (~2% absolute for GNNs).** This bounds the
+   maximum value of any penalty estimation improvement strategy.
 
 8. **Heterophilic graphs with high variance (chameleon) are unreliable.**
    High std (3–5%) makes small deltas uninterpretable.
 
 ### What this means for a paper
 
-The strongest narrative is the **GT finding**: co-occurrence regularization
-is a principled fix for a specific, named limitation of pure-attention GTs —
-the absence of local label-coherence inductive bias. If the full GT sweep
-confirms that attention-only models (Polynormer, NodeFormer) gain 2–4× more
-than hybrid/MPNN models (SGFormer, GCN) across multiple datasets, this
-becomes NeurIPS-competitive material.
+The GT finding is the strongest contribution: co-occurrence regularization
+delivers consistent, large improvements for Graph Transformers on datasets
+where GNNs plateau — up to 40× the GNN gain. The mechanism is principled
+(the penalty injects local label-coherence structure that GTs haven't
+internalized), the oracle experiment confirms the signal is real, and the
+static MLP penalty is a cheap, practical estimator.
 
-Supporting evidence already in hand:
-- Oracle bounds confirm the mechanism is real (not a coincidence)
-- Static MLP penalty recovers most of the oracle gain (efficient estimator)
-- Dynamic variant is not clearly better (simplicity wins)
-- The pattern is theoretically interpretable (edge-PMI connection)
-
-**Key risk:** the GT finding must replicate beyond cora. The full sweep
-will answer this.
+**For NeurIPS viability:**
+- Complete NodeFormer results (third GT data point)
+- Fix chameleon/squirrel in GTs_baselines (high-interest heterophilic results)
+- Add mechanism analysis (edge-label agreement before/after regularization)
+- Consider low-label regime experiment (penalty helps most when supervised
+  signal is scarce — this is where the effect should be largest)
