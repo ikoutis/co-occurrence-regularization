@@ -91,15 +91,23 @@ def load_model(args, model, optimizer, run):
     return model, optimizer
 
 def save_result(args, results):
-    if not os.path.exists(f'results/{args.dataset}'):
-        os.makedirs(f'results/{args.dataset}')
+    result_dir = getattr(args, 'result_dir', 'results')
+    if not os.path.exists(f'{result_dir}/{args.dataset}'):
+        os.makedirs(f'{result_dir}/{args.dataset}')
     if(args.model=='MPNN'):
-        filename = f'results/{args.dataset}/{args.model}_{args.gnn}.csv'
+        filename = f'{result_dir}/{args.dataset}/{args.model}_{args.gnn}.csv'
     else:
-        filename = f'results/{args.dataset}/{args.model}.csv'
+        filename = f'{result_dir}/{args.dataset}/{args.model}.csv'
     print(f"Saving results to {filename}")
     with open(f"{filename}", 'a+') as write_obj:
-        reg_info = f"REG: {args.lambda_val} " if getattr(args, 'use_reg', False) else "REG: False "
+        reg_info = "REG: False "
+        if getattr(args, 'use_reg', False):
+            if getattr(args, 'oracle_reg', False):
+                reg_info = f"ORACLE_REG: {args.lambda_val} "
+            elif getattr(args, 'mlp_reg', False):
+                reg_info = f"MLP_REG: {args.lambda_val} "
+            else:
+                reg_info = f"REG: {args.lambda_val} "
         if(args.model=='MPNN'):
             write_obj.write(
                 f"{args.model} " + f"{args.lr} " + f"{args.hidden_channels} " + f"{args.local_layers} " + f"{args.dropout} " + f"{args.ln} " + \

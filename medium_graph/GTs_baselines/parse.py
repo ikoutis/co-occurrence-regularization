@@ -154,4 +154,14 @@ def parser_add_main_args(parser):
     parser.add_argument('--reg_start_epoch', type=int, default=10, help='epoch to start applying regularization')
     parser.add_argument('--reg_update_freq', type=int, default=5, help='how often to update the penalty matrix')
 
+    # mlp inference variant
+    parser.add_argument('--mlp_reg', action='store_true', help='static penalty from pre-trained MLP')
+    parser.add_argument('--mlp_epochs', type=int, default=500, help='epochs to pre-train the MLP')
+
+    # oracle variant
+    parser.add_argument('--oracle_reg', action='store_true', help='oracle penalty from true labels (upper bound)')
+
+    # result directory
+    parser.add_argument('--result_dir', type=str, default='results', help='directory to save results')
+
 
