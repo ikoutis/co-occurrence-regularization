@@ -1,18 +1,14 @@
-from network.gps_model import GPSModel
-from polynormer import Polynormer
-from sgformer import SGFormer, GCN
-from nodeformer import NodeFormer
-from network.multi_model import MultiModel
-from nagphormer import TransformerModel
-from goat import Transformer
 def parse_method(args, n, c, d, device):
     if args.model == "GPS":
+        from network.gps_model import GPSModel
         model = GPSModel(args, d, c).to(device)
     elif args.model =="polynormer":
+        from polynormer import Polynormer
         model = Polynormer(d, args.hidden_channels, c, local_layers=args.local_layers, global_layers=args.global_layers,
             in_dropout=args.in_dropout, dropout=args.dropout, global_dropout=args.global_dropout,
             heads=args.num_heads, beta=args.beta, pre_ln=args.pre_ln).to(device)
     elif args.model == 'nodeformer':
+        from nodeformer import NodeFormer
         model = NodeFormer(in_channels=d,
                          hidden_channels=args.hidden_channels,
                          out_channels=c,
@@ -21,21 +17,24 @@ def parse_method(args, n, c, d, device):
                          num_heads=args.num_heads,
                          use_bn=args.use_bn).to(device)
     elif args.model == 'sgformer':
+        from sgformer import SGFormer, GCN
         gnn = GCN(in_channels=d,
                     hidden_channels=args.hidden_channels,
                     out_channels=args.hidden_channels,
                     num_layers=args.layers,
                     dropout=args.dropout)
-        model = SGFormer(d, args.hidden_channels, c, num_layers=args.layers, alpha=args.alpha, dropout=args.dropout, 
-                         num_heads=args.num_heads, use_bn=args.use_bn, use_residual=args.use_residual, 
-                         use_graph=args.use_graph, use_weight=args.use_weight, use_act=args.use_act, 
+        model = SGFormer(d, args.hidden_channels, c, num_layers=args.layers, alpha=args.alpha, dropout=args.dropout,
+                         num_heads=args.num_heads, use_bn=args.use_bn, use_residual=args.use_residual,
+                         use_graph=args.use_graph, use_weight=args.use_weight, use_act=args.use_act,
                          graph_weight=args.graph_weight, gnn=gnn, aggregate=args.aggregate, jk=args.jk).to(device)
     elif args.model == 'exphormer':
+        from network.multi_model import MultiModel
         model = MultiModel(args, d, c).to(device)
     elif args.model == 'nagphormer':
-        model = TransformerModel(hops=args.hops, 
-                        n_class=c, 
-                        input_dim=d, 
+        from nagphormer import TransformerModel
+        model = TransformerModel(hops=args.hops,
+                        n_class=c,
+                        input_dim=d,
                         pe_dim = args.hidden_channels,
                         n_layers=args.global_layers,
                         num_heads=args.num_heads,
@@ -44,10 +43,11 @@ def parse_method(args, n, c, d, device):
                         dropout_rate=args.dropout,
                         attention_dropout_rate=args.dropout).to(device)
     else:
+        from goat import Transformer
         model = Transformer(
             num_nodes=n,
             in_channels=d,
-            hidden_channels=args.hidden_channels, 
+            hidden_channels=args.hidden_channels,
             out_channels=c,
             global_dim=args.hidden_channels,
             num_layers=args.layers,
@@ -61,7 +61,7 @@ def parse_method(args, n, c, d, device):
             no_bn=False,
             norm_type='batch_norm'
         ).to(device)
-    
+
     return model
         
 
