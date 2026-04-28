@@ -3,7 +3,7 @@
 # MLP-GT sweep: static MLP-derived penalty applied to a Graph Transformer.
 # Runs GT baseline (no reg) then lambda = 0.01, 0.1, 0.2, 0.4.
 # Must be called from GTs_baselines/ directory.
-# Usage: ./mlp_gt/sweep_mlp_gt.sh "python main.py --model polynormer --dataset cora [HYPERPARAMS]"
+# Usage: ./mlp_gt/sweep_mlp_gt.sh "python main.py --model polynormer --dataset cora [HYPERPARAMS]" [result_dir]
 
 if [ -z "$1" ]; then
     echo "Please provide the base python command in quotes."
@@ -11,11 +11,12 @@ if [ -z "$1" ]; then
 fi
 
 BASE_CMD="$1"
-RESULT_DIR="mlp_gt/results"
+RESULT_DIR="${2:-mlp_gt/results}"
 
 echo "=========================================================="
 echo "Starting mlp_gt GT Sweep for:"
 echo "$BASE_CMD"
+echo "Result dir: $RESULT_DIR"
 echo "=========================================================="
 
 echo "Running GT Baseline (no reg)..."
