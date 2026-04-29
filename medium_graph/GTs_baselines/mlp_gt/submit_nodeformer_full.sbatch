@@ -13,6 +13,7 @@
 #SBATCH --time=48:00:00
 #SBATCH --array=0-13
 #SBATCH --requeue
+#SBATCH --nodelist=n0002
 
 # NodeFormer sweep across all 14 datasets.
 # PREREQUISITE: torch_sparse must be installed with CUDA support.
@@ -64,30 +65,13 @@ cd "$SLURM_SUBMIT_DIR"
 
 nvidia-smi
 
-# Ensure torch_sparse CUDA kernels work on this node (SparseTensor creation
-# is not enough — must test .csr() which calls the ind2ptr CUDA kernel).
+# Verify torch_sparse CUDA kernels work (must call .csr() to trigger ind2ptr).
 python -c "
 import torch, torch_sparse
-row = torch.zeros(1,dtype=torch.long).cuda()
-col = torch.zeros(1,dtype=torch.long).cuda()
-t = torch_sparse.SparseTensor(row=row, col=col, sparse_sizes=(1,1))
+t = torch_sparse.SparseTensor(row=torch.zeros(1,dtype=torch.long).cuda(), col=torch.zeros(1,dtype=torch.long).cuda(), sparse_sizes=(1,1))
 t.csr()
 print('torch_sparse CUDA OK')
-" 2>/dev/null || {
-    echo 'torch_sparse CUDA kernels not working — reinstalling with CUDA support...'
-    module load cuda/11.6 2>/dev/null || module load cuda 2>/dev/null || true
-    nvcc --version 2>/dev/null || echo 'nvcc not found, build may be CPU-only'
-    pip uninstall torch_sparse torch_scatter -y
-    pip install torch_sparse torch_scatter -f https://data.pyg.org/whl/torch-1.12.1+cu116.html --no-cache-dir
-    python -c "
-import torch, torch_sparse
-row = torch.zeros(1,dtype=torch.long).cuda()
-col = torch.zeros(1,dtype=torch.long).cuda()
-t = torch_sparse.SparseTensor(row=row, col=col, sparse_sizes=(1,1))
-t.csr()
-print('torch_sparse CUDA OK after reinstall')
 "
-}
 
 python -c "import torch; import torch_sparse; print(torch.__version__, torch_sparse.__version__, torch.cuda.is_available())"
 
