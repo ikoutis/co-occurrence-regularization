@@ -64,11 +64,29 @@ cd "$SLURM_SUBMIT_DIR"
 
 nvidia-smi
 
-# Ensure torch_sparse is installed with CUDA support on this node.
-# Building from source on a GPU node compiles in CUDA automatically.
-python -c "import torch_sparse; import torch; t = torch_sparse.SparseTensor(row=torch.zeros(1,dtype=torch.long).cuda(), col=torch.zeros(1,dtype=torch.long).cuda(), sparse_sizes=(1,1)); print('torch_sparse CUDA OK')" 2>/dev/null || {
-    echo "torch_sparse CUDA not working — reinstalling from source on this node..."
+# Ensure torch_sparse CUDA kernels work on this node (SparseTensor creation
+# is not enough — must test .csr() which calls the ind2ptr CUDA kernel).
+python -c "
+import torch, torch_sparse
+row = torch.zeros(1,dtype=torch.long).cuda()
+col = torch.zeros(1,dtype=torch.long).cuda()
+t = torch_sparse.SparseTensor(row=row, col=col, sparse_sizes=(1,1))
+t.csr()
+print('torch_sparse CUDA OK')
+" 2>/dev/null || {
+    echo 'torch_sparse CUDA kernels not working — reinstalling with CUDA support...'
+    module load cuda/11.6 2>/dev/null || module load cuda 2>/dev/null || true
+    nvcc --version 2>/dev/null || echo 'nvcc not found, build may be CPU-only'
+    pip uninstall torch_sparse torch_scatter -y
     pip install torch_sparse torch_scatter -f https://data.pyg.org/whl/torch-1.12.1+cu116.html --no-cache-dir
+    python -c "
+import torch, torch_sparse
+row = torch.zeros(1,dtype=torch.long).cuda()
+col = torch.zeros(1,dtype=torch.long).cuda()
+t = torch_sparse.SparseTensor(row=row, col=col, sparse_sizes=(1,1))
+t.csr()
+print('torch_sparse CUDA OK after reinstall')
+"
 }
 
 python -c "import torch; import torch_sparse; print(torch.__version__, torch_sparse.__version__, torch.cuda.is_available())"
