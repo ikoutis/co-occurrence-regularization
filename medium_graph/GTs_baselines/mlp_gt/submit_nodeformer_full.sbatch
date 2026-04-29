@@ -13,7 +13,6 @@
 #SBATCH --time=48:00:00
 #SBATCH --array=0-13
 #SBATCH --requeue
-#SBATCH --nodelist=n0002
 
 # NodeFormer sweep across all 14 datasets.
 # PREREQUISITE: torch_sparse must be installed with CUDA support.
