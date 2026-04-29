@@ -55,4 +55,10 @@ def parser_add_main_args(parser):
     parser.add_argument('--save_model', action='store_true', help='whether to save model')
     parser.add_argument('--model_dir', type=str, default='./model/', help='where to save model')
     parser.add_argument('--save_result', action='store_true', help='whether to save result')
+    # regularization
+    parser.add_argument('--use_reg', action='store_true')
+    parser.add_argument('--mlp_reg', action='store_true')
+    parser.add_argument('--lambda_val', type=float, default=0.1)
+    parser.add_argument('--mlp_epochs', type=int, default=500)
+    parser.add_argument('--result_dir', type=str, default='results')
 

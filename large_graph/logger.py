@@ -90,21 +90,25 @@ def load_model(args, model, optimizer, run):
     return model, optimizer
 
 def save_result(args, results):
-    if not os.path.exists(f'results/{args.dataset}'):
-        os.makedirs(f'results/{args.dataset}')
-    if(args.model=='MPNN'):
-        filename = f'results/{args.dataset}/{args.model}.csv'
+    result_dir = getattr(args, 'result_dir', 'results')
+    out_dir = f'{result_dir}/{args.dataset}'
+    if not os.path.exists(out_dir):
+        os.makedirs(out_dir)
+    filename = f'{out_dir}/{args.model}.csv'
+    if getattr(args, 'sage', False):
+        filename = f'{out_dir}/MPNN_sage.csv'
     else:
-        filename = f'results/{args.dataset}/{args.model}.csv'
+        filename = f'{out_dir}/MPNN_gcn.csv'
     print(f"Saving results to {filename}")
-    with open(f"{filename}", 'a+') as write_obj:
-        if(args.model=='MPNN'):
-            write_obj.write(
-                f"{args.model} " + f"{args.lr} " + f"{args.hidden_channels} " + f"{args.local_layers} " + f"{args.dropout} " + f"{args.ln} " + \
-                f"{args.bn} " + f"{args.res} " + \
-                f"{results.mean():.2f} $\pm$ {results.std():.2f} \n")
-        else:
-            write_obj.write(
-                f"{args.model} " + f"{args.lr} " + \
-                f"{results.mean():.2f} $\pm$ {results.std():.2f} \n")
+    if getattr(args, 'use_reg', False) and getattr(args, 'mlp_reg', False):
+        reg_tag = f"MLP_REG: {args.lambda_val}"
+    elif not getattr(args, 'use_reg', False):
+        reg_tag = "REG: False"
+    else:
+        reg_tag = f"REG: {args.lambda_val}"
+    with open(filename, 'a+') as write_obj:
+        write_obj.write(
+            f"MPNN {args.lr} {args.hidden_channels} {args.local_layers} {args.dropout} "
+            f"{args.ln} {args.bn} {args.res} {reg_tag} "
+            f"{results.mean():.2f} $\\pm$ {results.std():.2f} \n")
 

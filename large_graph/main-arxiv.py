@@ -13,6 +13,7 @@ from logger import *
 from dataset import load_dataset
 from data_utils import eval_acc, eval_rocauc, load_fixed_splits
 from eval import *
+from regularization import estimate_cooccurrence_matrix, edge_loss
 
 
 def fix_seed(seed=42):
@@ -56,10 +57,41 @@ print(f"dataset {args.dataset} | num nodes {n} | num edge {e} | num node feats {
 
 dataset.graph['edge_index'] = to_undirected(dataset.graph['edge_index'])
 dataset.graph['edge_index'], _ = remove_self_loops(dataset.graph['edge_index'])
+
+# Keep original edges (no self-loops) for co-occurrence regularization
+reg_edge_index = dataset.graph['edge_index'].to(device)
+
 dataset.graph['edge_index'], _ = add_self_loops(dataset.graph['edge_index'], num_nodes=n)
 
 dataset.graph['edge_index'], dataset.graph['node_feat'] = \
     dataset.graph['edge_index'].to(device), dataset.graph['node_feat'].to(device)
+
+### MLP pre-training for co-occurrence penalty ###
+penalty_matrix = None
+if args.use_reg and args.mlp_reg:
+    print(f"Pre-training MLP for {args.mlp_epochs} epochs to estimate co-occurrence matrix...")
+    mlp = nn.Sequential(
+        nn.Linear(d, args.hidden_channels),
+        nn.ReLU(),
+        nn.Linear(args.hidden_channels, c)
+    ).to(device)
+    mlp_opt = torch.optim.Adam(mlp.parameters(), lr=0.001)
+    train_idx = split_idx_lst[0]['train'].to(device)
+    for ep in range(args.mlp_epochs):
+        mlp.train()
+        mlp_opt.zero_grad()
+        out = F.log_softmax(mlp(dataset.graph['node_feat']), dim=1)
+        loss = F.nll_loss(out[train_idx], dataset.label.squeeze(1)[train_idx])
+        loss.backward()
+        mlp_opt.step()
+        if (ep + 1) % 100 == 0:
+            print(f"  MLP epoch {ep+1}/{args.mlp_epochs}, loss={loss.item():.4f}")
+    mlp.eval()
+    with torch.no_grad():
+        mlp_probs = torch.softmax(mlp(dataset.graph['node_feat']), dim=1)
+        co_matrix = estimate_cooccurrence_matrix(mlp_probs, reg_edge_index, c, device)
+        penalty_matrix = -torch.log(co_matrix + 1e-6)
+    print("MLP co-occurrence penalty matrix computed and frozen.")
 
 ### Load method ###
 model = parse_method(args, n, c, d, device)
@@ -91,6 +123,13 @@ for run in range(args.runs):
         out = F.log_softmax(out, dim=1)
         loss = criterion(
             out[train_idx], dataset.label.squeeze(1)[train_idx])
+
+        if args.use_reg and penalty_matrix is not None:
+            node_probs = torch.exp(out)
+            reg = edge_loss(node_probs, reg_edge_index, penalty_matrix)
+            scale = loss.detach() / (reg.detach().abs() + 1e-8)
+            loss = loss + args.lambda_val * scale * reg
+
         loss.backward()
         optimizer.step()
 
@@ -117,4 +156,3 @@ for run in range(args.runs):
 results = logger.print_statistics()
 ### Save results ###
 save_result(args, results)
-
