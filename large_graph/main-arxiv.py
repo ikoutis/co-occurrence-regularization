@@ -66,8 +66,15 @@ dataset.graph['edge_index'], _ = add_self_loops(dataset.graph['edge_index'], num
 dataset.graph['edge_index'], dataset.graph['node_feat'] = \
     dataset.graph['edge_index'].to(device), dataset.graph['node_feat'].to(device)
 
-### MLP pre-training for co-occurrence penalty ###
+### Penalty matrix construction ###
 penalty_matrix = None
+if args.use_reg and args.oracle_reg:
+    print("Computing oracle penalty matrix from true labels...")
+    true_probs = F.one_hot(dataset.label.squeeze(1), c).float()
+    co_matrix = estimate_cooccurrence_matrix(true_probs, reg_edge_index, c, device)
+    penalty_matrix = -torch.log(co_matrix + 1e-6)
+    print("Oracle penalty matrix frozen.")
+
 if args.use_reg and args.mlp_reg:
     print(f"Pre-training MLP for {args.mlp_epochs} epochs to estimate co-occurrence matrix...")
     mlp = nn.Sequential(

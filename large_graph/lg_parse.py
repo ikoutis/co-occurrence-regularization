@@ -58,6 +58,7 @@ def parser_add_main_args(parser):
     # regularization
     parser.add_argument('--use_reg', action='store_true')
     parser.add_argument('--mlp_reg', action='store_true')
+    parser.add_argument('--oracle_reg', action='store_true')
     parser.add_argument('--lambda_val', type=float, default=0.1)
     parser.add_argument('--mlp_epochs', type=int, default=500)
     parser.add_argument('--result_dir', type=str, default='results')

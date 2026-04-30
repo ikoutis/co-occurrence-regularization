@@ -102,6 +102,8 @@ def save_result(args, results):
     print(f"Saving results to {filename}")
     if getattr(args, 'use_reg', False) and getattr(args, 'mlp_reg', False):
         reg_tag = f"MLP_REG: {args.lambda_val}"
+    elif getattr(args, 'use_reg', False) and getattr(args, 'oracle_reg', False):
+        reg_tag = f"ORACLE_REG: {args.lambda_val}"
     elif not getattr(args, 'use_reg', False):
         reg_tag = "REG: False"
     else:
