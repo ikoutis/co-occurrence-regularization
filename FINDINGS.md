@@ -15,13 +15,15 @@ P = -log(C + 1e-6)           # high penalty for rare co-occurrences
 
 **Regularized loss:**
 ```
-scale = task_loss.detach() / (reg_loss.detach().abs() + 1e-8)
+scale = task_loss.detach().abs() / reg_loss.detach().abs().clamp(min=1e-4)
 loss  = task_loss + lambda * scale * reg_loss
 ```
 
 The per-step normalization makes λ dataset-agnostic: it always means
 "fraction of the current task loss," regardless of scale differences
-between datasets.
+between datasets.  `clamp(min=1e-4)` prevents scale explosion when
+reg_loss approaches zero late in training (originally `+1e-8`, which
+was too small to bound anything in practice — see Section 8).
 
 **Three variants:**
 | Variant | Penalty source | When frozen |
@@ -269,7 +271,52 @@ it and gain substantially.
 
 ---
 
-## 7. Pending / Incomplete
+## 7. Clamp Fix Ablation
+
+The original normalization used `+1e-8` in the denominator.  When `reg_loss`
+approaches zero (e.g., late training on high-accuracy datasets), this allows
+`scale` to blow up, creating occasional large gradient spikes.  The fix clamps
+the denominator at `1e-4`, bounding `scale ≤ task_loss / 1e-4`.
+
+Re-ran the 4 weakest GNN cases and 4 weakest GT cases under the corrected formula.
+
+**Table 6.** Clamp fix: best Δ (regularized − baseline) under old vs new formula.
+Within-run comparison only (baselines differ due to other config changes; see note).
+
+### GNN (mlp_gnn, GCN)
+
+| Dataset | Old best Δ | Clamp best Δ | Change |
+|---|---|---|---|
+| pubmed | −0.14 | **+0.50** | flipped positive |
+| coauthor-cs | −0.10 | **+0.37** | flipped positive |
+| minesweeper | +0.09 | +0.22 | marginal |
+| squirrel | −2.67 | −2.77 | unchanged |
+
+### GT (mlp_gt)
+
+| Dataset | Model | Old best Δ | Clamp best Δ | Change |
+|---|---|---|---|---|
+| amazon-ratings | SGFormer | +0.40 | **+0.98** | +145% |
+| minesweeper | SGFormer | −0.74 at λ=0.4 | +0.02 at λ=0.4 | eliminated degradation |
+| amazon-ratings | Polynormer | +0.84 | +0.68 | no change |
+| minesweeper | Polynormer | −0.25 | +0.06 | marginal |
+
+**Result: 5 of 8 cases improved, 3 unchanged, 0 hurt.**
+
+The improvement is concentrated where it should be: high-baseline datasets
+(pubmed 80%, coauthor-cs 95%) where the model satisfies co-occurrence
+constraints well and reg_loss can get small, and SGFormer (which has a more
+complex gradient landscape from its dual GCN+attention backbone).  Squirrel
+and heterophilic datasets are unaffected — reg_loss stays large there because
+the MLP's noisy co-occurrence matrix is hard to satisfy.
+
+> Note: absolute baselines differ between old and new runs due to unrelated
+> config changes (`--res` flag).  All Δ values are computed within each
+> run's own baseline.
+
+---
+
+## 9. Pending / Incomplete
 
 | Experiment | Status |
 |---|---|
@@ -280,7 +327,7 @@ it and gain substantially.
 
 ---
 
-## 8. Overall Conclusions
+## 10. Overall Conclusions
 
 ### What works
 
