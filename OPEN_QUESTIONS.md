@@ -68,3 +68,39 @@ or permuted assignment rather than the correct one, confirming that topology
 is what breaks the symmetry.
 
 **Script:** `experiments/cooc_recovery/cooc_recovery.py`
+
+---
+
+## 3. Two-phase training: statistics first, labels second
+
+Instead of combining CE and co-occurrence loss simultaneously, train in two
+phases:
+
+```
+Phase 1:  loss = edge_loss(softmax(f(G)), edge_index, -log(C* + ε))   # no labels
+Phase 2:  loss = CE(f(G)[train], y[train])                             # from phase 1 init
+```
+
+The hypothesis is that phase 1 forces the model into a region of parameter
+space where predictions are already globally consistent with the label
+topology.  Phase 2 then only needs to select the correct specific solution
+within that region rather than simultaneously building the representation and
+reading out labels.
+
+**Most promising variant:** warm-start into a combined loss rather than
+switching CE-only in phase 2, since the co-occurrence signal would otherwise
+disappear and the model (especially a GT) could drift back to a
+topology-agnostic solution:
+
+```
+Phase 1:  loss = edge_loss(...)          # statistics warm-start
+Phase 2:  loss = CE + λ * edge_loss(...) # combined, from phase 1 init
+```
+
+**Why it matters most for GTs:** GNNs propagate neighborhood information
+naturally during CE training so the initialization advantage is likely
+marginal.  GTs have no topology induction bias and cannot learn structure and
+labels simultaneously — a dedicated phase 1 may be the only way to get them
+into a topology-aware basin before label supervision takes over.  If the
+two-phase approach closes the GNN–GT accuracy gap more than the single-phase
+combined loss, it would confirm this as a GT-specific contribution.
