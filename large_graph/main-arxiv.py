@@ -134,7 +134,7 @@ for run in range(args.runs):
         if args.use_reg and penalty_matrix is not None:
             node_probs = torch.exp(out)
             reg = edge_loss(node_probs, reg_edge_index, penalty_matrix)
-            scale = loss.detach() / (reg.detach().abs() + 1e-8)
+            scale = loss.detach().abs() / reg.detach().abs().clamp(min=1e-4)
             loss = loss + args.lambda_val * scale * reg
 
         loss.backward()

@@ -185,9 +185,9 @@ for run in range(args.runs):
             else:
                 node_probs = torch.exp(out)
             reg_loss = edge_loss(node_probs, dataset.graph['edge_index'], penalty_matrix)
-            scale = loss.detach() / (reg_loss.detach().abs() + 1e-8)
+            scale = loss.detach().abs() / reg_loss.detach().abs().clamp(min=1e-4)
             loss = loss + args.lambda_val * scale * reg_loss
-            
+
         loss.backward()
         optimizer.step()
 
