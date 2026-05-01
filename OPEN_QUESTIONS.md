@@ -25,13 +25,13 @@ objective and strengthens the paper's narrative.
 
 ---
 
-## 2. Can a GNN recover a labeling from co-occurrence statistics alone?
+## 2. Can a model recover a labeling from co-occurrence statistics alone?
 
 A cleaner version of Q1: define the *co-occurrence recovery problem* as a
 pure optimization problem with no cross-entropy term.
 
 **Setup:** generate a Stochastic Block Model graph (labels = block membership).
-Compute C* from **all** true labels.  Train a GNN / MLP with only the
+Compute C* from **all** true labels.  Train GCN / GT / MLP with only the
 co-occurrence loss:
 
 ```
@@ -43,15 +43,28 @@ No label supervision at all.  Evaluate:
 - Clustering accuracy after Hungarian matching  (did it find the true labeling?)
 
 **Key comparisons:**
-- GCN vs MLP: does neighborhood aggregation help match co-occurrence stats?
-- Homophilic vs heterophilic SBM: does graph topology contain enough signal?
+- GCN vs GT vs MLP across homophilic and heterophilic SBM
+- GT here is pure all-pairs self-attention with no positional encoding and
+  no access to edge_index — the topology-free baseline
 
-**Why it matters:** if a GNN can recover the labeling purely from co-occurrence
-pressure, it means the penalty loss contains the full structural information
-needed for classification.  If only GCN succeeds (not MLP), it confirms that
-topology is essential — the model must propagate information across edges to
-satisfy the edge-level constraint.  A degenerate solution (low Fro error but
-low accuracy) would suggest co-occurrence statistics alone are insufficient to
-identify node labels uniquely.
+**The central hypothesis this tests:** GTs cannot recover co-occurrence
+statistics on their own because they have no topology induction bias — they
+treat all node pairs equally, so the edge-level constraint provides no
+gradient signal that distinguishes neighbors from non-neighbors.  GCNs, by
+contrast, aggregate over actual edges and can therefore feel the co-occurrence
+pressure directly through message passing.  This asymmetry is precisely why
+the explicit penalty helps GTs more than GNNs in the main experiments: GTs
+*need* the regularization to learn what GCNs can discover on their own.
+
+**Expected outcomes:**
+- GCN: low Fro error, high clustering accuracy (especially homo)
+- GT:  low Fro error possible (it can find *a* valid soft assignment via
+  attention collapse), but low clustering accuracy — degenerate solution
+- MLP: likely fails both (no structural signal whatsoever)
+
+A GT achieving low Fro error but low accuracy would be the most interesting
+result: it shows the GT satisfies the aggregate statistics through a uniform
+or permuted assignment rather than the correct one, confirming that topology
+is what breaks the symmetry.
 
 **Script:** `experiments/cooc_recovery/cooc_recovery.py`
