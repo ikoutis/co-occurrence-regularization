@@ -110,7 +110,6 @@ def main():
     parser = argparse.ArgumentParser()
     parser_add_main_args(parser)
     parser.add_argument('--lambdas', type=float, nargs='+', default=[0.01, 0.1, 0.2, 0.4])
-    parser.add_argument('--mlp_epochs', type=int, default=500)
     args = parser.parse_args()
     args.gnn = 'gcn'
     args.use_reg = False
