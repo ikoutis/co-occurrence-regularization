@@ -104,3 +104,46 @@ labels simultaneously — a dedicated phase 1 may be the only way to get them
 into a topology-aware basin before label supervision takes over.  If the
 two-phase approach closes the GNN–GT accuracy gap more than the single-phase
 combined loss, it would confirm this as a GT-specific contribution.
+
+---
+
+## 4. Label efficiency: co-occurrence regularization under small training sets
+
+**Background:** Training set sizes vary enormously across our benchmark
+datasets — and the split is not random:
+
+| Group | Examples | Train nodes | Train % |
+|---|---|---|---|
+| Homophilic (rand_split_class, 20/class) | coauthor-physics, amazon-computer | 60–300 | 0.3–5% |
+| Homophilic (wikics) | wikics | 580 | 5% |
+| Heterophilic (fixed 50/25/25) | roman-empire, amazon-ratings | 5k–12k | 48–50% |
+
+**Key observation:** GNNs are already extremely label-efficient on homophilic
+graphs — coauthor-physics achieves 96.79% from 100 labeled nodes (0.3%)
+because message passing propagates a few labeled seeds outward perfectly.
+This is exactly why co-occurrence regularization adds almost nothing for GNNs
+on these datasets: message passing already extracts the structural signal.
+Heterophilic datasets have 50× more training data but GCN still only reaches
+28–48% — the bottleneck is architecture, not label count.
+
+**The experiment:** vary labels/class (e.g., 2, 5, 10, 20, 50) on homophilic
+datasets and plot accuracy vs. label count for:
+- GCN (baseline)
+- GCN + co-occurrence reg
+- GT (baseline)
+- GT + co-occurrence reg
+
+**Prediction:**
+- GNNs maintain high accuracy until message-passing "coverage" collapses
+  (probably below ~5/class on sparse graphs)
+- Below that threshold, co-occurrence benefit for GNNs grows — the penalty
+  fills the structural gap that few seed nodes can no longer cover via MP
+- GT benefit grows even faster across the full range since GTs have no
+  message-passing fallback at any label count
+- This produces a "label efficiency" crossing point: the label count below
+  which co-occurrence regularization meaningfully helps even GNNs
+
+**Why it matters for the paper:** a label efficiency curve would be the
+strongest practical argument for the method — showing it is most valuable
+exactly when labeled data is scarce, which is the real-world regime where
+practitioners most need help.
