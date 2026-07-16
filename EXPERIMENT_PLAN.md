@@ -90,13 +90,24 @@ same split, same model init, same data order. Then report:
 
 ### E1.1 GT baselines at published hyperparameters
 
-Re-run Polynormer and SGFormer baselines using the **per-dataset** configs
-already present in `GTs_baselines/polynormer.sh` / `sgformer.sh` (or the
-papers' repos directly), 10 runs.
+**Status: IMPLEMENTED** — see `GTs_baselines/GT_BASELINES_README.md`.
 
-**Acceptance gate:** within ~1 point of published numbers
-(e.g. Polynormer amazon-computer ≥ 92.5, roman-empire ≥ 92). If a dataset
-can't be matched, find out why before running any regularization on it.
+Investigation revealed the baseline gap was not only hyperparameters:
+(a) Polynormer's two-phase schedule was missing from the adapted `main.py`,
+so `model._global` stayed False and **the global attention module was never
+trained** in any prior Polynormer run; (b) SGFormer's transformer depth was
+tied to its GCN backbone depth (official configs use 1 transformer layer);
+(c) amazon/coauthor splits differed between the GT and GNN sweeps. All
+three fixed. Published per-dataset configs pulled from the official repos
+(`polynormer_tuned.sh`, `sgformer_tuned.sh`); the (model, dataset) pairs
+with no published config get a bounded validation-selected search
+(`submit_gt_search.sbatch` + `analyze_gt_search.py`).
+
+**Acceptance gate:** 10-run mean within ~1 point of published numbers
+(Polynormer amazon-computer 94.07, roman-empire 92.48, …; SGFormer cora
+84.5, citeseer 72.6, pubmed 80.3). If a dataset can't be matched, find out
+why before running any regularization on it.
+Run: `sbatch submit_gt_tuned.sbatch` + `sbatch submit_gt_search.sbatch`.
 
 ### E1.2 GNN baselines cross-checked against tunedGNN
 

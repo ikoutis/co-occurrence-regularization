@@ -90,6 +90,71 @@ def load_model(args, model, optimizer, run):
 
     return model, optimizer
 
+def config_string(args):
+    """Compact hyperparameter fingerprint, used to identify search configs."""
+    parts = [f'lr={args.lr}', f'hid={args.hidden_channels}',
+             f'do={args.dropout}', f'wd={args.weight_decay}',
+             f'heads={getattr(args, "num_heads", "")}']
+    if args.model == 'polynormer':
+        parts += [f'll={args.local_layers}', f'gl={args.global_layers}',
+                  f'le={getattr(args, "local_epochs", 0)}',
+                  f'ge={getattr(args, "global_epochs", 0)}',
+                  f'beta={args.beta}']
+    elif args.model == 'sgformer':
+        parts += [f'gcn_l={args.layers}', f'tr_l={getattr(args, "tr_layers", 1)}',
+                  f'gw={args.graph_weight}', f'alpha={args.alpha}',
+                  f'tr_do={getattr(args, "tr_dropout", None)}',
+                  f'tr_wd={getattr(args, "tr_weight_decay", None)}',
+                  f'bn={args.use_bn}']
+    else:
+        parts += [f'gl={args.global_layers}', f'bn={args.use_bn}']
+    return ','.join(parts)
+
+def save_runs_detail(args, logger, run_meta=None):
+    """
+    Appends one CSV row per run with the validation accuracy and the test
+    accuracy at the best-validation epoch, plus a config fingerprint. This
+    is what downstream analysis needs for validation-based lambda/config
+    selection and paired statistics.
+    """
+    import csv
+    result_dir = getattr(args, 'result_dir', 'results')
+    d = f'{result_dir}/{args.dataset}'
+    os.makedirs(d, exist_ok=True)
+    name = f'{args.model}_{args.gnn}' if args.model == 'MPNN' else f'{args.model}'
+    path = f'{d}/runs_{name}.csv'
+    write_header = not os.path.exists(path)
+
+    reg_type = 'none'
+    if getattr(args, 'use_reg', False):
+        if getattr(args, 'oracle_reg', False):
+            reg_type = 'oracle'
+        elif getattr(args, 'mlp_reg', False):
+            reg_type = 'mlp'
+        else:
+            reg_type = 'dynamic'
+
+    with open(path, 'a', newline='') as f:
+        w = csv.writer(f)
+        if write_header:
+            w.writerow(['dataset', 'model', 'reg_type', 'penalty_transform',
+                        'lambda', 'seed', 'run', 'best_valid',
+                        'test_at_best_valid', 'penalty_dist', 'offdiag_cv',
+                        'config'])
+        for run, results in enumerate(logger.results):
+            if not results:
+                continue
+            r = 100 * torch.tensor(results)
+            ind = r[:, 1].argmax().item()
+            meta = run_meta[run] if run_meta and run < len(run_meta) else {}
+            w.writerow([args.dataset, name, reg_type,
+                        getattr(args, 'penalty_transform', 'none') if reg_type != 'none' else '',
+                        getattr(args, 'lambda_val', 0.0) if reg_type != 'none' else 0.0,
+                        args.seed, run,
+                        f'{r[ind, 1].item():.4f}', f'{r[ind, 2].item():.4f}',
+                        f"{meta.get('pdist', '')}", f"{meta.get('pcv', '')}",
+                        config_string(args)])
+
 def save_result(args, results):
     result_dir = getattr(args, 'result_dir', 'results')
     if not os.path.exists(f'{result_dir}/{args.dataset}'):

@@ -206,6 +206,18 @@ performance.
 
 ## 6. Graph Transformer Full Sweep (14 datasets × Polynormer + SGFormer)
 
+> ⚠ **RETRACTION-LEVEL CAVEAT (added 2026-07-16):** all Polynormer results in
+> this section were produced with `model._global = False` throughout training —
+> the adapted `main.py` never enabled Polynormer's two-phase schedule, so the
+> global attention module was never trained or used. The model actually
+> evaluated was only the local GATConv branch. In addition, the sweep used one
+> generic hyperparameter config for all datasets (baselines up to 24 points
+> below published numbers), SGFormer's transformer depth was erroneously tied
+> to its GCN depth, and amazon/coauthor datasets used a different split
+> protocol than the GNN sweep. The GT-vs-GNN comparison below is therefore not
+> interpretable as stated and must be redone with the fixed pipeline
+> (see `medium_graph/GTs_baselines/GT_BASELINES_README.md`).
+
 > NodeFormer not run: torch_sparse requires CUDA compilation (nvcc not available
 > on cluster compute nodes).
 

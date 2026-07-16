@@ -23,7 +23,11 @@ def parse_method(args, n, c, d, device):
                     out_channels=args.hidden_channels,
                     num_layers=args.layers,
                     dropout=args.dropout)
-        model = SGFormer(d, args.hidden_channels, c, num_layers=args.layers, alpha=args.alpha, dropout=args.dropout,
+        # Official SGFormer separates the transformer depth (ours_layers, here
+        # tr_layers) from the GCN backbone depth (--layers). The transformer
+        # branch also gets its own dropout (ours_dropout, here tr_dropout).
+        tr_dropout = args.tr_dropout if args.tr_dropout is not None else args.dropout
+        model = SGFormer(d, args.hidden_channels, c, num_layers=args.tr_layers, alpha=args.alpha, dropout=tr_dropout,
                          num_heads=args.num_heads, use_bn=args.use_bn, use_residual=args.use_residual,
                          use_graph=args.use_graph, use_weight=args.use_weight, use_act=args.use_act,
                          graph_weight=args.graph_weight, gnn=gnn, aggregate=args.aggregate, jk=args.jk).to(device)
@@ -117,6 +121,13 @@ def parser_add_main_args(parser):
     parser.add_argument('--beta', type=float, default=-1.0,
                         help='Polynormer beta initialization')
     parser.add_argument('--global_dropout', type=float, default=None)
+    parser.add_argument('--local_epochs', type=int, default=0,
+                        help='Polynormer official two-phase schedule: epochs with local '
+                             'attention only (model._global=False)')
+    parser.add_argument('--global_epochs', type=int, default=0,
+                        help='Polynormer official two-phase schedule: epochs with global '
+                             'attention, warm-started from the best local checkpoint. '
+                             'When local_epochs+global_epochs > 0, --epochs is ignored.')
     # sgformer
     parser.add_argument('--alpha', type=float, default=0.5,
                         help='weight for residual link')
@@ -128,6 +139,15 @@ def parser_add_main_args(parser):
                         default=0.8, help='graph weight.')
     parser.add_argument('--use_residual', action='store_true', help='use residual link for each trans layer')
     parser.add_argument('--use_act', action='store_true', help='use activation for each trans layer')
+    parser.add_argument('--tr_layers', type=int, default=1,
+                        help='SGFormer transformer-branch depth (official ours_layers; '
+                             'the official configs use 1). --layers is the GCN backbone depth.')
+    parser.add_argument('--tr_dropout', type=float, default=None,
+                        help='SGFormer transformer-branch dropout (official ours_dropout); '
+                             'defaults to --dropout')
+    parser.add_argument('--tr_weight_decay', type=float, default=None,
+                        help='SGFormer transformer-branch weight decay (official '
+                             'ours_weight_decay); enables the two-group optimizer')
     parser.add_argument('--aggregate', type=str, default='add',
                         help='aggregate type, add or cat.')
     # nagphormer
@@ -160,6 +180,14 @@ def parser_add_main_args(parser):
 
     # oracle variant
     parser.add_argument('--oracle_reg', action='store_true', help='oracle penalty from true labels (upper bound)')
+
+    # placebo / ablation controls (see ../PLACEBO_README.md)
+    parser.add_argument('--penalty_transform', type=str, default='none',
+                        choices=['none', 'shuffle', 'homophily'],
+                        help='ablation transform applied to the co-occurrence matrix')
+    parser.add_argument('--paired_seeds', action='store_true',
+                        help='re-seed model init and training per run so baseline and '
+                             'regularized runs are paired (enables paired statistics)')
 
     # result directory
     parser.add_argument('--result_dir', type=str, default='results', help='directory to save results')
