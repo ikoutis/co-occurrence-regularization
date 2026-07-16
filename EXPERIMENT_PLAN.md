@@ -202,12 +202,21 @@ Warm-start variant only (phase 1: edge_loss; phase 2: CE + λ·edge_loss).
 
 ### E4.1 Placebo control (cheap, high evidential value — run early)
 
-Re-run the winning configurations with a **row/column-permuted penalty
-matrix** (same spectrum, wrong semantics) and with a **uniform penalty**.
-If permuted penalties also improve accuracy, the gains are generic
-regularization (smoothing/confidence penalty), not co-occurrence
-information. This single ablation preempts the most damaging review.
-Add `--permute_penalty` flag; a few GPU-hours.
+**Status: IMPLEMENTED** — see `medium_graph/PLACEBO_README.md`,
+`submit_placebo.sbatch` (single Wulver submission, array 0–7).
+
+Design refined from the original sketch after noting that a permuted
+penalty is not a clean placebo when co-occurrence statistics are similar
+across class pairs (and that class-relabeling permutations preserve
+homophily and test nothing). Final design: `--penalty_transform
+{shuffle, homophily}` — a full entry shuffle (destroys all semantics) and
+a homophily-only control (keeps the diagonal, removes class-pair
+structure) — plus a per-run distinguishability diagnostic
+(‖P_shuffled − P_true‖_F / ‖P_true‖_F) so rows where the transform barely
+changed the penalty are flagged as having no statistical power instead of
+being misread. Paired runs via `--paired_seeds`; analysis with
+validation-based λ selection and Wilcoxon tests in
+`medium_graph/analyze_placebo.py`.
 
 ### E4.2 Scale normalization ablation
 

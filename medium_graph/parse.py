@@ -77,3 +77,13 @@ def parser_add_main_args(parser):
 
     # oracle variant: penalty matrix computed from true labels (upper-bound experiment)
     parser.add_argument('--oracle_reg', action='store_true', help='enable oracle regularization (penalty matrix from true labels)')
+
+    # placebo / ablation controls
+    parser.add_argument('--penalty_transform', type=str, default='none',
+                        choices=['none', 'shuffle', 'homophily'],
+                        help='ablation transform applied to the co-occurrence matrix: '
+                             'shuffle destroys all class semantics (placebo), '
+                             'homophily keeps the diagonal but removes class-pair structure')
+    parser.add_argument('--paired_seeds', action='store_true',
+                        help='re-seed model init and training per run so baseline and '
+                             'regularized runs are paired (enables paired statistics)')

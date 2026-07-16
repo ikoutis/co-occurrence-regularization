@@ -11,7 +11,7 @@ from dataset import load_dataset
 from data_utils import eval_acc, eval_rocauc, load_fixed_splits, class_rand_splits
 from eval import *
 from parse import parse_method, parser_add_main_args
-from regularization import estimate_cooccurrence_matrix, edge_loss
+from regularization import estimate_cooccurrence_matrix, edge_loss, transform_cooccurrence_matrix, penalty_stats
 from model import MLP
 
 def fix_seed(seed=42):
@@ -90,13 +90,33 @@ logger = Logger(args.runs, args)
 model.train()
 print('MODEL:', model)
 
+def build_penalty(co_matrix, run, meta):
+    """Applies the (optional) ablation transform and logs distinguishability."""
+    gen = torch.Generator()
+    gen.manual_seed(args.seed + 5000 + run)
+    co_t = transform_cooccurrence_matrix(co_matrix, args.penalty_transform, gen)
+    penalty_orig = -torch.log(co_matrix + 1e-6)
+    penalty = -torch.log(co_t + 1e-6)
+    rel_dist, offdiag_cv = penalty_stats(penalty_orig, penalty)
+    meta['pdist'] = rel_dist
+    meta['pcv'] = offdiag_cv
+    if args.penalty_transform != 'none':
+        print(f"Penalty transform '{args.penalty_transform}': "
+              f"rel Frobenius dist to original = {rel_dist:.4f}, "
+              f"off-diag CV of original penalty = {offdiag_cv:.4f}")
+    return penalty
+
 ### Training loop ###
+run_meta = []
 for run in range(args.runs):
+    run_meta.append({})
     if args.dataset in ('coauthor-cs', 'coauthor-physics', 'amazon-computer', 'amazon-photo', 'cora', 'citeseer', 'pubmed'):
         split_idx = split_idx_lst[0]
     else:
         split_idx = split_idx_lst[run]
     train_idx = split_idx['train'].to(device)
+    if args.paired_seeds:
+        fix_seed(args.seed + run)
     model.reset_parameters()
     optimizer = torch.optim.Adam(model.parameters(),weight_decay=args.weight_decay, lr=args.lr)
     best_val = float('-inf')
@@ -113,7 +133,7 @@ for run in range(args.runs):
         else:
             true_probs = F.one_hot(dataset.label.squeeze(1), c).float()
         co_matrix = estimate_cooccurrence_matrix(true_probs, dataset.graph['edge_index'], c, device)
-        penalty_matrix = -torch.log(co_matrix + 1e-6)
+        penalty_matrix = build_penalty(co_matrix, run, run_meta[run])
         print("Oracle penalty matrix frozen.")
 
     if args.use_reg and getattr(args, 'mlp_reg', False):
@@ -143,8 +163,14 @@ for run in range(args.runs):
             current_out = mlp(dataset.graph['node_feat'])
             preds = torch.sigmoid(current_out) if args.dataset == 'questions' else torch.exp(F.log_softmax(current_out, dim=1))
             co_matrix = estimate_cooccurrence_matrix(preds, dataset.graph['edge_index'], c, device)
-            penalty_matrix = -torch.log(co_matrix + 1e-6)
+            penalty_matrix = build_penalty(co_matrix, run, run_meta[run])
         print("MLP pre-training complete. Penalty matrix frozen.")
+
+    # Re-seed after penalty construction: MLP pre-training consumes RNG state,
+    # so without this, dropout/training noise would differ between the baseline
+    # and regularized conditions and the runs would not be paired.
+    if args.paired_seeds:
+        fix_seed(args.seed + 100000 + run)
 
     for epoch in range(args.epochs):
         
@@ -154,7 +180,7 @@ for run in range(args.runs):
                 current_out = model(dataset.graph['node_feat'], dataset.graph['edge_index'])
                 preds = torch.sigmoid(current_out) if args.dataset == 'questions' else torch.exp(F.log_softmax(current_out, dim=1))
                 co_matrix = estimate_cooccurrence_matrix(preds, dataset.graph['edge_index'], c, device)
-                penalty_matrix = -torch.log(co_matrix + 1e-6)
+                penalty_matrix = build_penalty(co_matrix, run, run_meta[run])
 
         model.train()
         optimizer.zero_grad()
@@ -207,4 +233,5 @@ for run in range(args.runs):
 results = logger.print_statistics()
 ### Save results ###
 save_result(args, results)
+save_runs_detail(args, logger, run_meta)
 
