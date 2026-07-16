@@ -55,7 +55,11 @@ cd ../..
 cat <<EOF
 
 All submitted. Watch with:  squeue -u \$USER
-When everything finishes, analyze:
+When everything finishes, gate first, then analyze:
+  cd medium_graph
+  python check_baselines.py --result_dir results/placebo results/unified
+  python check_baselines.py --result_dir GTs_baselines/results_tuned
+
   cd medium_graph
   python analyze_placebo.py --result_dir results/placebo      # placebo verdict
   python analyze_placebo.py --result_dir results/unified      # E2.1/E2.3 GNN tables

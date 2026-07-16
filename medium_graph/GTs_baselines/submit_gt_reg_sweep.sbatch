@@ -62,6 +62,16 @@ GROUP=$((SLURM_ARRAY_TASK_ID % 4))
 read -r MODEL DATASET <<< "${COMBOS[$COMBO_IDX]}"
 echo "Reg sweep: $MODEL / $DATASET | group $GROUP"
 
+# the homophily transform is mathematically the identity for 2-class
+# datasets (one off-diagonal entry per row) — the condition is vacuous
+if [ "$GROUP" = "2" ]; then
+    case "$DATASET" in
+        minesweeper|questions)
+            echo "homophily transform is identity on binary datasets — skipping vacuous group."
+            exit 0 ;;
+    esac
+fi
+
 # isolate checkpoints: group 0 and 1 for the same combo run concurrently and
 # polynormer's phase switch reloads from disk
 EXTRA="$EXTRA_BASE --model_dir models/gt_reg_${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}"

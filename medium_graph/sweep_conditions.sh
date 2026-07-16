@@ -39,15 +39,34 @@ echo "Condition sweep: $BASE_CMD"
 echo "result_dir=$RESULT_DIR transforms=[$TRANSFORMS] oracle=$ORACLE baseline=$RUN_BASELINE"
 echo "=========================================================="
 
+# Requeue resume: each completed condition leaves a stamp keyed on its full
+# command; a preempted-and-requeued SLURM task skips finished conditions
+# instead of re-running the whole sweep (and re-appending duplicate CSV
+# rows). Delete $RESULT_DIR/.done to force a full re-run.
+STAMP_DIR="$RESULT_DIR/.done"
+mkdir -p "$STAMP_DIR"
+
+run_condition () {
+    local cmd="$1"
+    local stamp
+    stamp="$STAMP_DIR/$(printf '%s' "$cmd" | md5sum | cut -d' ' -f1)"
+    if [ -f "$stamp" ]; then
+        echo "    (already completed — requeue resume, skipping)"
+        return 0
+    fi
+    eval "$cmd"
+    touch "$stamp"
+}
+
 if [ "$RUN_BASELINE" = "1" ]; then
     echo "--- baseline (no reg) ---"
-    eval "$BASE_CMD --paired_seeds --result_dir $RESULT_DIR"
+    run_condition "$BASE_CMD --paired_seeds --result_dir $RESULT_DIR"
 fi
 
 for transform in $TRANSFORMS; do
     for lambda_val in $LAMBDAS; do
         echo "--- mlp_reg | transform=$transform | lambda=$lambda_val | mlp_epochs=$MLP_EPOCHS ---"
-        eval "$BASE_CMD --paired_seeds --use_reg --mlp_reg --mlp_epochs $MLP_EPOCHS \
+        run_condition "$BASE_CMD --paired_seeds --use_reg --mlp_reg --mlp_epochs $MLP_EPOCHS \
               --lambda_val $lambda_val --penalty_transform $transform \
               --result_dir $RESULT_DIR"
     done
@@ -56,7 +75,7 @@ done
 if [ "$ORACLE" = "1" ]; then
     for lambda_val in $LAMBDAS; do
         echo "--- oracle_reg | lambda=$lambda_val ---"
-        eval "$BASE_CMD --paired_seeds --use_reg --oracle_reg \
+        run_condition "$BASE_CMD --paired_seeds --use_reg --oracle_reg \
               --lambda_val $lambda_val --result_dir $RESULT_DIR"
     done
 fi

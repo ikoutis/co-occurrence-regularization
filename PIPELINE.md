@@ -61,9 +61,10 @@ dependencies enforce the order; the placebo runs first.
   (max ~150k training epochs per task) so no task can exceed the 48h limit;
   cross-group pairing holds because `--paired_seeds` makes run *k*
   deterministic from the seed alone.
-- `--requeue`: a preempted task restarts from scratch and re-appends CSV
-  rows; analyzers keep the **last** row per (condition, run) and skip
-  malformed lines.
+- `--requeue`: sweeps are **resumable** — each completed condition leaves a
+  stamp under `<result_dir>/.done/`, so a preempted task skips finished
+  conditions on restart (delete `.done/` to force a re-run). Analyzers
+  additionally dedupe by (condition, seed, run), keeping the last row.
 
 ## After completion
 
@@ -76,10 +77,18 @@ python ../analyze_placebo.py --result_dir results_tuned   # stage 3+5 tables
 python analyze_gt_search.py                                # stage 4 winners
 ```
 
-Gates before believing anything downstream:
-1. GT tuned baselines within ~1 pt of published (`GT_BASELINES_README.md`).
-2. roman-empire/GCN baseline ≈ 88–91 (was degenerate at 28.5).
-3. Placebo `penalty_dist` column ≫ 0 wherever a shuffle verdict is claimed.
+Gates before believing anything downstream (automated):
+```bash
+cd medium_graph
+python check_baselines.py --result_dir results/placebo results/unified
+python check_baselines.py --result_dir GTs_baselines/results_tuned
+```
+`check_baselines.py` FAILs any GT baseline >1.5 pts below its published
+target and flags any baseline (GNN or GT) sitting far below the best model
+on the same dataset (the roman-empire/GCN failure mode). Additionally:
+`penalty_dist` must be ≫ 0 wherever a shuffle/homophily verdict is claimed —
+the homophily transform is mathematically vacuous on binary datasets (its
+sweep groups are skipped there).
 
 ## Not in this submission (follow-ups)
 

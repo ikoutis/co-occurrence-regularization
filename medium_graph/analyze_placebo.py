@@ -98,6 +98,9 @@ def main():
 
         for (reg_type, transform, mlp_ep), cond in g[g['reg_type'] != 'none'].groupby(
                 ['reg_type', 'penalty_transform', 'mlp_epochs']):
+            # dedup BEFORE lambda selection: requeue re-appends can otherwise
+            # give some lambdas double weight in the validation mean
+            cond = cond.drop_duplicates(subset=['lambda', 'seed', 'run'], keep='last')
             # validation-based lambda selection
             val_by_lambda = cond.groupby('lambda')['best_valid'].mean()
             lam = val_by_lambda.idxmax()

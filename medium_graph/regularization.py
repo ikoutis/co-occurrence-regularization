@@ -63,6 +63,11 @@ def transform_cooccurrence_matrix(co_matrix, mode, generator=None):
         row_sum = shuffled.sum(dim=1, keepdim=True).clamp(min=1e-8)
         return shuffled / row_sum
     if mode == 'homophily':
+        if k <= 2:
+            print("WARNING: 'homophily' transform is the IDENTITY for k<=2 "
+                  "(one off-diagonal entry per row reconstructs exactly) — "
+                  "this condition is vacuous on binary datasets and its "
+                  "penalty_dist diagnostic will be 0.")
         row_sum = co_matrix.sum(dim=1)
         diag = co_matrix.diagonal()
         if k > 1:

@@ -64,6 +64,16 @@ read -r MODEL DATASET <<< "${COMBOS[$COMBO_IDX]}"
 MODEL_DIR="models/gt_reg_s_${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}"
 echo "Reg sweep (search winner): $MODEL / $DATASET | group $GROUP"
 
+# the homophily transform is mathematically the identity for 2-class
+# datasets (one off-diagonal entry per row) — the condition is vacuous
+if [ "$GROUP" = "2" ]; then
+    case "$DATASET" in
+        minesweeper|questions)
+            echo "homophily transform is identity on binary datasets — skipping vacuous group."
+            exit 0 ;;
+    esac
+fi
+
 CMD=$(python gt_confirm_cmd.py --model $MODEL --dataset $DATASET \
       --runs $RUNS --device $DEVICE --model_dir $MODEL_DIR)
 echo "$CMD"
