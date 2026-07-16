@@ -93,6 +93,7 @@ if [ "$MODEL" == "polynormer" ]; then
       --local_layers $local_layers --global_layers $global_layers \
       --dropout $dropout --in_dropout 0.2 \
       --local_epochs 100 --global_epochs $EPOCHS --save_model \
+      --model_dir models/gt_search_${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID} \
       --runs $RUNS --device $DEVICE --result_dir $RESULT_DIR $SPLIT_FLAGS
   done; done; done
 else
@@ -114,4 +115,5 @@ else
   done; done; done; done
 fi
 
+rm -rf "models/gt_search_${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}"
 echo "Search done: $MODEL / $DATASET. Select with: python analyze_gt_search.py"

@@ -4,8 +4,12 @@ def parse_method(args, n, c, d, device):
         model = GPSModel(args, d, c).to(device)
     elif args.model =="polynormer":
         from polynormer import Polynormer
+        # official Polynormer falls back to --dropout when --global_dropout is
+        # unset; without this, GlobalAttn gets dropout=None and crashes with
+        # F.dropout(p=None) at the first forward after the phase switch
+        global_dropout = args.global_dropout if args.global_dropout is not None else args.dropout
         model = Polynormer(d, args.hidden_channels, c, local_layers=args.local_layers, global_layers=args.global_layers,
-            in_dropout=args.in_dropout, dropout=args.dropout, global_dropout=args.global_dropout,
+            in_dropout=args.in_dropout, dropout=args.dropout, global_dropout=global_dropout,
             heads=args.num_heads, beta=args.beta, pre_ln=args.pre_ln).to(device)
     elif args.model == 'nodeformer':
         from nodeformer import NodeFormer
@@ -18,11 +22,15 @@ def parse_method(args, n, c, d, device):
                          use_bn=args.use_bn).to(device)
     elif args.model == 'sgformer':
         from sgformer import SGFormer, GCN
+        # use_bn must be passed through: GCN defaults to use_bn=True, but the
+        # official SGFormer passes args.use_bn (published cora/citeseer/pubmed
+        # configs run the GCN branch WITHOUT BatchNorm)
         gnn = GCN(in_channels=d,
                     hidden_channels=args.hidden_channels,
                     out_channels=args.hidden_channels,
                     num_layers=args.layers,
-                    dropout=args.dropout)
+                    dropout=args.dropout,
+                    use_bn=args.use_bn)
         # Official SGFormer separates the transformer depth (ours_layers, here
         # tr_layers) from the GCN backbone depth (--layers). The transformer
         # branch also gets its own dropout (ours_dropout, here tr_dropout).
@@ -165,7 +173,7 @@ def parser_add_main_args(parser):
     parser.add_argument('--display_step', type=int,
                         default=100, help='how often to print')
     parser.add_argument('--save_model', action='store_true', help='whether to save model')
-    parser.add_argument('--model_dir', type=str, default='./model/', help='where to save model')
+    parser.add_argument('--model_dir', type=str, default='models', help='directory for model checkpoints (isolate per SLURM task to avoid collisions)')
     parser.add_argument('--save_result', action='store_true', help='whether to save result')
 
     # regularization

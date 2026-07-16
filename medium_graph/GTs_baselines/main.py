@@ -185,6 +185,19 @@ for run in range(args.runs):
             preds = torch.sigmoid(current_out) if args.dataset == 'questions' else torch.exp(F.log_softmax(current_out, dim=1))
             co_matrix = estimate_cooccurrence_matrix(preds, dataset.graph['edge_index'], c, device)
             penalty_matrix = build_penalty(co_matrix, run, run_meta[run])
+            # P0.6 covariates: how good is the penalty source? (diagnostics
+            # only — the oracle matrix is never used in training here)
+            if args.dataset == 'questions' and dataset.label.shape[1] > 1:
+                true_probs = dataset.label.float()
+            else:
+                true_probs = F.one_hot(dataset.label.squeeze(1), c).float()
+            co_oracle = estimate_cooccurrence_matrix(true_probs, dataset.graph['edge_index'], c, device)
+            run_meta[run]['cooc_oracle_dist'] = ((co_matrix - co_oracle).norm()
+                                                 / co_oracle.norm().clamp(min=1e-12)).item()
+            if args.dataset != 'questions':
+                valid_idx = split_idx['valid']
+                mlp_pred = current_out[valid_idx].argmax(dim=1)
+                run_meta[run]['mlp_acc'] = (mlp_pred == dataset.label.squeeze(1)[valid_idx]).float().mean().item()
         print("MLP pre-training complete. Penalty matrix frozen.")
 
     # Re-seed after penalty construction: MLP pre-training consumes RNG state,

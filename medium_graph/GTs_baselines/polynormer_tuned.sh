@@ -16,8 +16,7 @@
 
 DEVICE=${1:-0}
 RUNS=${2:-10}
-shift 2 2>/dev/null
-EXTRA="$@"
+EXTRA="${@:3}"
 
 ## heterophilic datasets
 python main.py --model polynormer --dataset roman-empire --hidden_channels 64 --local_epochs 100 --global_epochs 2500 --lr 0.001 --runs $RUNS --local_layers 10 --global_layers 2 --weight_decay 0.0 --dropout 0.3 --global_dropout 0.5 --in_dropout 0.15 --num_heads 8 --beta 0.5 --save_model --device $DEVICE $EXTRA

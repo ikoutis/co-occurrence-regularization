@@ -67,24 +67,20 @@ class Logger(object):
             f.write(f'test acc:{self.test}\n')
 
 import os
+def _model_path(args, run):
+    base = getattr(args, 'model_dir', 'models') or 'models'
+    os.makedirs(f'{base}/{args.dataset}', exist_ok=True)
+    if args.model == 'MPNN':
+        return f'{base}/{args.dataset}/{args.model}_{args.gnn}_{run}.pt'
+    return f'{base}/{args.dataset}/{args.model}_{run}.pt'
+
 def save_model(args, model, optimizer, run):
-    if not os.path.exists(f'models/{args.dataset}'):
-        os.makedirs(f'models/{args.dataset}')
-    if(args.model=='MPNN'):
-        model_path = f'models/{args.dataset}/{args.model}_{args.gnn}_{run}.pt'
-    else:
-        # return
-        model_path = f'models/{args.dataset}/{args.model}_{run}.pt'
     torch.save({'model_state_dict': model.state_dict(),
                 'optimizer_state_dict': optimizer.state_dict()
-                }, model_path)
+                }, _model_path(args, run))
 
 def load_model(args, model, optimizer, run):
-    if(args.model=='MPNN'):
-        model_path = f'models/{args.dataset}/{args.model}_{args.gnn}_{run}.pt'
-    else:
-        model_path = f'models/{args.dataset}/{args.model}_{run}.pt'
-    checkpoint = torch.load(model_path)
+    checkpoint = torch.load(_model_path(args, run))
     model.load_state_dict(checkpoint['model_state_dict'])
     optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
 
@@ -138,9 +134,9 @@ def save_runs_detail(args, logger, run_meta=None):
         w = csv.writer(f)
         if write_header:
             w.writerow(['dataset', 'model', 'reg_type', 'penalty_transform',
-                        'lambda', 'seed', 'run', 'best_valid',
+                        'lambda', 'mlp_epochs', 'seed', 'run', 'best_valid',
                         'test_at_best_valid', 'penalty_dist', 'offdiag_cv',
-                        'config'])
+                        'mlp_acc', 'cooc_oracle_dist', 'config'])
         for run, results in enumerate(logger.results):
             if not results:
                 continue
@@ -150,15 +146,16 @@ def save_runs_detail(args, logger, run_meta=None):
             w.writerow([args.dataset, name, reg_type,
                         getattr(args, 'penalty_transform', 'none') if reg_type != 'none' else '',
                         getattr(args, 'lambda_val', 0.0) if reg_type != 'none' else 0.0,
+                        getattr(args, 'mlp_epochs', '') if reg_type == 'mlp' else '',
                         args.seed, run,
                         f'{r[ind, 1].item():.4f}', f'{r[ind, 2].item():.4f}',
                         f"{meta.get('pdist', '')}", f"{meta.get('pcv', '')}",
+                        f"{meta.get('mlp_acc', '')}", f"{meta.get('cooc_oracle_dist', '')}",
                         config_string(args)])
 
 def save_result(args, results):
     result_dir = getattr(args, 'result_dir', 'results')
-    if not os.path.exists(f'{result_dir}/{args.dataset}'):
-        os.makedirs(f'{result_dir}/{args.dataset}')
+    os.makedirs(f'{result_dir}/{args.dataset}', exist_ok=True)
     if(args.model=='MPNN'):
         filename = f'{result_dir}/{args.dataset}/{args.model}_{args.gnn}.csv'
     else:

@@ -63,10 +63,10 @@ same split, same model init, same data order. Then report:
 
 ### P0.4 Datasets
 
-- Replace chameleon/squirrel with the **filtered** versions
-  (Platonov et al. 2023); the current 2,277/5,201-node versions have
-  known train/test leakage and reviewers flag them on sight. Report the
-  old splits in an appendix at most.
+- ~~Replace chameleon/squirrel with the filtered versions~~ **Already
+  satisfied**: the loaders read `*_filtered.npz` (Platonov et al. filtered
+  versions). The node counts in FINDINGS.md Table 1 (2,277/5,201) describe
+  the old versions and are stale documentation, not what was run.
 
 ### P0.5 Fix degenerate baselines before interpreting them
 

@@ -28,7 +28,10 @@ set -e
 
 DEVICE=0
 RUNS=10
-EXTRA="--result_dir results_tuned --paired_seeds"
+# model_dir isolated per task: polynormer's phase switch reloads checkpoints
+# from disk, and concurrent tasks must never share checkpoint paths
+EXTRA="--result_dir results_tuned --paired_seeds --model_dir models/gt_tuned_\${SLURM_ARRAY_JOB_ID}_\${SLURM_ARRAY_TASK_ID}"
+EXTRA=$(eval echo "$EXTRA")
 
 module load Miniforge3
 source "$(conda info --base)/etc/profile.d/conda.sh"
@@ -56,11 +59,12 @@ COMBOS=(
 read -r MODEL DATASET <<< "${COMBOS[$SLURM_ARRAY_TASK_ID]}"
 echo "Verifying published config: $MODEL / $DATASET"
 
-CMD=$(grep -m1 -- "--dataset $DATASET " ${MODEL}_tuned.sh)
+CMD=$(grep -m1 -- "--dataset $DATASET " ${MODEL}_tuned.sh || true)
 if [ -z "$CMD" ]; then
     echo "ERROR: no command for $MODEL/$DATASET in ${MODEL}_tuned.sh"; exit 1
 fi
 echo "$CMD"
 eval "$CMD"
 
+rm -rf "models/gt_tuned_${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}"
 echo "Done: $MODEL / $DATASET"

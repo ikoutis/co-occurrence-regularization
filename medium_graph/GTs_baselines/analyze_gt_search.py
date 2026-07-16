@@ -27,8 +27,17 @@ def main():
     if not files:
         raise SystemExit(f'no runs_*.csv found under {args.result_dir}')
 
-    df = pd.concat([pd.read_csv(f) for f in files], ignore_index=True)
+    df = pd.concat([pd.read_csv(f, on_bad_lines='skip') for f in files],
+                   ignore_index=True)
+    df = df[df['dataset'] != 'dataset']  # stray headers from concurrent appends
     df = df[df['reg_type'] == 'none']
+    for col in ('best_valid', 'test_at_best_valid'):
+        df[col] = pd.to_numeric(df[col], errors='coerce')
+    df = df.dropna(subset=['best_valid', 'config'])
+
+    # requeued SLURM tasks restart the config loop and re-append rows for
+    # configs that already completed — keep the last row per (config, run)
+    df = df.drop_duplicates(subset=['dataset', 'model', 'config', 'run'], keep='last')
 
     best_rows = []
     for (dataset, model), g in df.groupby(['dataset', 'model']):

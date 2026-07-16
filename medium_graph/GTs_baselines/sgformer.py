@@ -270,3 +270,6 @@ class SGFormer(nn.Module):
         self.trans_conv.reset_parameters()
         if self.use_graph:
             self.gnn.reset_parameters()
+        # fc must be reset too: without this, runs after the first warm-start
+        # from the previous run's trained classification head
+        self.fc.reset_parameters()

@@ -54,33 +54,55 @@ def paired_pvalue(deltas):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--result_dir', type=str, default='results/placebo')
+    ap.add_argument('--result_dir', type=str, nargs='+', default=['results/placebo'],
+                    help='one or more result dirs to merge (e.g. results/placebo '
+                         'results/unified for the full E2.1 table)')
     args = ap.parse_args()
 
-    files = glob.glob(os.path.join(args.result_dir, '*', 'runs_*.csv'))
+    files = [f for d in args.result_dir
+             for f in glob.glob(os.path.join(d, '*', 'runs_*.csv'))]
     if not files:
         raise SystemExit(f'no runs_*.csv found under {args.result_dir}')
 
-    df = pd.concat([pd.read_csv(f) for f in files], ignore_index=True)
+    df = pd.concat([pd.read_csv(f, on_bad_lines='skip') for f in files],
+                   ignore_index=True)
+    # guard against interleaved/duplicate header rows from concurrent appends
+    df = df[df['dataset'] != 'dataset']
+    for col in ('best_valid', 'test_at_best_valid', 'lambda', 'run', 'seed'):
+        df[col] = pd.to_numeric(df[col], errors='coerce')
+    df = df.dropna(subset=['best_valid', 'test_at_best_valid', 'run'])
     df['penalty_transform'] = df['penalty_transform'].fillna('')
+    if 'mlp_epochs' not in df.columns:
+        df['mlp_epochs'] = ''
+    df['mlp_epochs'] = df['mlp_epochs'].fillna('').astype(str).str.replace(r'\.0$', '', regex=True)
+    if 'config' not in df.columns:
+        df['config'] = ''
+    df['config'] = df['config'].fillna('')
 
     rows = []
     for (dataset, model), g in df.groupby(['dataset', 'model']):
+        if g['config'].nunique() > 1:
+            print(f'WARNING: {dataset}/{model} has rows from {g["config"].nunique()} '
+                  f'different hyperparameter configs in these result dirs — '
+                  f'selection/pairing may mix stale rows. Configs:')
+            for cfg in g['config'].unique():
+                print(f'    {cfg}')
         base = g[g['reg_type'] == 'none']
         if base.empty:
             print(f'WARNING: no baseline rows for {dataset}/{model}, skipping')
             continue
-        # deduplicate baseline (keep last occurrence per run index)
-        base = base.drop_duplicates(subset='run', keep='last').set_index('run')
+        # deduplicate (keep last occurrence per seed+run: requeued tasks
+        # re-append rows) and key the pairing on (seed, run), not run alone
+        base = base.drop_duplicates(subset=['seed', 'run'], keep='last').set_index(['seed', 'run'])
         base_mean, base_std = base['test_at_best_valid'].mean(), base['test_at_best_valid'].std()
 
-        for (reg_type, transform), cond in g[g['reg_type'] != 'none'].groupby(
-                ['reg_type', 'penalty_transform']):
+        for (reg_type, transform, mlp_ep), cond in g[g['reg_type'] != 'none'].groupby(
+                ['reg_type', 'penalty_transform', 'mlp_epochs']):
             # validation-based lambda selection
             val_by_lambda = cond.groupby('lambda')['best_valid'].mean()
             lam = val_by_lambda.idxmax()
             sel = cond[cond['lambda'] == lam].drop_duplicates(
-                subset='run', keep='last').set_index('run')
+                subset=['seed', 'run'], keep='last').set_index(['seed', 'run'])
 
             common = sel.index.intersection(base.index)
             if len(common) == 0:
@@ -95,7 +117,8 @@ def main():
             rows.append({
                 'dataset': dataset,
                 'model': model,
-                'condition': f'{reg_type}/{transform or "none"}',
+                'condition': f'{reg_type}/{transform or "none"}'
+                             + (f'/mlp_ep{mlp_ep}' if mlp_ep not in ('', '500') else ''),
                 'lambda*': lam,
                 'n_pairs': len(common),
                 'baseline': f'{base_mean:.2f} ± {base_std:.2f}',
@@ -107,15 +130,22 @@ def main():
                 'offdiag_cv': f'{pcv:.3f}' if pd.notna(pcv) else '—',
             })
 
+    if not rows:
+        raise SystemExit('No comparable (baseline, condition) pairs found yet — '
+                         'is the sweep still running?')
     out = pd.DataFrame(rows).sort_values(['dataset', 'model', 'condition'])
-    print(out.to_markdown(index=False))
-    out_path = os.path.join(args.result_dir, 'placebo_summary.md')
+    try:
+        table = out.to_markdown(index=False)  # needs 'tabulate'
+    except ImportError:
+        table = out.to_string(index=False)
+    print(table)
+    out_path = os.path.join(args.result_dir[0], 'placebo_summary.md')
     with open(out_path, 'w') as f:
         f.write('# Placebo experiment summary\n\n')
         f.write('λ selected by mean validation accuracy; test reported at λ*.\n')
         f.write('penalty_dist ≈ 0 ⇒ the transform barely changed the penalty '
                 'and that placebo row has no power.\n\n')
-        f.write(out.to_markdown(index=False))
+        f.write(table)
         f.write('\n')
     print(f'\nWritten to {out_path}')
 

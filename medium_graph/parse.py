@@ -63,7 +63,7 @@ def parser_add_main_args(parser):
     parser.add_argument('--display_step', type=int,
                         default=100, help='how often to print')
     parser.add_argument('--save_model', action='store_true', help='whether to save model')
-    parser.add_argument('--model_dir', type=str, default='./model/', help='where to save model')
+    parser.add_argument('--model_dir', type=str, default='models', help='directory for model checkpoints (isolate per SLURM task to avoid collisions)')
 
     # regularization
     parser.add_argument('--use_reg', action='store_true', help='enable dynamic structure-aware regularization')

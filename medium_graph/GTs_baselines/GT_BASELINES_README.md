@@ -59,8 +59,10 @@ Notes:
   (a different attention mechanism) — not reproducible here; searched
   instead.
 - SGFormer chameleon/squirrel published numbers are on the **filtered**
-  datasets (Platonov et al.); this repo loads the old versions, so
-  published values are loose references until the loaders are switched.
+  datasets (Platonov et al.) — and this repo's loaders also read the
+  filtered versions (`dataset.py` loads `*_filtered.npz`), so the published
+  values are directly comparable. (FINDINGS.md Table 1's node counts for
+  these datasets describe the old versions and are stale.)
 - Every dataset has a published config for at least one GT, which anchors
   the search spaces for the other.
 
@@ -73,6 +75,13 @@ coauthor-cs 95.28 · coauthor-physics 97.14 · wikics 81.20
 
 SGFormer (paper, 20-per-class splits):
 cora 84.5 · citeseer 72.6 · pubmed 80.3
+
+Not covered anywhere: tolokers (in Polynormer's paper but outside this
+project's 14-dataset benchmark — intentionally excluded).
+
+Search-space note: the SGFormer search does not vary --tr_dropout /
+--tr_weight_decay (grid economy); if a searched SGFormer baseline
+undershoots expectations, those two axes are the first thing to try.
 
 **Gate:** a (model, dataset) baseline is usable for regularization
 experiments only once the 10-run mean is within ~1 point of its target

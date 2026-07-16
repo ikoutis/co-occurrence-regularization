@@ -32,7 +32,10 @@ subtleties:
 ## Design: two controls + a power diagnostic
 
 Three penalty conditions, all built from the same MLP co-occurrence matrix
-`C`, all swept over λ ∈ {0.05, 0.1, 0.2, 0.4}:
+`C`, all swept over λ ∈ {0.01, 0.05, 0.1, 0.2, 0.4} (0.01 included because
+several original wins — e.g. squirrel — peaked there), plus an **oracle**
+condition (true-label penalty, same λ grid) so the ceiling is measured under
+the same paired protocol:
 
 | Condition (`--penalty_transform`) | What it does | What it tests |
 |---|---|---|
@@ -84,7 +87,7 @@ and the claim becomes correspondingly narrower).
   The goal is beating the optimized baselines from the tunedGNN paper, so
   those configs are the fixed reference point.
 
-## Targets (8 sbatch array tasks)
+## Targets (8 pairs x 4 condition groups = 32 sbatch array tasks)
 
 The pairs with the largest reported mlp_gnn wins in FINDINGS.md Table 2:
 cora/GCN, cora/GAT, citeseer/GAT, squirrel/GAT, squirrel/GCN,
@@ -97,10 +100,14 @@ degenerate and nothing measured on top of it is interpretable.
 
 ```bash
 cd medium_graph
-sbatch submit_placebo.sbatch          # single submission, array 0-7
+sbatch submit_placebo.sbatch          # single submission, array 0-31
+# (or as stage 1 of the full pipeline: ../submit_all.sh — see ../PIPELINE.md)
 # after completion:
 python analyze_placebo.py --result_dir results/placebo
 ```
+
+The sweep itself is `sweep_conditions.sh` (shared with the unified GNN and
+GT sweeps); `sweep_placebo.sh` remains as a thin compatibility wrapper.
 
 Output: `results/placebo/placebo_summary.md` — one row per
 (dataset, model, condition) with λ*, paired Δ, Wilcoxon p, and the
@@ -108,7 +115,9 @@ Output: `results/placebo/placebo_summary.md` — one row per
 
 ## Cost estimate
 
-Per array task: 1 baseline + 12 regularized configs × 10 runs. Dominated
-by amazon-ratings (2500 epochs × 130 runs ≈ heavy but each epoch is fast)
-and roman-empire/GAT. Everything fits comfortably in the 48 h limit per
-task; the whole experiment is one submission on 8 GPUs.
+Each (pair, condition-group) task runs at most 6 configs × 10 runs — for
+the heaviest pairs (amazon-ratings, roman-empire at 2500 epochs) that is
+≤150k training epochs per task, safely inside the 48 h limit even at
+~0.5 s/epoch. The whole experiment is one submission across 32 array
+tasks; cross-group pairing is preserved because `--paired_seeds` makes
+run *k* deterministic from the seed alone.
