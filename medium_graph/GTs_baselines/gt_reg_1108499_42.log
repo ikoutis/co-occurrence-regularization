@@ -1,0 +1,1027 @@
+Fri Jul 24 18:39:57 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.159.04             Driver Version: 580.159.04     CUDA Version: 13.0     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA A100-SXM4-80GB          On  |   00000000:01:00.0 Off |                   On |
+| N/A   51C    P0            296W /  500W |   41221MiB /  81920MiB |     N/A      Default |
+|                                         |                        |              Enabled |
++-----------------------------------------+------------------------+----------------------+
+|   1  NVIDIA A100-SXM4-80GB          On  |   00000000:41:00.0 Off |                   On |
+| N/A   47C    P0            154W /  500W |   39785MiB /  81920MiB |     N/A      Default |
+|                                         |                        |              Enabled |
++-----------------------------------------+------------------------+----------------------+
+|   2  NVIDIA A100-SXM4-80GB          On  |   00000000:81:00.0 Off |                   On |
+| N/A   38C    P0            105W /  500W |    1434MiB /  81920MiB |     N/A      Default |
+|                                         |                        |              Enabled |
++-----------------------------------------+------------------------+----------------------+
+|   3  NVIDIA A100-SXM4-80GB          On  |   00000000:C1:00.0 Off |                   On |
+| N/A   27C    P0             49W /  500W |     249MiB /  81920MiB |     N/A      Default |
+|                                         |                        |              Enabled |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| MIG devices:                                                                            |
++------------------+----------------------------------+-----------+-----------------------+
+| GPU  GI  CI  MIG |              Shared Memory-Usage |        Vol|        Shared         |
+|      ID  ID  Dev |                Shared BAR1-Usage | SM     Unc| CE ENC  DEC  OFA  JPG |
+|                  |                                  |        ECC|                       |
+|==================+==================================+===========+=======================|
+|  3    5   0   0  |              71MiB / 19968MiB    | 28      0 |  2   0    1    0    0 |
+|                  |               0MiB / 12271MiB    |           |                       |
++------------------+----------------------------------+-----------+-----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0    1    0            39303      C   python                                26422MiB |
+|    0    5    0          1417196      C   python                                11654MiB |
+|    0   14    0          1421018      C   python                                 2864MiB |
+|    1    2    0            39302      C   python                                26422MiB |
+|    1    3    0          1417195      C   python                                11658MiB |
+|    1   10    0          1421716      C   python                                 1432MiB |
+|    2    9    0          1421716      C   python                                 1178MiB |
++-----------------------------------------------------------------------------------------+
+Reg sweep: sgformer / citeseer | group 2
+python main.py --model sgformer --dataset citeseer --lr 0.005 --layers 4 --tr_layers 1 --hidden_channels 64 --weight_decay 0.01 --dropout 0.5 --tr_dropout 0.3 --tr_weight_decay 0.01 --use_graph --graph_weight 0.7 --alpha 0.5 --num_heads 1 --epochs 500 --rand_split_class --valid_num 500 --test_num 1000 --seed 123 --runs $RUNS --device $DEVICE $EXTRA
+==========================================================
+Condition sweep: python main.py --model sgformer --dataset citeseer --lr 0.005 --layers 4 --tr_layers 1 --hidden_channels 64 --weight_decay 0.01 --dropout 0.5 --tr_dropout 0.3 --tr_weight_decay 0.01 --use_graph --graph_weight 0.7 --alpha 0.5 --num_heads 1 --epochs 500 --rand_split_class --valid_num 500 --test_num 1000 --seed 123 --runs 10 --device 0 --result_dir results_tuned --model_dir models/gt_reg_1108499_42
+result_dir=results_tuned transforms=[homophily] oracle=0 baseline=0
+==========================================================
+--- mlp_reg | transform=homophily | lambda=0.01 | mlp_epochs=500 ---
+Namespace(aggregate='add', alpha=0.5, attention='gcn', beta=-1.0, bn=False, cpu=False, data_dir='../data/', dataset='citeseer', device=0, dim_inner=64, display_step=100, dropout=0.5, epochs=500, global_dropout=None, global_epochs=0, global_layers=2, gnn='gcn', graph_weight=0.7, hidden_channels=64, hops=10, in_dropout=0.0, jk=False, label_num_per_class=20, lambda_val=0.01, layers=4, ln=False, local_epochs=0, local_gnn_type='GCN', local_layers=7, lr=0.005, metric='acc', mlp_epochs=500, mlp_reg=True, model='sgformer', model_dir='models/gt_reg_1108499_42', n_heads=1, num_centroids=4096, num_heads=1, oracle_reg=False, paired_seeds=True, pe_types='RWSE', penalty_transform='homophily', pre_linear=False, pre_ln=False, rand_split=False, rand_split_class=True, reg_start_epoch=10, reg_update_freq=5, res=False, result_dir='results_tuned', runs=10, save_model=False, save_result=False, seed=123, test_num=1000, tr_dropout=0.3, tr_layers=1, tr_weight_decay=0.01, train_prop=0.5, use_act=False, use_bn=False, use_graph=True, use_reg=True, use_residual=False, use_weight=False, valid_num=500, valid_prop=0.25, weight_decay=0.01)
+citeseer
+Num nodes: 3327
+train:torch.Size([120]), valid:torch.Size([500]), test:torch.Size([1000])
+dataset citeseer | num nodes 3327 | num edge 9104 | num node feats 3703 | num classes 6
+MODEL: SGFormer(
+  (trans_conv): TransConv(
+    (convs): ModuleList(
+      (0): TransConvLayer(
+        (Wk): Linear(in_features=64, out_features=64, bias=True)
+        (Wq): Linear(in_features=64, out_features=64, bias=True)
+      )
+    )
+    (fcs): ModuleList(
+      (0): Linear(in_features=3703, out_features=64, bias=True)
+    )
+    (bns): ModuleList(
+      (0): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+      (1): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+    )
+  )
+  (gnn): GCN(
+    (convs): ModuleList(
+      (0): GCNConv(3703, 64)
+      (1): GCNConv(64, 64)
+      (2): GCNConv(64, 64)
+      (3): GCNConv(64, 64)
+    )
+    (bns): ModuleList(
+      (0): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (1): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (2): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    )
+  )
+  (fc): Linear(in_features=64, out_features=6, bias=True)
+)
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+Penalty transform 'homophily': rel Frobenius dist to original = 0.0538, off-diag CV of original penalty = 0.0594
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.8125, Train: 19.17%, Valid: 16.00%, Test: 18.10%, Best Valid: 16.00%, Best Test: 18.10%
+Epoch: 100, Loss: 0.0724, Train: 100.00%, Valid: 63.60%, Test: 66.10%, Best Valid: 65.80%, Best Test: 67.80%
+Epoch: 200, Loss: 0.0722, Train: 100.00%, Valid: 64.40%, Test: 65.50%, Best Valid: 66.40%, Best Test: 66.20%
+Epoch: 300, Loss: 0.0610, Train: 100.00%, Valid: 62.20%, Test: 64.80%, Best Valid: 67.00%, Best Test: 66.60%
+Epoch: 400, Loss: 0.0658, Train: 100.00%, Valid: 64.40%, Test: 65.70%, Best Valid: 68.20%, Best Test: 68.00%
+Run 01:
+Highest Train: 100.00
+Highest Valid: 68.20
+Highest Test: 69.60
+Chosen epoch: 373
+Final Train: 100.00
+Final Test: 68.00
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+Penalty transform 'homophily': rel Frobenius dist to original = 0.0473, off-diag CV of original penalty = 0.0529
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.8121, Train: 35.00%, Valid: 22.00%, Test: 21.40%, Best Valid: 22.00%, Best Test: 21.40%
+Epoch: 100, Loss: 0.0954, Train: 99.17%, Valid: 60.20%, Test: 63.40%, Best Valid: 67.40%, Best Test: 69.40%
+Epoch: 200, Loss: 0.0571, Train: 100.00%, Valid: 60.40%, Test: 61.20%, Best Valid: 67.40%, Best Test: 69.40%
+Epoch: 300, Loss: 0.0713, Train: 99.17%, Valid: 55.40%, Test: 60.50%, Best Valid: 67.40%, Best Test: 69.40%
+Epoch: 400, Loss: 0.0485, Train: 100.00%, Valid: 61.40%, Test: 62.60%, Best Valid: 67.40%, Best Test: 69.40%
+Run 02:
+Highest Train: 100.00
+Highest Valid: 67.40
+Highest Test: 69.80
+Chosen epoch: 30
+Final Train: 99.17
+Final Test: 69.40
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+Penalty transform 'homophily': rel Frobenius dist to original = 0.0376, off-diag CV of original penalty = 0.0422
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.8117, Train: 33.33%, Valid: 26.80%, Test: 25.30%, Best Valid: 26.80%, Best Test: 25.30%
+Epoch: 100, Loss: 0.0713, Train: 99.17%, Valid: 60.00%, Test: 66.70%, Best Valid: 68.20%, Best Test: 70.70%
+Epoch: 200, Loss: 0.0567, Train: 100.00%, Valid: 66.00%, Test: 69.10%, Best Valid: 69.80%, Best Test: 71.20%
+Epoch: 300, Loss: 0.0592, Train: 100.00%, Valid: 66.80%, Test: 70.00%, Best Valid: 69.80%, Best Test: 71.20%
+Epoch: 400, Loss: 0.0552, Train: 99.17%, Valid: 67.60%, Test: 71.90%, Best Valid: 70.00%, Best Test: 70.90%
+Run 03:
+Highest Train: 100.00
+Highest Valid: 70.00
+Highest Test: 72.00
+Chosen epoch: 357
+Final Train: 100.00
+Final Test: 70.90
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+Penalty transform 'homophily': rel Frobenius dist to original = 0.0526, off-diag CV of original penalty = 0.0588
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.8127, Train: 32.50%, Valid: 10.80%, Test: 11.40%, Best Valid: 10.80%, Best Test: 11.40%
+Epoch: 100, Loss: 0.0532, Train: 100.00%, Valid: 66.60%, Test: 70.00%, Best Valid: 68.80%, Best Test: 69.80%
+Epoch: 200, Loss: 0.0515, Train: 100.00%, Valid: 63.40%, Test: 68.70%, Best Valid: 68.80%, Best Test: 69.80%
+Epoch: 300, Loss: 0.0682, Train: 100.00%, Valid: 65.00%, Test: 65.00%, Best Valid: 68.80%, Best Test: 69.80%
+Epoch: 400, Loss: 0.0643, Train: 100.00%, Valid: 66.00%, Test: 67.80%, Best Valid: 69.00%, Best Test: 68.20%
+Run 04:
+Highest Train: 100.00
+Highest Valid: 69.00
+Highest Test: 71.60
+Chosen epoch: 365
+Final Train: 100.00
+Final Test: 68.20
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+Penalty transform 'homophily': rel Frobenius dist to original = 0.0459, off-diag CV of original penalty = 0.0512
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.8085, Train: 60.83%, Valid: 30.80%, Test: 35.50%, Best Valid: 30.80%, Best Test: 35.50%
+Epoch: 100, Loss: 0.0651, Train: 100.00%, Valid: 61.80%, Test: 66.20%, Best Valid: 66.00%, Best Test: 71.00%
+Epoch: 200, Loss: 0.0561, Train: 100.00%, Valid: 61.60%, Test: 66.10%, Best Valid: 66.00%, Best Test: 71.00%
+Epoch: 300, Loss: 0.0686, Train: 99.17%, Valid: 60.00%, Test: 65.70%, Best Valid: 66.00%, Best Test: 71.00%
+Epoch: 400, Loss: 0.0549, Train: 100.00%, Valid: 60.60%, Test: 68.40%, Best Valid: 66.00%, Best Test: 71.00%
+Run 05:
+Highest Train: 100.00
+Highest Valid: 66.00
+Highest Test: 71.00
+Chosen epoch: 16
+Final Train: 99.17
+Final Test: 71.00
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+Penalty transform 'homophily': rel Frobenius dist to original = 0.0594, off-diag CV of original penalty = 0.0659
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.8102, Train: 41.67%, Valid: 22.40%, Test: 21.80%, Best Valid: 22.40%, Best Test: 21.80%
+Epoch: 100, Loss: 0.0733, Train: 100.00%, Valid: 65.20%, Test: 66.50%, Best Valid: 68.20%, Best Test: 69.30%
+Epoch: 200, Loss: 0.0613, Train: 100.00%, Valid: 60.00%, Test: 60.60%, Best Valid: 68.20%, Best Test: 69.30%
+Epoch: 300, Loss: 0.0479, Train: 100.00%, Valid: 63.80%, Test: 67.40%, Best Valid: 68.20%, Best Test: 69.30%
+Epoch: 400, Loss: 0.0490, Train: 100.00%, Valid: 62.60%, Test: 64.20%, Best Valid: 68.20%, Best Test: 69.30%
+Run 06:
+Highest Train: 100.00
+Highest Valid: 68.20
+Highest Test: 70.50
+Chosen epoch: 75
+Final Train: 100.00
+Final Test: 69.30
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+Penalty transform 'homophily': rel Frobenius dist to original = 0.0533, off-diag CV of original penalty = 0.0597
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.8165, Train: 44.17%, Valid: 21.60%, Test: 23.10%, Best Valid: 21.60%, Best Test: 23.10%
+Epoch: 100, Loss: 0.0556, Train: 100.00%, Valid: 60.00%, Test: 64.70%, Best Valid: 65.60%, Best Test: 68.70%
+Epoch: 200, Loss: 0.0715, Train: 100.00%, Valid: 60.00%, Test: 64.80%, Best Valid: 65.60%, Best Test: 68.70%
+Epoch: 300, Loss: 0.0551, Train: 100.00%, Valid: 61.20%, Test: 66.20%, Best Valid: 65.60%, Best Test: 68.70%
+Epoch: 400, Loss: 0.0639, Train: 100.00%, Valid: 59.80%, Test: 64.90%, Best Valid: 65.60%, Best Test: 68.70%
+Run 07:
+Highest Train: 100.00
+Highest Valid: 65.60
+Highest Test: 69.60
+Chosen epoch: 36
+Final Train: 99.17
+Final Test: 68.70
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+Penalty transform 'homophily': rel Frobenius dist to original = 0.0463, off-diag CV of original penalty = 0.0520
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.8115, Train: 63.33%, Valid: 40.60%, Test: 41.10%, Best Valid: 40.60%, Best Test: 41.10%
+Epoch: 100, Loss: 0.0551, Train: 100.00%, Valid: 60.40%, Test: 65.10%, Best Valid: 66.00%, Best Test: 66.80%
+Epoch: 200, Loss: 0.0589, Train: 100.00%, Valid: 61.60%, Test: 65.30%, Best Valid: 66.00%, Best Test: 66.80%
+Epoch: 300, Loss: 0.0500, Train: 100.00%, Valid: 61.40%, Test: 65.10%, Best Valid: 66.00%, Best Test: 66.80%
+Epoch: 400, Loss: 0.0534, Train: 100.00%, Valid: 62.40%, Test: 66.00%, Best Valid: 66.00%, Best Test: 66.80%
+Run 08:
+Highest Train: 100.00
+Highest Valid: 66.00
+Highest Test: 70.90
+Chosen epoch: 5
+Final Train: 98.33
+Final Test: 66.80
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+Penalty transform 'homophily': rel Frobenius dist to original = 0.0580, off-diag CV of original penalty = 0.0653
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.8122, Train: 44.17%, Valid: 14.80%, Test: 15.50%, Best Valid: 14.80%, Best Test: 15.50%
+Epoch: 100, Loss: 0.0619, Train: 100.00%, Valid: 63.00%, Test: 66.00%, Best Valid: 65.20%, Best Test: 67.00%
+Epoch: 200, Loss: 0.0468, Train: 100.00%, Valid: 62.40%, Test: 64.60%, Best Valid: 65.20%, Best Test: 67.00%
+Epoch: 300, Loss: 0.0612, Train: 100.00%, Valid: 61.40%, Test: 64.50%, Best Valid: 65.20%, Best Test: 67.00%
+Epoch: 400, Loss: 0.0634, Train: 99.17%, Valid: 63.60%, Test: 66.10%, Best Valid: 65.20%, Best Test: 67.00%
+Run 09:
+Highest Train: 100.00
+Highest Valid: 65.20
+Highest Test: 68.20
+Chosen epoch: 56
+Final Train: 99.17
+Final Test: 67.00
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+Penalty transform 'homophily': rel Frobenius dist to original = 0.0838, off-diag CV of original penalty = 0.0936
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.8115, Train: 23.33%, Valid: 16.60%, Test: 15.70%, Best Valid: 16.60%, Best Test: 15.70%
+Epoch: 100, Loss: 0.0683, Train: 100.00%, Valid: 63.00%, Test: 66.40%, Best Valid: 65.20%, Best Test: 67.70%
+Epoch: 200, Loss: 0.0511, Train: 100.00%, Valid: 62.40%, Test: 65.60%, Best Valid: 66.20%, Best Test: 67.10%
+Epoch: 300, Loss: 0.0416, Train: 100.00%, Valid: 63.20%, Test: 66.90%, Best Valid: 66.20%, Best Test: 67.10%
+Epoch: 400, Loss: 0.0573, Train: 100.00%, Valid: 62.80%, Test: 66.30%, Best Valid: 66.20%, Best Test: 67.10%
+Run 10:
+Highest Train: 100.00
+Highest Valid: 66.20
+Highest Test: 69.40
+Chosen epoch: 154
+Final Train: 100.00
+Final Test: 67.10
+All runs:
+Highest Train: 100.00 ± 0.00
+Highest Test: 70.26 ± 1.15
+Highest Valid: 67.18 ± 1.62
+  Final Train: 99.50 ± 0.58
+   Final Test: 68.64 ± 1.52
+Saving results to results_tuned/citeseer/sgformer.csv
+--- mlp_reg | transform=homophily | lambda=0.05 | mlp_epochs=500 ---
+Namespace(aggregate='add', alpha=0.5, attention='gcn', beta=-1.0, bn=False, cpu=False, data_dir='../data/', dataset='citeseer', device=0, dim_inner=64, display_step=100, dropout=0.5, epochs=500, global_dropout=None, global_epochs=0, global_layers=2, gnn='gcn', graph_weight=0.7, hidden_channels=64, hops=10, in_dropout=0.0, jk=False, label_num_per_class=20, lambda_val=0.05, layers=4, ln=False, local_epochs=0, local_gnn_type='GCN', local_layers=7, lr=0.005, metric='acc', mlp_epochs=500, mlp_reg=True, model='sgformer', model_dir='models/gt_reg_1108499_42', n_heads=1, num_centroids=4096, num_heads=1, oracle_reg=False, paired_seeds=True, pe_types='RWSE', penalty_transform='homophily', pre_linear=False, pre_ln=False, rand_split=False, rand_split_class=True, reg_start_epoch=10, reg_update_freq=5, res=False, result_dir='results_tuned', runs=10, save_model=False, save_result=False, seed=123, test_num=1000, tr_dropout=0.3, tr_layers=1, tr_weight_decay=0.01, train_prop=0.5, use_act=False, use_bn=False, use_graph=True, use_reg=True, use_residual=False, use_weight=False, valid_num=500, valid_prop=0.25, weight_decay=0.01)
+citeseer
+Num nodes: 3327
+train:torch.Size([120]), valid:torch.Size([500]), test:torch.Size([1000])
+dataset citeseer | num nodes 3327 | num edge 9104 | num node feats 3703 | num classes 6
+MODEL: SGFormer(
+  (trans_conv): TransConv(
+    (convs): ModuleList(
+      (0): TransConvLayer(
+        (Wk): Linear(in_features=64, out_features=64, bias=True)
+        (Wq): Linear(in_features=64, out_features=64, bias=True)
+      )
+    )
+    (fcs): ModuleList(
+      (0): Linear(in_features=3703, out_features=64, bias=True)
+    )
+    (bns): ModuleList(
+      (0): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+      (1): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+    )
+  )
+  (gnn): GCN(
+    (convs): ModuleList(
+      (0): GCNConv(3703, 64)
+      (1): GCNConv(64, 64)
+      (2): GCNConv(64, 64)
+      (3): GCNConv(64, 64)
+    )
+    (bns): ModuleList(
+      (0): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (1): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (2): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    )
+  )
+  (fc): Linear(in_features=64, out_features=6, bias=True)
+)
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+Penalty transform 'homophily': rel Frobenius dist to original = 0.0538, off-diag CV of original penalty = 0.0594
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.8843, Train: 19.17%, Valid: 16.00%, Test: 18.10%, Best Valid: 16.00%, Best Test: 18.10%
+Epoch: 100, Loss: 0.0861, Train: 100.00%, Valid: 63.80%, Test: 66.70%, Best Valid: 66.20%, Best Test: 68.10%
+Epoch: 200, Loss: 0.0758, Train: 100.00%, Valid: 63.00%, Test: 65.20%, Best Valid: 66.20%, Best Test: 68.10%
+Epoch: 300, Loss: 0.0551, Train: 100.00%, Valid: 63.80%, Test: 64.40%, Best Valid: 67.80%, Best Test: 68.30%
+Epoch: 400, Loss: 0.0585, Train: 100.00%, Valid: 64.60%, Test: 65.50%, Best Valid: 67.80%, Best Test: 68.30%
+Run 01:
+Highest Train: 100.00
+Highest Valid: 68.00
+Highest Test: 69.30
+Chosen epoch: 434
+Final Train: 100.00
+Final Test: 68.90
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+Penalty transform 'homophily': rel Frobenius dist to original = 0.0473, off-diag CV of original penalty = 0.0529
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.8839, Train: 35.00%, Valid: 22.00%, Test: 21.40%, Best Valid: 22.00%, Best Test: 21.40%
+Epoch: 100, Loss: 0.0931, Train: 100.00%, Valid: 60.20%, Test: 64.40%, Best Valid: 67.60%, Best Test: 69.70%
+Epoch: 200, Loss: 0.0600, Train: 100.00%, Valid: 59.20%, Test: 62.20%, Best Valid: 67.60%, Best Test: 69.70%
+Epoch: 300, Loss: 0.1095, Train: 99.17%, Valid: 57.80%, Test: 63.80%, Best Valid: 67.60%, Best Test: 69.70%
+Epoch: 400, Loss: 0.0566, Train: 100.00%, Valid: 59.60%, Test: 63.30%, Best Valid: 67.60%, Best Test: 69.70%
+Run 02:
+Highest Train: 100.00
+Highest Valid: 67.60
+Highest Test: 69.70
+Chosen epoch: 30
+Final Train: 99.17
+Final Test: 69.70
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+Penalty transform 'homophily': rel Frobenius dist to original = 0.0376, off-diag CV of original penalty = 0.0422
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.8834, Train: 33.33%, Valid: 26.80%, Test: 25.30%, Best Valid: 26.80%, Best Test: 25.30%
+Epoch: 100, Loss: 0.0602, Train: 100.00%, Valid: 64.60%, Test: 67.70%, Best Valid: 68.00%, Best Test: 70.80%
+Epoch: 200, Loss: 0.0575, Train: 100.00%, Valid: 66.60%, Test: 68.90%, Best Valid: 68.80%, Best Test: 71.30%
+Epoch: 300, Loss: 0.0653, Train: 100.00%, Valid: 66.60%, Test: 69.00%, Best Valid: 68.80%, Best Test: 71.30%
+Epoch: 400, Loss: 0.0590, Train: 100.00%, Valid: 66.60%, Test: 69.40%, Best Valid: 69.20%, Best Test: 71.60%
+Run 03:
+Highest Train: 100.00
+Highest Valid: 69.20
+Highest Test: 72.40
+Chosen epoch: 357
+Final Train: 100.00
+Final Test: 71.60
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+Penalty transform 'homophily': rel Frobenius dist to original = 0.0526, off-diag CV of original penalty = 0.0588
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.8845, Train: 32.50%, Valid: 10.60%, Test: 11.00%, Best Valid: 10.60%, Best Test: 11.00%
+Epoch: 100, Loss: 0.0528, Train: 100.00%, Valid: 66.40%, Test: 69.90%, Best Valid: 68.40%, Best Test: 69.70%
+Epoch: 200, Loss: 0.0479, Train: 100.00%, Valid: 65.00%, Test: 68.10%, Best Valid: 68.40%, Best Test: 69.70%
+Epoch: 300, Loss: 0.0737, Train: 99.17%, Valid: 64.60%, Test: 64.70%, Best Valid: 68.40%, Best Test: 69.70%
+Epoch: 400, Loss: 0.0572, Train: 100.00%, Valid: 67.00%, Test: 68.20%, Best Valid: 68.40%, Best Test: 69.70%
+Run 04:
+Highest Train: 100.00
+Highest Valid: 68.40
+Highest Test: 72.10
+Chosen epoch: 28
+Final Train: 99.17
+Final Test: 69.70
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+Penalty transform 'homophily': rel Frobenius dist to original = 0.0459, off-diag CV of original penalty = 0.0512
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.8801, Train: 63.33%, Valid: 30.00%, Test: 34.80%, Best Valid: 30.00%, Best Test: 34.80%
+Epoch: 100, Loss: 0.0628, Train: 100.00%, Valid: 60.60%, Test: 65.20%, Best Valid: 66.20%, Best Test: 71.00%
+Epoch: 200, Loss: 0.0640, Train: 100.00%, Valid: 62.80%, Test: 66.90%, Best Valid: 66.20%, Best Test: 71.00%
+Epoch: 300, Loss: 0.0647, Train: 100.00%, Valid: 61.40%, Test: 69.00%, Best Valid: 66.20%, Best Test: 71.00%
+Epoch: 400, Loss: 0.0516, Train: 100.00%, Valid: 59.40%, Test: 67.30%, Best Valid: 66.20%, Best Test: 71.00%
+Run 05:
+Highest Train: 100.00
+Highest Valid: 66.20
+Highest Test: 71.00
+Chosen epoch: 16
+Final Train: 100.00
+Final Test: 71.00
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+Penalty transform 'homophily': rel Frobenius dist to original = 0.0594, off-diag CV of original penalty = 0.0659
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.8819, Train: 41.67%, Valid: 22.40%, Test: 21.80%, Best Valid: 22.40%, Best Test: 21.80%
+Epoch: 100, Loss: 0.0771, Train: 100.00%, Valid: 67.20%, Test: 67.80%, Best Valid: 69.00%, Best Test: 67.70%
+Epoch: 200, Loss: 0.0617, Train: 99.17%, Valid: 58.20%, Test: 60.40%, Best Valid: 69.00%, Best Test: 67.70%
+Epoch: 300, Loss: 0.0541, Train: 100.00%, Valid: 67.00%, Test: 67.80%, Best Valid: 69.00%, Best Test: 67.70%
+Epoch: 400, Loss: 0.0567, Train: 99.17%, Valid: 64.40%, Test: 64.60%, Best Valid: 69.00%, Best Test: 67.70%
+Run 06:
+Highest Train: 100.00
+Highest Valid: 69.00
+Highest Test: 71.20
+Chosen epoch: 71
+Final Train: 100.00
+Final Test: 67.70
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+Penalty transform 'homophily': rel Frobenius dist to original = 0.0533, off-diag CV of original penalty = 0.0597
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.8885, Train: 44.17%, Valid: 21.80%, Test: 23.10%, Best Valid: 21.80%, Best Test: 23.10%
+Epoch: 100, Loss: 0.0566, Train: 100.00%, Valid: 61.80%, Test: 65.30%, Best Valid: 65.60%, Best Test: 68.80%
+Epoch: 200, Loss: 0.0724, Train: 100.00%, Valid: 60.00%, Test: 64.50%, Best Valid: 65.60%, Best Test: 68.80%
+Epoch: 300, Loss: 0.0521, Train: 100.00%, Valid: 62.20%, Test: 66.90%, Best Valid: 65.60%, Best Test: 68.80%
+Epoch: 400, Loss: 0.0768, Train: 100.00%, Valid: 62.00%, Test: 66.20%, Best Valid: 65.60%, Best Test: 68.80%
+Run 07:
+Highest Train: 100.00
+Highest Valid: 65.60
+Highest Test: 69.60
+Chosen epoch: 36
+Final Train: 99.17
+Final Test: 68.80
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+Penalty transform 'homophily': rel Frobenius dist to original = 0.0463, off-diag CV of original penalty = 0.0520
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.8832, Train: 63.33%, Valid: 40.60%, Test: 41.20%, Best Valid: 40.60%, Best Test: 41.20%
+Epoch: 100, Loss: 0.0549, Train: 100.00%, Valid: 59.60%, Test: 65.20%, Best Valid: 65.80%, Best Test: 66.90%
+Epoch: 200, Loss: 0.0777, Train: 100.00%, Valid: 62.00%, Test: 65.10%, Best Valid: 65.80%, Best Test: 66.90%
+Epoch: 300, Loss: 0.0597, Train: 100.00%, Valid: 63.60%, Test: 66.70%, Best Valid: 65.80%, Best Test: 66.90%
+Epoch: 400, Loss: 0.0632, Train: 100.00%, Valid: 60.40%, Test: 65.70%, Best Valid: 65.80%, Best Test: 66.90%
+Run 08:
+Highest Train: 100.00
+Highest Valid: 65.80
+Highest Test: 70.90
+Chosen epoch: 5
+Final Train: 98.33
+Final Test: 66.90
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+Penalty transform 'homophily': rel Frobenius dist to original = 0.0580, off-diag CV of original penalty = 0.0653
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.8840, Train: 44.17%, Valid: 14.80%, Test: 15.50%, Best Valid: 14.80%, Best Test: 15.50%
+Epoch: 100, Loss: 0.0633, Train: 100.00%, Valid: 62.00%, Test: 65.60%, Best Valid: 66.00%, Best Test: 66.40%
+Epoch: 200, Loss: 0.0546, Train: 100.00%, Valid: 63.40%, Test: 66.10%, Best Valid: 66.00%, Best Test: 66.40%
+Epoch: 300, Loss: 0.0624, Train: 100.00%, Valid: 61.80%, Test: 64.80%, Best Valid: 66.00%, Best Test: 66.40%
+Epoch: 400, Loss: 0.0577, Train: 100.00%, Valid: 62.60%, Test: 66.30%, Best Valid: 66.00%, Best Test: 66.40%
+Run 09:
+Highest Train: 100.00
+Highest Valid: 66.00
+Highest Test: 68.00
+Chosen epoch: 69
+Final Train: 100.00
+Final Test: 66.40
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+Penalty transform 'homophily': rel Frobenius dist to original = 0.0838, off-diag CV of original penalty = 0.0936
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.8833, Train: 23.33%, Valid: 16.60%, Test: 15.70%, Best Valid: 16.60%, Best Test: 15.70%
+Epoch: 100, Loss: 0.0700, Train: 100.00%, Valid: 62.20%, Test: 66.60%, Best Valid: 65.40%, Best Test: 66.70%
+Epoch: 200, Loss: 0.0552, Train: 100.00%, Valid: 61.00%, Test: 65.80%, Best Valid: 65.40%, Best Test: 66.70%
+Epoch: 300, Loss: 0.0451, Train: 100.00%, Valid: 62.00%, Test: 65.10%, Best Valid: 65.60%, Best Test: 67.00%
+Epoch: 400, Loss: 0.0534, Train: 100.00%, Valid: 63.60%, Test: 66.60%, Best Valid: 65.60%, Best Test: 67.00%
+Run 10:
+Highest Train: 100.00
+Highest Valid: 65.60
+Highest Test: 69.50
+Chosen epoch: 261
+Final Train: 100.00
+Final Test: 67.00
+All runs:
+Highest Train: 100.00 ± 0.00
+Highest Test: 70.37 ± 1.38
+Highest Valid: 67.14 ± 1.45
+  Final Train: 99.58 ± 0.59
+   Final Test: 68.77 ± 1.77
+Saving results to results_tuned/citeseer/sgformer.csv
+--- mlp_reg | transform=homophily | lambda=0.1 | mlp_epochs=500 ---
+Namespace(aggregate='add', alpha=0.5, attention='gcn', beta=-1.0, bn=False, cpu=False, data_dir='../data/', dataset='citeseer', device=0, dim_inner=64, display_step=100, dropout=0.5, epochs=500, global_dropout=None, global_epochs=0, global_layers=2, gnn='gcn', graph_weight=0.7, hidden_channels=64, hops=10, in_dropout=0.0, jk=False, label_num_per_class=20, lambda_val=0.1, layers=4, ln=False, local_epochs=0, local_gnn_type='GCN', local_layers=7, lr=0.005, metric='acc', mlp_epochs=500, mlp_reg=True, model='sgformer', model_dir='models/gt_reg_1108499_42', n_heads=1, num_centroids=4096, num_heads=1, oracle_reg=False, paired_seeds=True, pe_types='RWSE', penalty_transform='homophily', pre_linear=False, pre_ln=False, rand_split=False, rand_split_class=True, reg_start_epoch=10, reg_update_freq=5, res=False, result_dir='results_tuned', runs=10, save_model=False, save_result=False, seed=123, test_num=1000, tr_dropout=0.3, tr_layers=1, tr_weight_decay=0.01, train_prop=0.5, use_act=False, use_bn=False, use_graph=True, use_reg=True, use_residual=False, use_weight=False, valid_num=500, valid_prop=0.25, weight_decay=0.01)
+citeseer
+Num nodes: 3327
+train:torch.Size([120]), valid:torch.Size([500]), test:torch.Size([1000])
+dataset citeseer | num nodes 3327 | num edge 9104 | num node feats 3703 | num classes 6
+MODEL: SGFormer(
+  (trans_conv): TransConv(
+    (convs): ModuleList(
+      (0): TransConvLayer(
+        (Wk): Linear(in_features=64, out_features=64, bias=True)
+        (Wq): Linear(in_features=64, out_features=64, bias=True)
+      )
+    )
+    (fcs): ModuleList(
+      (0): Linear(in_features=3703, out_features=64, bias=True)
+    )
+    (bns): ModuleList(
+      (0): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+      (1): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+    )
+  )
+  (gnn): GCN(
+    (convs): ModuleList(
+      (0): GCNConv(3703, 64)
+      (1): GCNConv(64, 64)
+      (2): GCNConv(64, 64)
+      (3): GCNConv(64, 64)
+    )
+    (bns): ModuleList(
+      (0): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (1): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (2): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    )
+  )
+  (fc): Linear(in_features=64, out_features=6, bias=True)
+)
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+Penalty transform 'homophily': rel Frobenius dist to original = 0.0538, off-diag CV of original penalty = 0.0594
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.9740, Train: 19.17%, Valid: 16.00%, Test: 18.10%, Best Valid: 16.00%, Best Test: 18.10%
+Epoch: 100, Loss: 0.0903, Train: 99.17%, Valid: 63.20%, Test: 66.60%, Best Valid: 65.60%, Best Test: 69.30%
+Epoch: 200, Loss: 0.0768, Train: 100.00%, Valid: 64.60%, Test: 68.00%, Best Valid: 67.60%, Best Test: 67.30%
+Epoch: 300, Loss: 0.0607, Train: 99.17%, Valid: 65.20%, Test: 67.10%, Best Valid: 67.60%, Best Test: 67.30%
+Epoch: 400, Loss: 0.0625, Train: 100.00%, Valid: 64.00%, Test: 65.10%, Best Valid: 67.60%, Best Test: 67.30%
+Run 01:
+Highest Train: 100.00
+Highest Valid: 67.60
+Highest Test: 69.30
+Chosen epoch: 154
+Final Train: 100.00
+Final Test: 67.30
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+Penalty transform 'homophily': rel Frobenius dist to original = 0.0473, off-diag CV of original penalty = 0.0529
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.9736, Train: 35.00%, Valid: 22.00%, Test: 21.40%, Best Valid: 22.00%, Best Test: 21.40%
+Epoch: 100, Loss: 0.0899, Train: 100.00%, Valid: 60.20%, Test: 62.70%, Best Valid: 67.20%, Best Test: 69.70%
+Epoch: 200, Loss: 0.0636, Train: 100.00%, Valid: 58.40%, Test: 61.30%, Best Valid: 67.20%, Best Test: 69.70%
+Epoch: 300, Loss: 0.0732, Train: 99.17%, Valid: 59.80%, Test: 63.10%, Best Valid: 67.20%, Best Test: 69.70%
+Epoch: 400, Loss: 0.0637, Train: 100.00%, Valid: 60.80%, Test: 62.70%, Best Valid: 67.20%, Best Test: 69.70%
+Run 02:
+Highest Train: 100.00
+Highest Valid: 67.20
+Highest Test: 69.70
+Chosen epoch: 30
+Final Train: 99.17
+Final Test: 69.70
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+Penalty transform 'homophily': rel Frobenius dist to original = 0.0376, off-diag CV of original penalty = 0.0422
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.9731, Train: 33.33%, Valid: 26.80%, Test: 25.30%, Best Valid: 26.80%, Best Test: 25.30%
+Epoch: 100, Loss: 0.0713, Train: 100.00%, Valid: 61.60%, Test: 66.90%, Best Valid: 69.80%, Best Test: 71.80%
+Epoch: 200, Loss: 0.0632, Train: 100.00%, Valid: 67.20%, Test: 69.30%, Best Valid: 70.00%, Best Test: 70.80%
+Epoch: 300, Loss: 0.0664, Train: 100.00%, Valid: 67.20%, Test: 69.80%, Best Valid: 70.00%, Best Test: 70.80%
+Epoch: 400, Loss: 0.0564, Train: 99.17%, Valid: 66.20%, Test: 69.40%, Best Valid: 70.00%, Best Test: 70.80%
+Run 03:
+Highest Train: 100.00
+Highest Valid: 70.00
+Highest Test: 72.30
+Chosen epoch: 172
+Final Train: 100.00
+Final Test: 70.80
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+Penalty transform 'homophily': rel Frobenius dist to original = 0.0526, off-diag CV of original penalty = 0.0588
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.9742, Train: 32.50%, Valid: 10.60%, Test: 11.00%, Best Valid: 10.60%, Best Test: 11.00%
+Epoch: 100, Loss: 0.0562, Train: 100.00%, Valid: 66.60%, Test: 71.00%, Best Valid: 68.80%, Best Test: 69.90%
+Epoch: 200, Loss: 0.0555, Train: 100.00%, Valid: 62.40%, Test: 68.00%, Best Valid: 69.20%, Best Test: 69.70%
+Epoch: 300, Loss: 0.0747, Train: 100.00%, Valid: 65.60%, Test: 66.10%, Best Valid: 69.20%, Best Test: 69.70%
+Epoch: 400, Loss: 0.0617, Train: 100.00%, Valid: 67.00%, Test: 68.00%, Best Valid: 69.20%, Best Test: 69.70%
+Run 04:
+Highest Train: 100.00
+Highest Valid: 69.20
+Highest Test: 72.30
+Chosen epoch: 114
+Final Train: 100.00
+Final Test: 69.70
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+Penalty transform 'homophily': rel Frobenius dist to original = 0.0459, off-diag CV of original penalty = 0.0512
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.9696, Train: 63.33%, Valid: 30.00%, Test: 34.70%, Best Valid: 30.00%, Best Test: 34.70%
+Epoch: 100, Loss: 0.0666, Train: 100.00%, Valid: 61.60%, Test: 66.50%, Best Valid: 66.20%, Best Test: 70.60%
+Epoch: 200, Loss: 0.0593, Train: 100.00%, Valid: 59.60%, Test: 65.10%, Best Valid: 66.20%, Best Test: 70.60%
+Epoch: 300, Loss: 0.0658, Train: 100.00%, Valid: 59.40%, Test: 67.50%, Best Valid: 66.20%, Best Test: 70.60%
+Epoch: 400, Loss: 0.0627, Train: 100.00%, Valid: 60.20%, Test: 68.10%, Best Valid: 66.20%, Best Test: 70.60%
+Run 05:
+Highest Train: 100.00
+Highest Valid: 66.20
+Highest Test: 71.30
+Chosen epoch: 15
+Final Train: 99.17
+Final Test: 70.60
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+Penalty transform 'homophily': rel Frobenius dist to original = 0.0594, off-diag CV of original penalty = 0.0659
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.9715, Train: 41.67%, Valid: 22.40%, Test: 21.80%, Best Valid: 22.40%, Best Test: 21.80%
+Epoch: 100, Loss: 0.0817, Train: 100.00%, Valid: 65.80%, Test: 66.70%, Best Valid: 69.40%, Best Test: 68.30%
+Epoch: 200, Loss: 0.0654, Train: 100.00%, Valid: 60.40%, Test: 60.90%, Best Valid: 69.40%, Best Test: 68.30%
+Epoch: 300, Loss: 0.0490, Train: 99.17%, Valid: 64.20%, Test: 66.60%, Best Valid: 69.40%, Best Test: 68.30%
+Epoch: 400, Loss: 0.0731, Train: 100.00%, Valid: 65.00%, Test: 65.70%, Best Valid: 69.40%, Best Test: 68.30%
+Run 06:
+Highest Train: 100.00
+Highest Valid: 69.40
+Highest Test: 70.80
+Chosen epoch: 71
+Final Train: 100.00
+Final Test: 68.30
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+Penalty transform 'homophily': rel Frobenius dist to original = 0.0533, off-diag CV of original penalty = 0.0597
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.9784, Train: 44.17%, Valid: 21.80%, Test: 23.30%, Best Valid: 21.80%, Best Test: 23.30%
+Epoch: 100, Loss: 0.0638, Train: 100.00%, Valid: 61.00%, Test: 64.50%, Best Valid: 65.80%, Best Test: 68.50%
+Epoch: 200, Loss: 0.0688, Train: 100.00%, Valid: 60.80%, Test: 65.20%, Best Valid: 65.80%, Best Test: 68.50%
+Epoch: 300, Loss: 0.0560, Train: 100.00%, Valid: 62.40%, Test: 66.20%, Best Valid: 65.80%, Best Test: 68.50%
+Epoch: 400, Loss: 0.0734, Train: 100.00%, Valid: 60.20%, Test: 65.00%, Best Valid: 65.80%, Best Test: 68.50%
+Run 07:
+Highest Train: 100.00
+Highest Valid: 65.80
+Highest Test: 69.70
+Chosen epoch: 36
+Final Train: 99.17
+Final Test: 68.50
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+Penalty transform 'homophily': rel Frobenius dist to original = 0.0463, off-diag CV of original penalty = 0.0520
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.9729, Train: 63.33%, Valid: 40.60%, Test: 40.90%, Best Valid: 40.60%, Best Test: 40.90%
+Epoch: 100, Loss: 0.0586, Train: 100.00%, Valid: 60.60%, Test: 64.80%, Best Valid: 65.80%, Best Test: 67.40%
+Epoch: 200, Loss: 0.0735, Train: 100.00%, Valid: 61.80%, Test: 64.60%, Best Valid: 65.80%, Best Test: 67.40%
+Epoch: 300, Loss: 0.0589, Train: 100.00%, Valid: 60.00%, Test: 63.80%, Best Valid: 65.80%, Best Test: 67.40%
+Epoch: 400, Loss: 0.0598, Train: 100.00%, Valid: 61.80%, Test: 65.70%, Best Valid: 65.80%, Best Test: 67.40%
+Run 08:
+Highest Train: 100.00
+Highest Valid: 65.80
+Highest Test: 70.80
+Chosen epoch: 9
+Final Train: 98.33
+Final Test: 67.40
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+Penalty transform 'homophily': rel Frobenius dist to original = 0.0580, off-diag CV of original penalty = 0.0653
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.9737, Train: 44.17%, Valid: 14.80%, Test: 15.50%, Best Valid: 14.80%, Best Test: 15.50%
+Epoch: 100, Loss: 0.0707, Train: 100.00%, Valid: 62.20%, Test: 66.00%, Best Valid: 65.40%, Best Test: 67.30%
+Epoch: 200, Loss: 0.0618, Train: 100.00%, Valid: 61.80%, Test: 64.40%, Best Valid: 65.40%, Best Test: 67.30%
+Epoch: 300, Loss: 0.0744, Train: 100.00%, Valid: 62.00%, Test: 64.60%, Best Valid: 65.40%, Best Test: 67.30%
+Epoch: 400, Loss: 0.0605, Train: 99.17%, Valid: 63.00%, Test: 66.00%, Best Valid: 65.40%, Best Test: 67.30%
+Run 09:
+Highest Train: 100.00
+Highest Valid: 65.40
+Highest Test: 68.20
+Chosen epoch: 67
+Final Train: 99.17
+Final Test: 67.30
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+Penalty transform 'homophily': rel Frobenius dist to original = 0.0838, off-diag CV of original penalty = 0.0936
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.9730, Train: 23.33%, Valid: 16.60%, Test: 15.70%, Best Valid: 16.60%, Best Test: 15.70%
+Epoch: 100, Loss: 0.0709, Train: 100.00%, Valid: 62.40%, Test: 66.00%, Best Valid: 65.40%, Best Test: 68.00%
+Epoch: 200, Loss: 0.0636, Train: 100.00%, Valid: 62.00%, Test: 66.20%, Best Valid: 65.40%, Best Test: 68.00%
+Epoch: 300, Loss: 0.0469, Train: 100.00%, Valid: 63.60%, Test: 68.00%, Best Valid: 65.40%, Best Test: 68.00%
+Epoch: 400, Loss: 0.0617, Train: 100.00%, Valid: 63.60%, Test: 66.10%, Best Valid: 66.00%, Best Test: 68.30%
+Run 10:
+Highest Train: 100.00
+Highest Valid: 66.00
+Highest Test: 69.80
+Chosen epoch: 346
+Final Train: 100.00
+Final Test: 68.30
+All runs:
+Highest Train: 100.00 ± 0.00
+Highest Test: 70.42 ± 1.32
+Highest Valid: 67.26 ± 1.71
+  Final Train: 99.50 ± 0.58
+   Final Test: 68.79 ± 1.33
+Saving results to results_tuned/citeseer/sgformer.csv
+--- mlp_reg | transform=homophily | lambda=0.2 | mlp_epochs=500 ---
+Namespace(aggregate='add', alpha=0.5, attention='gcn', beta=-1.0, bn=False, cpu=False, data_dir='../data/', dataset='citeseer', device=0, dim_inner=64, display_step=100, dropout=0.5, epochs=500, global_dropout=None, global_epochs=0, global_layers=2, gnn='gcn', graph_weight=0.7, hidden_channels=64, hops=10, in_dropout=0.0, jk=False, label_num_per_class=20, lambda_val=0.2, layers=4, ln=False, local_epochs=0, local_gnn_type='GCN', local_layers=7, lr=0.005, metric='acc', mlp_epochs=500, mlp_reg=True, model='sgformer', model_dir='models/gt_reg_1108499_42', n_heads=1, num_centroids=4096, num_heads=1, oracle_reg=False, paired_seeds=True, pe_types='RWSE', penalty_transform='homophily', pre_linear=False, pre_ln=False, rand_split=False, rand_split_class=True, reg_start_epoch=10, reg_update_freq=5, res=False, result_dir='results_tuned', runs=10, save_model=False, save_result=False, seed=123, test_num=1000, tr_dropout=0.3, tr_layers=1, tr_weight_decay=0.01, train_prop=0.5, use_act=False, use_bn=False, use_graph=True, use_reg=True, use_residual=False, use_weight=False, valid_num=500, valid_prop=0.25, weight_decay=0.01)
+citeseer
+Num nodes: 3327
+train:torch.Size([120]), valid:torch.Size([500]), test:torch.Size([1000])
+dataset citeseer | num nodes 3327 | num edge 9104 | num node feats 3703 | num classes 6
+MODEL: SGFormer(
+  (trans_conv): TransConv(
+    (convs): ModuleList(
+      (0): TransConvLayer(
+        (Wk): Linear(in_features=64, out_features=64, bias=True)
+        (Wq): Linear(in_features=64, out_features=64, bias=True)
+      )
+    )
+    (fcs): ModuleList(
+      (0): Linear(in_features=3703, out_features=64, bias=True)
+    )
+    (bns): ModuleList(
+      (0): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+      (1): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+    )
+  )
+  (gnn): GCN(
+    (convs): ModuleList(
+      (0): GCNConv(3703, 64)
+      (1): GCNConv(64, 64)
+      (2): GCNConv(64, 64)
+      (3): GCNConv(64, 64)
+    )
+    (bns): ModuleList(
+      (0): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (1): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (2): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    )
+  )
+  (fc): Linear(in_features=64, out_features=6, bias=True)
+)
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+Penalty transform 'homophily': rel Frobenius dist to original = 0.0538, off-diag CV of original penalty = 0.0594
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.1535, Train: 19.17%, Valid: 16.00%, Test: 18.10%, Best Valid: 16.00%, Best Test: 18.10%
+Epoch: 100, Loss: 0.0914, Train: 100.00%, Valid: 63.60%, Test: 67.00%, Best Valid: 66.20%, Best Test: 68.70%
+Epoch: 200, Loss: 0.0953, Train: 100.00%, Valid: 65.80%, Test: 67.40%, Best Valid: 66.60%, Best Test: 67.80%
+Epoch: 300, Loss: 0.0593, Train: 100.00%, Valid: 62.80%, Test: 63.80%, Best Valid: 66.60%, Best Test: 67.80%
+Epoch: 400, Loss: 0.0713, Train: 100.00%, Valid: 65.00%, Test: 66.80%, Best Valid: 67.40%, Best Test: 67.50%
+Run 01:
+Highest Train: 100.00
+Highest Valid: 67.80
+Highest Test: 69.00
+Chosen epoch: 435
+Final Train: 100.00
+Final Test: 68.20
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+Penalty transform 'homophily': rel Frobenius dist to original = 0.0473, off-diag CV of original penalty = 0.0529
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.1530, Train: 35.00%, Valid: 22.00%, Test: 21.60%, Best Valid: 22.00%, Best Test: 21.60%
+Epoch: 100, Loss: 0.0936, Train: 100.00%, Valid: 59.40%, Test: 64.20%, Best Valid: 67.00%, Best Test: 70.10%
+Epoch: 200, Loss: 0.0763, Train: 100.00%, Valid: 60.80%, Test: 62.40%, Best Valid: 67.00%, Best Test: 70.10%
+Epoch: 300, Loss: 0.0900, Train: 99.17%, Valid: 58.20%, Test: 63.00%, Best Valid: 67.00%, Best Test: 70.10%
+Epoch: 400, Loss: 0.0579, Train: 100.00%, Valid: 60.80%, Test: 62.60%, Best Valid: 67.00%, Best Test: 70.10%
+Run 02:
+Highest Train: 100.00
+Highest Valid: 67.00
+Highest Test: 70.10
+Chosen epoch: 30
+Final Train: 99.17
+Final Test: 70.10
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+Penalty transform 'homophily': rel Frobenius dist to original = 0.0376, off-diag CV of original penalty = 0.0422
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.1525, Train: 33.33%, Valid: 26.80%, Test: 25.30%, Best Valid: 26.80%, Best Test: 25.30%
+Epoch: 100, Loss: 0.0708, Train: 100.00%, Valid: 62.80%, Test: 67.30%, Best Valid: 68.60%, Best Test: 70.70%
+Epoch: 200, Loss: 0.0685, Train: 100.00%, Valid: 66.40%, Test: 69.40%, Best Valid: 68.60%, Best Test: 70.70%
+Epoch: 300, Loss: 0.0761, Train: 100.00%, Valid: 67.80%, Test: 69.90%, Best Valid: 69.20%, Best Test: 70.60%
+Epoch: 400, Loss: 0.0658, Train: 100.00%, Valid: 69.00%, Test: 69.80%, Best Valid: 69.40%, Best Test: 71.00%
+Run 03:
+Highest Train: 100.00
+Highest Valid: 69.60
+Highest Test: 72.30
+Chosen epoch: 463
+Final Train: 100.00
+Final Test: 70.70
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+Penalty transform 'homophily': rel Frobenius dist to original = 0.0526, off-diag CV of original penalty = 0.0588
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.1537, Train: 32.50%, Valid: 10.40%, Test: 10.00%, Best Valid: 10.40%, Best Test: 10.00%
+Epoch: 100, Loss: 0.0655, Train: 100.00%, Valid: 66.40%, Test: 70.70%, Best Valid: 68.20%, Best Test: 69.60%
+Epoch: 200, Loss: 0.0531, Train: 100.00%, Valid: 64.20%, Test: 67.80%, Best Valid: 68.20%, Best Test: 69.60%
+Epoch: 300, Loss: 0.0805, Train: 100.00%, Valid: 62.80%, Test: 63.10%, Best Valid: 68.20%, Best Test: 69.60%
+Epoch: 400, Loss: 0.0713, Train: 100.00%, Valid: 66.40%, Test: 67.20%, Best Valid: 68.20%, Best Test: 69.60%
+Run 04:
+Highest Train: 100.00
+Highest Valid: 68.20
+Highest Test: 71.50
+Chosen epoch: 28
+Final Train: 99.17
+Final Test: 69.60
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+Penalty transform 'homophily': rel Frobenius dist to original = 0.0459, off-diag CV of original penalty = 0.0512
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.1487, Train: 61.67%, Valid: 30.40%, Test: 35.40%, Best Valid: 30.40%, Best Test: 35.40%
+Epoch: 100, Loss: 0.0808, Train: 100.00%, Valid: 61.40%, Test: 66.40%, Best Valid: 66.60%, Best Test: 71.20%
+Epoch: 200, Loss: 0.0624, Train: 100.00%, Valid: 61.80%, Test: 65.70%, Best Valid: 66.60%, Best Test: 71.20%
+Epoch: 300, Loss: 0.0793, Train: 100.00%, Valid: 60.00%, Test: 66.40%, Best Valid: 66.60%, Best Test: 71.20%
+Epoch: 400, Loss: 0.0603, Train: 100.00%, Valid: 62.40%, Test: 68.80%, Best Valid: 66.60%, Best Test: 71.20%
+Run 05:
+Highest Train: 100.00
+Highest Valid: 66.60
+Highest Test: 71.20
+Chosen epoch: 16
+Final Train: 100.00
+Final Test: 71.20
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+Penalty transform 'homophily': rel Frobenius dist to original = 0.0594, off-diag CV of original penalty = 0.0659
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.1507, Train: 41.67%, Valid: 22.40%, Test: 21.80%, Best Valid: 22.40%, Best Test: 21.80%
+Epoch: 100, Loss: 0.0909, Train: 100.00%, Valid: 64.80%, Test: 66.70%, Best Valid: 67.80%, Best Test: 68.00%
+Epoch: 200, Loss: 0.0675, Train: 100.00%, Valid: 59.60%, Test: 59.90%, Best Valid: 67.80%, Best Test: 68.00%
+Epoch: 300, Loss: 0.0625, Train: 100.00%, Valid: 64.80%, Test: 67.30%, Best Valid: 67.80%, Best Test: 68.00%
+Epoch: 400, Loss: 0.0693, Train: 100.00%, Valid: 64.20%, Test: 65.20%, Best Valid: 68.40%, Best Test: 69.20%
+Run 06:
+Highest Train: 100.00
+Highest Valid: 68.40
+Highest Test: 70.70
+Chosen epoch: 373
+Final Train: 100.00
+Final Test: 69.20
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+Penalty transform 'homophily': rel Frobenius dist to original = 0.0533, off-diag CV of original penalty = 0.0597
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.1583, Train: 44.17%, Valid: 21.80%, Test: 23.30%, Best Valid: 21.80%, Best Test: 23.30%
+Epoch: 100, Loss: 0.0676, Train: 100.00%, Valid: 60.20%, Test: 65.10%, Best Valid: 65.60%, Best Test: 68.50%
+Epoch: 200, Loss: 0.0715, Train: 100.00%, Valid: 60.40%, Test: 65.30%, Best Valid: 65.60%, Best Test: 68.50%
+Epoch: 300, Loss: 0.0597, Train: 100.00%, Valid: 62.40%, Test: 67.20%, Best Valid: 65.60%, Best Test: 68.50%
+Epoch: 400, Loss: 0.0704, Train: 100.00%, Valid: 62.40%, Test: 66.10%, Best Valid: 65.60%, Best Test: 68.50%
+Run 07:
+Highest Train: 100.00
+Highest Valid: 65.60
+Highest Test: 70.00
+Chosen epoch: 36
+Final Train: 99.17
+Final Test: 68.50
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+Penalty transform 'homophily': rel Frobenius dist to original = 0.0463, off-diag CV of original penalty = 0.0520
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.1522, Train: 64.17%, Valid: 40.80%, Test: 40.90%, Best Valid: 40.80%, Best Test: 40.90%
+Epoch: 100, Loss: 0.0630, Train: 100.00%, Valid: 60.80%, Test: 65.70%, Best Valid: 66.20%, Best Test: 67.30%
+Epoch: 200, Loss: 0.0827, Train: 100.00%, Valid: 60.80%, Test: 65.10%, Best Valid: 66.20%, Best Test: 67.30%
+Epoch: 300, Loss: 0.0556, Train: 100.00%, Valid: 62.00%, Test: 65.60%, Best Valid: 66.20%, Best Test: 67.30%
+Epoch: 400, Loss: 0.0669, Train: 100.00%, Valid: 61.80%, Test: 64.60%, Best Valid: 66.20%, Best Test: 67.30%
+Run 08:
+Highest Train: 100.00
+Highest Valid: 66.20
+Highest Test: 71.10
+Chosen epoch: 10
+Final Train: 98.33
+Final Test: 67.30
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+Penalty transform 'homophily': rel Frobenius dist to original = 0.0580, off-diag CV of original penalty = 0.0653
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.1531, Train: 44.17%, Valid: 14.80%, Test: 15.40%, Best Valid: 14.80%, Best Test: 15.40%
+Epoch: 100, Loss: 0.0765, Train: 100.00%, Valid: 61.60%, Test: 65.60%, Best Valid: 65.40%, Best Test: 67.40%
+Epoch: 200, Loss: 0.0588, Train: 100.00%, Valid: 62.60%, Test: 64.30%, Best Valid: 65.40%, Best Test: 67.40%
+Epoch: 300, Loss: 0.0850, Train: 100.00%, Valid: 61.80%, Test: 66.00%, Best Valid: 65.40%, Best Test: 67.40%
+Epoch: 400, Loss: 0.0684, Train: 100.00%, Valid: 63.20%, Test: 66.60%, Best Valid: 65.40%, Best Test: 67.40%
+Run 09:
+Highest Train: 100.00
+Highest Valid: 65.40
+Highest Test: 68.30
+Chosen epoch: 81
+Final Train: 99.17
+Final Test: 67.40
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+Penalty transform 'homophily': rel Frobenius dist to original = 0.0838, off-diag CV of original penalty = 0.0936
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.1523, Train: 23.33%, Valid: 16.60%, Test: 15.70%, Best Valid: 16.60%, Best Test: 15.70%
+Epoch: 100, Loss: 0.0808, Train: 100.00%, Valid: 63.40%, Test: 65.60%, Best Valid: 65.20%, Best Test: 67.30%
+Epoch: 200, Loss: 0.0742, Train: 100.00%, Valid: 63.00%, Test: 65.30%, Best Valid: 65.80%, Best Test: 68.00%
+Epoch: 300, Loss: 0.0530, Train: 100.00%, Valid: 64.00%, Test: 67.90%, Best Valid: 65.80%, Best Test: 68.00%
+Epoch: 400, Loss: 0.0683, Train: 100.00%, Valid: 62.00%, Test: 65.90%, Best Valid: 65.80%, Best Test: 68.00%
+Run 10:
+Highest Train: 100.00
+Highest Valid: 65.80
+Highest Test: 69.60
+Chosen epoch: 186
+Final Train: 100.00
+Final Test: 68.00
+All runs:
+Highest Train: 100.00 ± 0.00
+Highest Test: 70.38 ± 1.22
+Highest Valid: 67.06 ± 1.40
+  Final Train: 99.50 ± 0.58
+   Final Test: 69.02 ± 1.36
+Saving results to results_tuned/citeseer/sgformer.csv
+--- mlp_reg | transform=homophily | lambda=0.4 | mlp_epochs=500 ---
+Namespace(aggregate='add', alpha=0.5, attention='gcn', beta=-1.0, bn=False, cpu=False, data_dir='../data/', dataset='citeseer', device=0, dim_inner=64, display_step=100, dropout=0.5, epochs=500, global_dropout=None, global_epochs=0, global_layers=2, gnn='gcn', graph_weight=0.7, hidden_channels=64, hops=10, in_dropout=0.0, jk=False, label_num_per_class=20, lambda_val=0.4, layers=4, ln=False, local_epochs=0, local_gnn_type='GCN', local_layers=7, lr=0.005, metric='acc', mlp_epochs=500, mlp_reg=True, model='sgformer', model_dir='models/gt_reg_1108499_42', n_heads=1, num_centroids=4096, num_heads=1, oracle_reg=False, paired_seeds=True, pe_types='RWSE', penalty_transform='homophily', pre_linear=False, pre_ln=False, rand_split=False, rand_split_class=True, reg_start_epoch=10, reg_update_freq=5, res=False, result_dir='results_tuned', runs=10, save_model=False, save_result=False, seed=123, test_num=1000, tr_dropout=0.3, tr_layers=1, tr_weight_decay=0.01, train_prop=0.5, use_act=False, use_bn=False, use_graph=True, use_reg=True, use_residual=False, use_weight=False, valid_num=500, valid_prop=0.25, weight_decay=0.01)
+citeseer
+Num nodes: 3327
+train:torch.Size([120]), valid:torch.Size([500]), test:torch.Size([1000])
+dataset citeseer | num nodes 3327 | num edge 9104 | num node feats 3703 | num classes 6
+MODEL: SGFormer(
+  (trans_conv): TransConv(
+    (convs): ModuleList(
+      (0): TransConvLayer(
+        (Wk): Linear(in_features=64, out_features=64, bias=True)
+        (Wq): Linear(in_features=64, out_features=64, bias=True)
+      )
+    )
+    (fcs): ModuleList(
+      (0): Linear(in_features=3703, out_features=64, bias=True)
+    )
+    (bns): ModuleList(
+      (0): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+      (1): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+    )
+  )
+  (gnn): GCN(
+    (convs): ModuleList(
+      (0): GCNConv(3703, 64)
+      (1): GCNConv(64, 64)
+      (2): GCNConv(64, 64)
+      (3): GCNConv(64, 64)
+    )
+    (bns): ModuleList(
+      (0): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (1): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (2): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    )
+  )
+  (fc): Linear(in_features=64, out_features=6, bias=True)
+)
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+Penalty transform 'homophily': rel Frobenius dist to original = 0.0538, off-diag CV of original penalty = 0.0594
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.5124, Train: 19.17%, Valid: 16.00%, Test: 18.10%, Best Valid: 16.00%, Best Test: 18.10%
+Epoch: 100, Loss: 0.1205, Train: 99.17%, Valid: 63.40%, Test: 64.80%, Best Valid: 65.60%, Best Test: 68.70%
+Epoch: 200, Loss: 0.0986, Train: 100.00%, Valid: 63.40%, Test: 65.60%, Best Valid: 66.40%, Best Test: 67.60%
+Epoch: 300, Loss: 0.0691, Train: 100.00%, Valid: 64.40%, Test: 65.00%, Best Valid: 67.00%, Best Test: 67.50%
+Epoch: 400, Loss: 0.0951, Train: 100.00%, Valid: 65.80%, Test: 66.80%, Best Valid: 67.60%, Best Test: 67.20%
+Run 01:
+Highest Train: 100.00
+Highest Valid: 67.80
+Highest Test: 69.40
+Chosen epoch: 434
+Final Train: 100.00
+Final Test: 69.10
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+Penalty transform 'homophily': rel Frobenius dist to original = 0.0473, off-diag CV of original penalty = 0.0529
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.5119, Train: 35.00%, Valid: 22.00%, Test: 21.40%, Best Valid: 22.00%, Best Test: 21.40%
+Epoch: 100, Loss: 0.1124, Train: 99.17%, Valid: 60.80%, Test: 64.30%, Best Valid: 68.00%, Best Test: 69.80%
+Epoch: 200, Loss: 0.0739, Train: 100.00%, Valid: 60.40%, Test: 62.70%, Best Valid: 68.00%, Best Test: 69.80%
+Epoch: 300, Loss: 0.0703, Train: 99.17%, Valid: 58.60%, Test: 63.00%, Best Valid: 68.00%, Best Test: 69.80%
+Epoch: 400, Loss: 0.0679, Train: 99.17%, Valid: 61.80%, Test: 65.00%, Best Valid: 68.00%, Best Test: 69.80%
+Run 02:
+Highest Train: 100.00
+Highest Valid: 68.00
+Highest Test: 69.90
+Chosen epoch: 31
+Final Train: 99.17
+Final Test: 69.80
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+Penalty transform 'homophily': rel Frobenius dist to original = 0.0376, off-diag CV of original penalty = 0.0422
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.5112, Train: 33.33%, Valid: 26.80%, Test: 25.30%, Best Valid: 26.80%, Best Test: 25.30%
+Epoch: 100, Loss: 0.0885, Train: 100.00%, Valid: 63.40%, Test: 67.40%, Best Valid: 68.20%, Best Test: 71.40%
+Epoch: 200, Loss: 0.0757, Train: 100.00%, Valid: 68.00%, Test: 69.90%, Best Valid: 69.20%, Best Test: 70.40%
+Epoch: 300, Loss: 0.0803, Train: 100.00%, Valid: 67.80%, Test: 70.00%, Best Valid: 69.40%, Best Test: 70.60%
+Epoch: 400, Loss: 0.0778, Train: 100.00%, Valid: 68.80%, Test: 70.40%, Best Valid: 69.60%, Best Test: 71.80%
+Run 03:
+Highest Train: 100.00
+Highest Valid: 69.80
+Highest Test: 72.50
+Chosen epoch: 471
+Final Train: 100.00
+Final Test: 71.10
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+Penalty transform 'homophily': rel Frobenius dist to original = 0.0526, off-diag CV of original penalty = 0.0588
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.5126, Train: 33.33%, Valid: 9.60%, Test: 9.90%, Best Valid: 9.60%, Best Test: 9.90%
+Epoch: 100, Loss: 0.0748, Train: 100.00%, Valid: 66.80%, Test: 70.40%, Best Valid: 67.80%, Best Test: 69.30%
+Epoch: 200, Loss: 0.0662, Train: 100.00%, Valid: 63.00%, Test: 68.40%, Best Valid: 67.80%, Best Test: 69.30%
+Epoch: 300, Loss: 0.1082, Train: 100.00%, Valid: 63.00%, Test: 63.30%, Best Valid: 67.80%, Best Test: 69.30%
+Epoch: 400, Loss: 0.0780, Train: 100.00%, Valid: 66.00%, Test: 67.10%, Best Valid: 67.80%, Best Test: 69.30%
+Run 04:
+Highest Train: 100.00
+Highest Valid: 68.60
+Highest Test: 71.60
+Chosen epoch: 412
+Final Train: 100.00
+Final Test: 68.30
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+Penalty transform 'homophily': rel Frobenius dist to original = 0.0459, off-diag CV of original penalty = 0.0512
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.5068, Train: 61.67%, Valid: 30.20%, Test: 34.70%, Best Valid: 30.20%, Best Test: 34.70%
+Epoch: 100, Loss: 0.0902, Train: 100.00%, Valid: 60.40%, Test: 65.00%, Best Valid: 66.20%, Best Test: 70.70%
+Epoch: 200, Loss: 0.0888, Train: 100.00%, Valid: 62.20%, Test: 66.20%, Best Valid: 66.20%, Best Test: 70.70%
+Epoch: 300, Loss: 0.0951, Train: 100.00%, Valid: 60.20%, Test: 66.80%, Best Valid: 66.20%, Best Test: 70.70%
+Epoch: 400, Loss: 0.0743, Train: 100.00%, Valid: 61.60%, Test: 67.80%, Best Valid: 66.20%, Best Test: 70.70%
+Run 05:
+Highest Train: 100.00
+Highest Valid: 66.20
+Highest Test: 71.10
+Chosen epoch: 14
+Final Train: 99.17
+Final Test: 70.70
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+Penalty transform 'homophily': rel Frobenius dist to original = 0.0594, off-diag CV of original penalty = 0.0659
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.5092, Train: 41.67%, Valid: 22.40%, Test: 22.10%, Best Valid: 22.40%, Best Test: 22.10%
+Epoch: 100, Loss: 0.1007, Train: 100.00%, Valid: 66.80%, Test: 68.20%, Best Valid: 67.80%, Best Test: 68.30%
+Epoch: 200, Loss: 0.0840, Train: 100.00%, Valid: 59.40%, Test: 60.00%, Best Valid: 68.20%, Best Test: 67.90%
+Epoch: 300, Loss: 0.0867, Train: 100.00%, Valid: 65.40%, Test: 67.60%, Best Valid: 68.20%, Best Test: 67.90%
+Epoch: 400, Loss: 0.0732, Train: 100.00%, Valid: 64.20%, Test: 64.70%, Best Valid: 69.00%, Best Test: 69.40%
+Run 06:
+Highest Train: 100.00
+Highest Valid: 69.00
+Highest Test: 70.80
+Chosen epoch: 374
+Final Train: 99.17
+Final Test: 69.40
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+Penalty transform 'homophily': rel Frobenius dist to original = 0.0533, off-diag CV of original penalty = 0.0597
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.5180, Train: 44.17%, Valid: 21.80%, Test: 23.50%, Best Valid: 21.80%, Best Test: 23.50%
+Epoch: 100, Loss: 0.0800, Train: 100.00%, Valid: 60.00%, Test: 65.10%, Best Valid: 66.00%, Best Test: 67.50%
+Epoch: 200, Loss: 0.1062, Train: 100.00%, Valid: 60.20%, Test: 64.20%, Best Valid: 66.00%, Best Test: 67.50%
+Epoch: 300, Loss: 0.0746, Train: 100.00%, Valid: 62.00%, Test: 66.10%, Best Valid: 66.00%, Best Test: 67.50%
+Epoch: 400, Loss: 0.1156, Train: 100.00%, Valid: 58.00%, Test: 64.60%, Best Valid: 66.00%, Best Test: 67.50%
+Run 07:
+Highest Train: 100.00
+Highest Valid: 66.00
+Highest Test: 69.90
+Chosen epoch: 46
+Final Train: 100.00
+Final Test: 67.50
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+Penalty transform 'homophily': rel Frobenius dist to original = 0.0463, off-diag CV of original penalty = 0.0520
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.5110, Train: 64.17%, Valid: 40.60%, Test: 39.70%, Best Valid: 40.60%, Best Test: 39.70%
+Epoch: 100, Loss: 0.0765, Train: 100.00%, Valid: 59.40%, Test: 64.10%, Best Valid: 66.20%, Best Test: 67.50%
+Epoch: 200, Loss: 0.0977, Train: 99.17%, Valid: 63.20%, Test: 65.80%, Best Valid: 66.20%, Best Test: 67.50%
+Epoch: 300, Loss: 0.0739, Train: 100.00%, Valid: 60.60%, Test: 66.20%, Best Valid: 66.20%, Best Test: 67.50%
+Epoch: 400, Loss: 0.0830, Train: 100.00%, Valid: 62.60%, Test: 67.10%, Best Valid: 66.20%, Best Test: 67.50%
+Run 08:
+Highest Train: 100.00
+Highest Valid: 66.20
+Highest Test: 71.10
+Chosen epoch: 8
+Final Train: 98.33
+Final Test: 67.50
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+Penalty transform 'homophily': rel Frobenius dist to original = 0.0580, off-diag CV of original penalty = 0.0653
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.5120, Train: 44.17%, Valid: 14.60%, Test: 15.50%, Best Valid: 14.60%, Best Test: 15.50%
+Epoch: 100, Loss: 0.0828, Train: 100.00%, Valid: 62.20%, Test: 64.80%, Best Valid: 64.60%, Best Test: 67.50%
+Epoch: 200, Loss: 0.0763, Train: 100.00%, Valid: 62.80%, Test: 65.40%, Best Valid: 64.60%, Best Test: 67.50%
+Epoch: 300, Loss: 0.0942, Train: 100.00%, Valid: 63.60%, Test: 65.60%, Best Valid: 64.80%, Best Test: 67.20%
+Epoch: 400, Loss: 0.0694, Train: 100.00%, Valid: 64.40%, Test: 66.60%, Best Valid: 65.00%, Best Test: 66.70%
+Run 09:
+Highest Train: 100.00
+Highest Valid: 65.00
+Highest Test: 68.40
+Chosen epoch: 399
+Final Train: 99.17
+Final Test: 66.70
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+Penalty transform 'homophily': rel Frobenius dist to original = 0.0838, off-diag CV of original penalty = 0.0936
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.5111, Train: 23.33%, Valid: 16.60%, Test: 15.80%, Best Valid: 16.60%, Best Test: 15.80%
+Epoch: 100, Loss: 0.0878, Train: 100.00%, Valid: 61.20%, Test: 65.10%, Best Valid: 65.20%, Best Test: 67.70%
+Epoch: 200, Loss: 0.0703, Train: 100.00%, Valid: 62.60%, Test: 64.90%, Best Valid: 65.20%, Best Test: 67.70%
+Epoch: 300, Loss: 0.0615, Train: 100.00%, Valid: 63.80%, Test: 67.10%, Best Valid: 65.20%, Best Test: 67.70%
+Epoch: 400, Loss: 0.0749, Train: 100.00%, Valid: 61.60%, Test: 64.60%, Best Valid: 65.20%, Best Test: 67.70%
+Run 10:
+Highest Train: 100.00
+Highest Valid: 65.20
+Highest Test: 69.50
+Chosen epoch: 40
+Final Train: 98.33
+Final Test: 67.70
+All runs:
+Highest Train: 100.00 ± 0.00
+Highest Test: 70.42 ± 1.22
+Highest Valid: 67.18 ± 1.67
+  Final Train: 99.33 ± 0.66
+   Final Test: 68.78 ± 1.48
+Saving results to results_tuned/citeseer/sgformer.csv
+Condition sweep completed.
+Task 42 done.

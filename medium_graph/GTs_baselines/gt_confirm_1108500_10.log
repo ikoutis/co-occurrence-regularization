@@ -1,0 +1,413 @@
+Sat Jul 25 22:30:56 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.159.04             Driver Version: 580.159.04     CUDA Version: 13.0     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA A100-SXM4-80GB          On  |   00000000:01:00.0 Off |                   On |
+| N/A   51C    P0            194W /  500W |   11393MiB /  81920MiB |     N/A      Default |
+|                                         |                        |              Enabled |
++-----------------------------------------+------------------------+----------------------+
+|   1  NVIDIA A100-SXM4-80GB          On  |   00000000:41:00.0 Off |                   On |
+| N/A   35C    P0            114W /  500W |    2609MiB /  81920MiB |     N/A      Default |
+|                                         |                        |              Enabled |
++-----------------------------------------+------------------------+----------------------+
+|   2  NVIDIA A100-SXM4-80GB          On  |   00000000:81:00.0 Off |                   On |
+| N/A   36C    P0            102W /  500W |    8196MiB /  81920MiB |     N/A      Default |
+|                                         |                        |              Enabled |
++-----------------------------------------+------------------------+----------------------+
+|   3  NVIDIA A100-SXM4-80GB          On  |   00000000:C1:00.0 Off |                   On |
+| N/A   41C    P0            182W /  500W |   24117MiB /  81920MiB |     N/A      Default |
+|                                         |                        |              Enabled |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| MIG devices:                                                                            |
++------------------+----------------------------------+-----------+-----------------------+
+| GPU  GI  CI  MIG |              Shared Memory-Usage |        Vol|        Shared         |
+|      ID  ID  Dev |                Shared BAR1-Usage | SM     Unc| CE ENC  DEC  OFA  JPG |
+|                  |                                  |        ECC|                       |
+|==================+==================================+===========+=======================|
+|  2    3   0   0  |              71MiB / 19968MiB    | 28      0 |  2   0    1    0    0 |
+|                  |               0MiB / 12271MiB    |           |                       |
++------------------+----------------------------------+-----------+-----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0    1    0           268164      C   python                                 9802MiB |
+|    0    5    0           363442      C   ...a/envs/graph-mamba/bin/python        256MiB |
+|    0   14    0          2570058      C   ...ware/symmetrix-env/bin/python        562MiB |
+|    0   13    0          2570059      C   ...ware/symmetrix-env/bin/python        492MiB |
+|    1    1    0           397597      C   python                                 1134MiB |
+|    1   14    0          2571763      C   ...ware/symmetrix-env/bin/python        640MiB |
+|    1   13    0          2571766      C   ...ware/symmetrix-env/bin/python        562MiB |
+|    3    1    0           389907      C   python                                 3164MiB |
+|    3    5    0           395771      C   python                                 3946MiB |
+|    3   13    0          2571757      C   ...ware/symmetrix-env/bin/python       7500MiB |
+|    3   14    0          2571769      C   ...ware/symmetrix-env/bin/python       9226MiB |
++-----------------------------------------------------------------------------------------+
+Confirming search winner: sgformer / roman-empire
+python main.py --model sgformer --dataset roman-empire --lr 0.001 --hidden_channels 256 --dropout 0.3 --weight_decay 0.0005 --num_heads 1 --runs 10 --device 0 --result_dir results_tuned --model_dir models/gt_confirm_1108500_10 --paired_seeds  --layers 2 --tr_layers 1 --graph_weight 0.5 --alpha 0.5 --use_graph --use_residual --epochs 2500 --use_bn
+Namespace(aggregate='add', alpha=0.5, attention='gcn', beta=-1.0, bn=False, cpu=False, data_dir='../data/', dataset='roman-empire', device=0, dim_inner=256, display_step=100, dropout=0.3, epochs=2500, global_dropout=None, global_epochs=0, global_layers=2, gnn='gcn', graph_weight=0.5, hidden_channels=256, hops=10, in_dropout=0.0, jk=False, label_num_per_class=20, lambda_val=0.5, layers=2, ln=False, local_epochs=0, local_gnn_type='GCN', local_layers=7, lr=0.001, metric='acc', mlp_epochs=500, mlp_reg=False, model='sgformer', model_dir='models/gt_confirm_1108500_10', n_heads=1, num_centroids=4096, num_heads=1, oracle_reg=False, paired_seeds=True, pe_types='RWSE', penalty_transform='none', pre_linear=False, pre_ln=False, rand_split=False, rand_split_class=False, reg_start_epoch=10, reg_update_freq=5, res=False, result_dir='results_tuned', runs=10, save_model=False, save_result=False, seed=42, test_num=1000, tr_dropout=None, tr_layers=1, tr_weight_decay=None, train_prop=0.5, use_act=False, use_bn=True, use_graph=True, use_reg=False, use_residual=True, use_weight=False, valid_num=500, valid_prop=0.25, weight_decay=0.0005)
+roman-empire
+dataset roman-empire | num nodes 22662 | num edge 32927 | num node feats 300 | num classes 18
+MODEL: SGFormer(
+  (trans_conv): TransConv(
+    (convs): ModuleList(
+      (0): TransConvLayer(
+        (Wk): Linear(in_features=256, out_features=256, bias=True)
+        (Wq): Linear(in_features=256, out_features=256, bias=True)
+      )
+    )
+    (fcs): ModuleList(
+      (0): Linear(in_features=300, out_features=256, bias=True)
+    )
+    (bns): ModuleList(
+      (0): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+      (1): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+    )
+  )
+  (gnn): GCN(
+    (convs): ModuleList(
+      (0): GCNConv(300, 256)
+      (1): GCNConv(256, 256)
+    )
+    (bns): ModuleList(
+      (0): BatchNorm1d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    )
+  )
+  (fc): Linear(in_features=256, out_features=18, bias=True)
+)
+Epoch: 00, Loss: 2.9568, Train: 11.89%, Valid: 12.00%, Test: 12.94%, Best Valid: 12.00%, Best Test: 12.94%
+Epoch: 100, Loss: 0.4345, Train: 88.27%, Valid: 74.70%, Test: 74.06%, Best Valid: 74.70%, Best Test: 74.04%
+Epoch: 200, Loss: 0.1416, Train: 98.01%, Valid: 74.46%, Test: 73.63%, Best Valid: 75.34%, Best Test: 74.00%
+Epoch: 300, Loss: 0.0829, Train: 99.35%, Valid: 74.58%, Test: 74.27%, Best Valid: 75.34%, Best Test: 74.00%
+Epoch: 400, Loss: 0.0612, Train: 99.52%, Valid: 74.33%, Test: 73.56%, Best Valid: 75.34%, Best Test: 74.00%
+Epoch: 500, Loss: 0.0524, Train: 99.65%, Valid: 74.28%, Test: 73.99%, Best Valid: 75.34%, Best Test: 74.00%
+Epoch: 600, Loss: 0.0472, Train: 99.57%, Valid: 74.35%, Test: 74.00%, Best Valid: 75.34%, Best Test: 74.00%
+Epoch: 700, Loss: 0.0428, Train: 99.80%, Valid: 74.07%, Test: 73.72%, Best Valid: 75.34%, Best Test: 74.00%
+Epoch: 800, Loss: 0.0417, Train: 99.69%, Valid: 74.16%, Test: 73.61%, Best Valid: 75.34%, Best Test: 74.00%
+Epoch: 900, Loss: 0.0405, Train: 99.80%, Valid: 74.02%, Test: 73.63%, Best Valid: 75.34%, Best Test: 74.00%
+Epoch: 1000, Loss: 0.0392, Train: 99.72%, Valid: 74.42%, Test: 74.04%, Best Valid: 75.34%, Best Test: 74.00%
+Epoch: 1100, Loss: 0.0383, Train: 99.86%, Valid: 73.89%, Test: 73.95%, Best Valid: 75.34%, Best Test: 74.00%
+Epoch: 1200, Loss: 0.0352, Train: 99.81%, Valid: 73.87%, Test: 73.42%, Best Valid: 75.34%, Best Test: 74.00%
+Epoch: 1300, Loss: 0.0358, Train: 99.89%, Valid: 74.23%, Test: 73.74%, Best Valid: 75.34%, Best Test: 74.00%
+Epoch: 1400, Loss: 0.0348, Train: 99.90%, Valid: 73.89%, Test: 73.60%, Best Valid: 75.34%, Best Test: 74.00%
+Epoch: 1500, Loss: 0.0353, Train: 99.79%, Valid: 73.89%, Test: 73.44%, Best Valid: 75.34%, Best Test: 74.00%
+Epoch: 1600, Loss: 0.0353, Train: 99.77%, Valid: 73.91%, Test: 73.88%, Best Valid: 75.34%, Best Test: 74.00%
+Epoch: 1700, Loss: 0.0326, Train: 99.93%, Valid: 74.17%, Test: 73.79%, Best Valid: 75.34%, Best Test: 74.00%
+Epoch: 1800, Loss: 0.0326, Train: 99.94%, Valid: 73.87%, Test: 73.42%, Best Valid: 75.34%, Best Test: 74.00%
+Epoch: 1900, Loss: 0.0337, Train: 99.87%, Valid: 73.86%, Test: 73.53%, Best Valid: 75.34%, Best Test: 74.00%
+Epoch: 2000, Loss: 0.0320, Train: 99.84%, Valid: 74.25%, Test: 73.97%, Best Valid: 75.34%, Best Test: 74.00%
+Epoch: 2100, Loss: 0.0316, Train: 99.88%, Valid: 74.03%, Test: 73.90%, Best Valid: 75.34%, Best Test: 74.00%
+Epoch: 2200, Loss: 0.0309, Train: 99.84%, Valid: 74.07%, Test: 73.60%, Best Valid: 75.34%, Best Test: 74.00%
+Epoch: 2300, Loss: 0.0319, Train: 99.77%, Valid: 74.14%, Test: 73.72%, Best Valid: 75.34%, Best Test: 74.00%
+Epoch: 2400, Loss: 0.0310, Train: 99.93%, Valid: 74.23%, Test: 73.86%, Best Valid: 75.34%, Best Test: 74.00%
+Run 01:
+Highest Train: 99.96
+Highest Valid: 75.34
+Highest Test: 74.55
+Chosen epoch: 138
+Final Train: 94.16
+Final Test: 74.00
+Epoch: 00, Loss: 2.9936, Train: 11.38%, Valid: 10.84%, Test: 11.82%, Best Valid: 10.84%, Best Test: 11.82%
+Epoch: 100, Loss: 0.4576, Train: 87.20%, Valid: 75.22%, Test: 74.55%, Best Valid: 75.23%, Best Test: 74.48%
+Epoch: 200, Loss: 0.1437, Train: 98.05%, Valid: 74.77%, Test: 74.81%, Best Valid: 75.64%, Best Test: 75.36%
+Epoch: 300, Loss: 0.0840, Train: 99.20%, Valid: 74.92%, Test: 74.92%, Best Valid: 75.64%, Best Test: 75.36%
+Epoch: 400, Loss: 0.0650, Train: 99.50%, Valid: 74.72%, Test: 74.25%, Best Valid: 75.64%, Best Test: 75.36%
+Epoch: 500, Loss: 0.0548, Train: 99.64%, Valid: 75.09%, Test: 74.46%, Best Valid: 75.64%, Best Test: 75.36%
+Epoch: 600, Loss: 0.0495, Train: 99.53%, Valid: 74.74%, Test: 73.99%, Best Valid: 75.64%, Best Test: 75.36%
+Epoch: 700, Loss: 0.0442, Train: 99.75%, Valid: 74.69%, Test: 73.93%, Best Valid: 75.64%, Best Test: 75.36%
+Epoch: 800, Loss: 0.0431, Train: 99.73%, Valid: 74.72%, Test: 74.14%, Best Valid: 75.64%, Best Test: 75.36%
+Epoch: 900, Loss: 0.0410, Train: 99.89%, Valid: 74.42%, Test: 74.11%, Best Valid: 75.64%, Best Test: 75.36%
+Epoch: 1000, Loss: 0.0395, Train: 99.81%, Valid: 74.95%, Test: 74.14%, Best Valid: 75.64%, Best Test: 75.36%
+Epoch: 1100, Loss: 0.0386, Train: 99.79%, Valid: 74.56%, Test: 73.84%, Best Valid: 75.64%, Best Test: 75.36%
+Epoch: 1200, Loss: 0.0374, Train: 99.86%, Valid: 74.63%, Test: 74.18%, Best Valid: 75.64%, Best Test: 75.36%
+Epoch: 1300, Loss: 0.0349, Train: 99.74%, Valid: 74.40%, Test: 73.93%, Best Valid: 75.64%, Best Test: 75.36%
+Epoch: 1400, Loss: 0.0363, Train: 99.81%, Valid: 74.26%, Test: 73.72%, Best Valid: 75.64%, Best Test: 75.36%
+Epoch: 1500, Loss: 0.0357, Train: 99.87%, Valid: 74.32%, Test: 74.23%, Best Valid: 75.64%, Best Test: 75.36%
+Epoch: 1600, Loss: 0.0337, Train: 99.92%, Valid: 74.00%, Test: 73.91%, Best Valid: 75.64%, Best Test: 75.36%
+Epoch: 1700, Loss: 0.0330, Train: 99.80%, Valid: 73.84%, Test: 73.91%, Best Valid: 75.64%, Best Test: 75.36%
+Epoch: 1800, Loss: 0.0335, Train: 99.85%, Valid: 74.44%, Test: 73.77%, Best Valid: 75.64%, Best Test: 75.36%
+Epoch: 1900, Loss: 0.0330, Train: 99.83%, Valid: 74.28%, Test: 73.90%, Best Valid: 75.64%, Best Test: 75.36%
+Epoch: 2000, Loss: 0.0325, Train: 99.89%, Valid: 73.91%, Test: 73.60%, Best Valid: 75.64%, Best Test: 75.36%
+Epoch: 2100, Loss: 0.0315, Train: 99.95%, Valid: 74.21%, Test: 73.60%, Best Valid: 75.64%, Best Test: 75.36%
+Epoch: 2200, Loss: 0.0326, Train: 99.81%, Valid: 73.86%, Test: 73.86%, Best Valid: 75.64%, Best Test: 75.36%
+Epoch: 2300, Loss: 0.0319, Train: 99.91%, Valid: 74.26%, Test: 73.81%, Best Valid: 75.64%, Best Test: 75.36%
+Epoch: 2400, Loss: 0.0308, Train: 99.91%, Valid: 74.02%, Test: 73.86%, Best Valid: 75.64%, Best Test: 75.36%
+Run 02:
+Highest Train: 99.99
+Highest Valid: 75.64
+Highest Test: 75.59
+Chosen epoch: 151
+Final Train: 95.13
+Final Test: 75.36
+Epoch: 00, Loss: 3.0332, Train: 14.97%, Valid: 15.36%, Test: 14.90%, Best Valid: 15.36%, Best Test: 14.90%
+Epoch: 100, Loss: 0.4632, Train: 87.34%, Valid: 74.44%, Test: 74.09%, Best Valid: 74.44%, Best Test: 74.09%
+Epoch: 200, Loss: 0.1453, Train: 98.20%, Valid: 74.70%, Test: 74.02%, Best Valid: 75.02%, Best Test: 74.51%
+Epoch: 300, Loss: 0.0850, Train: 99.13%, Valid: 74.09%, Test: 73.74%, Best Valid: 75.02%, Best Test: 74.51%
+Epoch: 400, Loss: 0.0639, Train: 99.50%, Valid: 73.91%, Test: 74.07%, Best Valid: 75.02%, Best Test: 74.51%
+Epoch: 500, Loss: 0.0518, Train: 99.70%, Valid: 73.91%, Test: 74.07%, Best Valid: 75.02%, Best Test: 74.51%
+Epoch: 600, Loss: 0.0473, Train: 99.62%, Valid: 73.77%, Test: 73.95%, Best Valid: 75.02%, Best Test: 74.51%
+Epoch: 700, Loss: 0.0449, Train: 99.66%, Valid: 74.16%, Test: 74.11%, Best Valid: 75.02%, Best Test: 74.51%
+Epoch: 800, Loss: 0.0431, Train: 99.78%, Valid: 73.84%, Test: 73.72%, Best Valid: 75.02%, Best Test: 74.51%
+Epoch: 900, Loss: 0.0397, Train: 99.77%, Valid: 73.89%, Test: 73.70%, Best Valid: 75.02%, Best Test: 74.51%
+Epoch: 1000, Loss: 0.0389, Train: 99.71%, Valid: 73.61%, Test: 73.61%, Best Valid: 75.02%, Best Test: 74.51%
+Epoch: 1100, Loss: 0.0369, Train: 99.89%, Valid: 73.45%, Test: 73.63%, Best Valid: 75.02%, Best Test: 74.51%
+Epoch: 1200, Loss: 0.0358, Train: 99.84%, Valid: 73.52%, Test: 73.77%, Best Valid: 75.02%, Best Test: 74.51%
+Epoch: 1300, Loss: 0.0346, Train: 99.84%, Valid: 73.73%, Test: 73.60%, Best Valid: 75.02%, Best Test: 74.51%
+Epoch: 1400, Loss: 0.0333, Train: 99.86%, Valid: 73.50%, Test: 73.31%, Best Valid: 75.02%, Best Test: 74.51%
+Epoch: 1500, Loss: 0.0340, Train: 99.82%, Valid: 73.57%, Test: 73.46%, Best Valid: 75.02%, Best Test: 74.51%
+Epoch: 1600, Loss: 0.0334, Train: 99.90%, Valid: 73.56%, Test: 73.37%, Best Valid: 75.02%, Best Test: 74.51%
+Epoch: 1700, Loss: 0.0345, Train: 99.89%, Valid: 73.27%, Test: 73.19%, Best Valid: 75.02%, Best Test: 74.51%
+Epoch: 1800, Loss: 0.0314, Train: 99.89%, Valid: 73.05%, Test: 73.12%, Best Valid: 75.02%, Best Test: 74.51%
+Epoch: 1900, Loss: 0.0320, Train: 99.82%, Valid: 73.15%, Test: 73.14%, Best Valid: 75.02%, Best Test: 74.51%
+Epoch: 2000, Loss: 0.0329, Train: 99.87%, Valid: 73.05%, Test: 73.46%, Best Valid: 75.02%, Best Test: 74.51%
+Epoch: 2100, Loss: 0.0301, Train: 99.89%, Valid: 73.24%, Test: 73.37%, Best Valid: 75.02%, Best Test: 74.51%
+Epoch: 2200, Loss: 0.0316, Train: 99.80%, Valid: 73.05%, Test: 73.61%, Best Valid: 75.02%, Best Test: 74.51%
+Epoch: 2300, Loss: 0.0308, Train: 99.89%, Valid: 73.15%, Test: 73.39%, Best Valid: 75.02%, Best Test: 74.51%
+Epoch: 2400, Loss: 0.0309, Train: 99.92%, Valid: 73.47%, Test: 73.40%, Best Valid: 75.02%, Best Test: 74.51%
+Run 03:
+Highest Train: 99.96
+Highest Valid: 75.02
+Highest Test: 74.73
+Chosen epoch: 152
+Final Train: 95.10
+Final Test: 74.51
+Epoch: 00, Loss: 3.0428, Train: 20.86%, Valid: 20.53%, Test: 20.49%, Best Valid: 20.53%, Best Test: 20.49%
+Epoch: 100, Loss: 0.4517, Train: 87.69%, Valid: 74.26%, Test: 74.44%, Best Valid: 74.32%, Best Test: 74.27%
+Epoch: 200, Loss: 0.1454, Train: 98.06%, Valid: 74.63%, Test: 74.78%, Best Valid: 75.04%, Best Test: 74.94%
+Epoch: 300, Loss: 0.0808, Train: 99.45%, Valid: 74.44%, Test: 74.62%, Best Valid: 75.04%, Best Test: 74.94%
+Epoch: 400, Loss: 0.0635, Train: 99.32%, Valid: 74.10%, Test: 74.23%, Best Valid: 75.04%, Best Test: 74.94%
+Epoch: 500, Loss: 0.0543, Train: 99.82%, Valid: 74.30%, Test: 74.43%, Best Valid: 75.04%, Best Test: 74.94%
+Epoch: 600, Loss: 0.0474, Train: 99.61%, Valid: 74.35%, Test: 73.95%, Best Valid: 75.04%, Best Test: 74.94%
+Epoch: 700, Loss: 0.0438, Train: 99.82%, Valid: 74.21%, Test: 74.16%, Best Valid: 75.04%, Best Test: 74.94%
+Epoch: 800, Loss: 0.0415, Train: 99.89%, Valid: 74.07%, Test: 73.99%, Best Valid: 75.04%, Best Test: 74.94%
+Epoch: 900, Loss: 0.0397, Train: 99.80%, Valid: 74.32%, Test: 73.81%, Best Valid: 75.04%, Best Test: 74.94%
+Epoch: 1000, Loss: 0.0400, Train: 99.79%, Valid: 74.07%, Test: 73.86%, Best Valid: 75.04%, Best Test: 74.94%
+Epoch: 1100, Loss: 0.0365, Train: 99.88%, Valid: 73.95%, Test: 73.97%, Best Valid: 75.04%, Best Test: 74.94%
+Epoch: 1200, Loss: 0.0364, Train: 99.94%, Valid: 73.57%, Test: 73.81%, Best Valid: 75.04%, Best Test: 74.94%
+Epoch: 1300, Loss: 0.0357, Train: 99.89%, Valid: 73.89%, Test: 74.07%, Best Valid: 75.04%, Best Test: 74.94%
+Epoch: 1400, Loss: 0.0346, Train: 99.85%, Valid: 73.95%, Test: 73.90%, Best Valid: 75.04%, Best Test: 74.94%
+Epoch: 1500, Loss: 0.0336, Train: 99.90%, Valid: 73.45%, Test: 73.95%, Best Valid: 75.04%, Best Test: 74.94%
+Epoch: 1600, Loss: 0.0318, Train: 99.95%, Valid: 73.95%, Test: 73.65%, Best Valid: 75.04%, Best Test: 74.94%
+Epoch: 1700, Loss: 0.0324, Train: 99.91%, Valid: 73.80%, Test: 73.74%, Best Valid: 75.04%, Best Test: 74.94%
+Epoch: 1800, Loss: 0.0316, Train: 99.92%, Valid: 73.72%, Test: 73.84%, Best Valid: 75.04%, Best Test: 74.94%
+Epoch: 1900, Loss: 0.0336, Train: 99.91%, Valid: 73.24%, Test: 73.46%, Best Valid: 75.04%, Best Test: 74.94%
+Epoch: 2000, Loss: 0.0325, Train: 99.96%, Valid: 73.72%, Test: 73.65%, Best Valid: 75.04%, Best Test: 74.94%
+Epoch: 2100, Loss: 0.0335, Train: 99.91%, Valid: 73.43%, Test: 73.47%, Best Valid: 75.04%, Best Test: 74.94%
+Epoch: 2200, Loss: 0.0321, Train: 99.93%, Valid: 73.54%, Test: 73.63%, Best Valid: 75.04%, Best Test: 74.94%
+Epoch: 2300, Loss: 0.0315, Train: 99.89%, Valid: 73.59%, Test: 73.31%, Best Valid: 75.04%, Best Test: 74.94%
+Epoch: 2400, Loss: 0.0311, Train: 99.89%, Valid: 73.66%, Test: 73.70%, Best Valid: 75.04%, Best Test: 74.94%
+Run 04:
+Highest Train: 99.98
+Highest Valid: 75.04
+Highest Test: 75.24
+Chosen epoch: 165
+Final Train: 95.96
+Final Test: 74.94
+Epoch: 00, Loss: 2.8839, Train: 28.33%, Valid: 27.86%, Test: 27.99%, Best Valid: 27.86%, Best Test: 27.99%
+Epoch: 100, Loss: 0.4471, Train: 87.57%, Valid: 73.86%, Test: 73.47%, Best Valid: 74.03%, Best Test: 73.61%
+Epoch: 200, Loss: 0.1439, Train: 98.11%, Valid: 74.74%, Test: 73.99%, Best Valid: 75.09%, Best Test: 73.76%
+Epoch: 300, Loss: 0.0781, Train: 99.33%, Valid: 74.33%, Test: 73.88%, Best Valid: 75.09%, Best Test: 73.76%
+Epoch: 400, Loss: 0.0585, Train: 99.56%, Valid: 74.19%, Test: 73.39%, Best Valid: 75.09%, Best Test: 73.76%
+Epoch: 500, Loss: 0.0509, Train: 99.77%, Valid: 74.14%, Test: 73.23%, Best Valid: 75.09%, Best Test: 73.76%
+Epoch: 600, Loss: 0.0484, Train: 99.66%, Valid: 73.98%, Test: 73.37%, Best Valid: 75.09%, Best Test: 73.76%
+Epoch: 700, Loss: 0.0431, Train: 99.79%, Valid: 73.89%, Test: 73.74%, Best Valid: 75.09%, Best Test: 73.76%
+Epoch: 800, Loss: 0.0409, Train: 99.88%, Valid: 73.95%, Test: 73.24%, Best Valid: 75.09%, Best Test: 73.76%
+Epoch: 900, Loss: 0.0388, Train: 99.86%, Valid: 73.87%, Test: 73.14%, Best Valid: 75.09%, Best Test: 73.76%
+Epoch: 1000, Loss: 0.0362, Train: 99.79%, Valid: 73.68%, Test: 73.09%, Best Valid: 75.09%, Best Test: 73.76%
+Epoch: 1100, Loss: 0.0375, Train: 99.86%, Valid: 73.70%, Test: 73.26%, Best Valid: 75.09%, Best Test: 73.76%
+Epoch: 1200, Loss: 0.0345, Train: 99.87%, Valid: 73.42%, Test: 73.12%, Best Valid: 75.09%, Best Test: 73.76%
+Epoch: 1300, Loss: 0.0352, Train: 99.84%, Valid: 73.29%, Test: 73.30%, Best Valid: 75.09%, Best Test: 73.76%
+Epoch: 1400, Loss: 0.0332, Train: 99.89%, Valid: 73.43%, Test: 72.82%, Best Valid: 75.09%, Best Test: 73.76%
+Epoch: 1500, Loss: 0.0327, Train: 99.89%, Valid: 73.80%, Test: 73.31%, Best Valid: 75.09%, Best Test: 73.76%
+Epoch: 1600, Loss: 0.0332, Train: 99.80%, Valid: 73.27%, Test: 73.30%, Best Valid: 75.09%, Best Test: 73.76%
+Epoch: 1700, Loss: 0.0332, Train: 99.86%, Valid: 73.56%, Test: 73.14%, Best Valid: 75.09%, Best Test: 73.76%
+Epoch: 1800, Loss: 0.0311, Train: 99.94%, Valid: 73.72%, Test: 73.23%, Best Valid: 75.09%, Best Test: 73.76%
+Epoch: 1900, Loss: 0.0324, Train: 99.90%, Valid: 73.35%, Test: 72.93%, Best Valid: 75.09%, Best Test: 73.76%
+Epoch: 2000, Loss: 0.0324, Train: 99.93%, Valid: 73.52%, Test: 73.03%, Best Valid: 75.09%, Best Test: 73.76%
+Epoch: 2100, Loss: 0.0310, Train: 99.89%, Valid: 73.43%, Test: 73.09%, Best Valid: 75.09%, Best Test: 73.76%
+Epoch: 2200, Loss: 0.0321, Train: 99.85%, Valid: 73.61%, Test: 72.87%, Best Valid: 75.09%, Best Test: 73.76%
+Epoch: 2300, Loss: 0.0311, Train: 99.94%, Valid: 73.70%, Test: 73.05%, Best Valid: 75.09%, Best Test: 73.76%
+Epoch: 2400, Loss: 0.0333, Train: 99.88%, Valid: 73.50%, Test: 72.29%, Best Valid: 75.09%, Best Test: 73.76%
+Run 05:
+Highest Train: 99.98
+Highest Valid: 75.09
+Highest Test: 74.20
+Chosen epoch: 186
+Final Train: 97.40
+Final Test: 73.76
+Epoch: 00, Loss: 2.9254, Train: 28.62%, Valid: 28.60%, Test: 28.47%, Best Valid: 28.60%, Best Test: 28.47%
+Epoch: 100, Loss: 0.4614, Train: 87.34%, Valid: 73.96%, Test: 75.57%, Best Valid: 74.02%, Best Test: 75.38%
+Epoch: 200, Loss: 0.1528, Train: 97.86%, Valid: 74.72%, Test: 75.43%, Best Valid: 74.97%, Best Test: 75.40%
+Epoch: 300, Loss: 0.0852, Train: 99.05%, Valid: 74.12%, Test: 74.66%, Best Valid: 74.97%, Best Test: 75.40%
+Epoch: 400, Loss: 0.0624, Train: 99.49%, Valid: 74.05%, Test: 74.69%, Best Valid: 74.97%, Best Test: 75.40%
+Epoch: 500, Loss: 0.0527, Train: 99.63%, Valid: 73.68%, Test: 74.23%, Best Valid: 74.97%, Best Test: 75.40%
+Epoch: 600, Loss: 0.0517, Train: 99.76%, Valid: 74.03%, Test: 75.04%, Best Valid: 74.97%, Best Test: 75.40%
+Epoch: 700, Loss: 0.0439, Train: 99.75%, Valid: 74.17%, Test: 74.87%, Best Valid: 74.97%, Best Test: 75.40%
+Epoch: 800, Loss: 0.0431, Train: 99.74%, Valid: 73.93%, Test: 74.59%, Best Valid: 74.97%, Best Test: 75.40%
+Epoch: 900, Loss: 0.0421, Train: 99.80%, Valid: 73.77%, Test: 74.80%, Best Valid: 74.97%, Best Test: 75.40%
+Epoch: 1000, Loss: 0.0399, Train: 99.77%, Valid: 73.61%, Test: 74.90%, Best Valid: 74.97%, Best Test: 75.40%
+Epoch: 1100, Loss: 0.0377, Train: 99.75%, Valid: 73.49%, Test: 75.06%, Best Valid: 74.97%, Best Test: 75.40%
+Epoch: 1200, Loss: 0.0372, Train: 99.93%, Valid: 73.47%, Test: 74.43%, Best Valid: 74.97%, Best Test: 75.40%
+Epoch: 1300, Loss: 0.0351, Train: 99.70%, Valid: 73.80%, Test: 74.51%, Best Valid: 74.97%, Best Test: 75.40%
+Epoch: 1400, Loss: 0.0345, Train: 99.87%, Valid: 73.40%, Test: 74.25%, Best Valid: 74.97%, Best Test: 75.40%
+Epoch: 1500, Loss: 0.0357, Train: 99.95%, Valid: 73.27%, Test: 74.57%, Best Valid: 74.97%, Best Test: 75.40%
+Epoch: 1600, Loss: 0.0354, Train: 99.88%, Valid: 72.92%, Test: 74.23%, Best Valid: 74.97%, Best Test: 75.40%
+Epoch: 1700, Loss: 0.0326, Train: 99.91%, Valid: 73.24%, Test: 74.21%, Best Valid: 74.97%, Best Test: 75.40%
+Epoch: 1800, Loss: 0.0328, Train: 99.80%, Valid: 73.40%, Test: 74.87%, Best Valid: 74.97%, Best Test: 75.40%
+Epoch: 1900, Loss: 0.0332, Train: 99.93%, Valid: 73.22%, Test: 74.44%, Best Valid: 74.97%, Best Test: 75.40%
+Epoch: 2000, Loss: 0.0334, Train: 99.91%, Valid: 73.54%, Test: 74.48%, Best Valid: 74.97%, Best Test: 75.40%
+Epoch: 2100, Loss: 0.0324, Train: 99.91%, Valid: 73.56%, Test: 74.44%, Best Valid: 74.97%, Best Test: 75.40%
+Epoch: 2200, Loss: 0.0332, Train: 99.88%, Valid: 73.56%, Test: 74.34%, Best Valid: 74.97%, Best Test: 75.40%
+Epoch: 2300, Loss: 0.0310, Train: 99.84%, Valid: 73.43%, Test: 74.29%, Best Valid: 74.97%, Best Test: 75.40%
+Epoch: 2400, Loss: 0.0328, Train: 99.95%, Valid: 73.40%, Test: 74.60%, Best Valid: 74.97%, Best Test: 75.40%
+Run 06:
+Highest Train: 99.96
+Highest Valid: 74.97
+Highest Test: 76.24
+Chosen epoch: 178
+Final Train: 96.70
+Final Test: 75.40
+Epoch: 00, Loss: 2.9480, Train: 12.73%, Valid: 12.53%, Test: 11.77%, Best Valid: 12.53%, Best Test: 11.77%
+Epoch: 100, Loss: 0.4381, Train: 87.91%, Valid: 73.91%, Test: 74.25%, Best Valid: 73.91%, Best Test: 74.06%
+Epoch: 200, Loss: 0.1462, Train: 97.99%, Valid: 74.63%, Test: 74.80%, Best Valid: 74.67%, Best Test: 74.73%
+Epoch: 300, Loss: 0.0832, Train: 98.97%, Valid: 74.05%, Test: 74.55%, Best Valid: 74.69%, Best Test: 74.60%
+Epoch: 400, Loss: 0.0619, Train: 99.43%, Valid: 74.16%, Test: 74.87%, Best Valid: 74.69%, Best Test: 74.60%
+Epoch: 500, Loss: 0.0538, Train: 99.58%, Valid: 74.12%, Test: 74.09%, Best Valid: 74.69%, Best Test: 74.60%
+Epoch: 600, Loss: 0.0528, Train: 99.78%, Valid: 73.73%, Test: 73.93%, Best Valid: 74.69%, Best Test: 74.60%
+Epoch: 700, Loss: 0.0452, Train: 99.66%, Valid: 74.21%, Test: 74.57%, Best Valid: 74.69%, Best Test: 74.60%
+Epoch: 800, Loss: 0.0443, Train: 99.70%, Valid: 73.87%, Test: 74.02%, Best Valid: 74.69%, Best Test: 74.60%
+Epoch: 900, Loss: 0.0432, Train: 99.81%, Valid: 73.59%, Test: 74.16%, Best Valid: 74.69%, Best Test: 74.60%
+Epoch: 1000, Loss: 0.0393, Train: 99.78%, Valid: 73.56%, Test: 74.36%, Best Valid: 74.69%, Best Test: 74.60%
+Epoch: 1100, Loss: 0.0375, Train: 99.80%, Valid: 73.35%, Test: 74.36%, Best Valid: 74.69%, Best Test: 74.60%
+Epoch: 1200, Loss: 0.0377, Train: 99.77%, Valid: 73.79%, Test: 73.95%, Best Valid: 74.69%, Best Test: 74.60%
+Epoch: 1300, Loss: 0.0372, Train: 99.80%, Valid: 73.63%, Test: 74.27%, Best Valid: 74.69%, Best Test: 74.60%
+Epoch: 1400, Loss: 0.0365, Train: 99.88%, Valid: 73.59%, Test: 74.09%, Best Valid: 74.69%, Best Test: 74.60%
+Epoch: 1500, Loss: 0.0350, Train: 99.88%, Valid: 73.77%, Test: 74.41%, Best Valid: 74.69%, Best Test: 74.60%
+Epoch: 1600, Loss: 0.0350, Train: 99.76%, Valid: 73.56%, Test: 74.14%, Best Valid: 74.69%, Best Test: 74.60%
+Epoch: 1700, Loss: 0.0337, Train: 99.83%, Valid: 73.61%, Test: 74.59%, Best Valid: 74.69%, Best Test: 74.60%
+Epoch: 1800, Loss: 0.0331, Train: 99.89%, Valid: 73.38%, Test: 74.11%, Best Valid: 74.69%, Best Test: 74.60%
+Epoch: 1900, Loss: 0.0325, Train: 99.74%, Valid: 73.65%, Test: 73.88%, Best Valid: 74.69%, Best Test: 74.60%
+Epoch: 2000, Loss: 0.0347, Train: 99.89%, Valid: 73.70%, Test: 74.07%, Best Valid: 74.69%, Best Test: 74.60%
+Epoch: 2100, Loss: 0.0321, Train: 99.74%, Valid: 73.35%, Test: 73.79%, Best Valid: 74.69%, Best Test: 74.60%
+Epoch: 2200, Loss: 0.0335, Train: 99.70%, Valid: 73.63%, Test: 73.79%, Best Valid: 74.69%, Best Test: 74.60%
+Epoch: 2300, Loss: 0.0317, Train: 99.85%, Valid: 73.63%, Test: 73.60%, Best Valid: 74.69%, Best Test: 74.60%
+Epoch: 2400, Loss: 0.0334, Train: 99.95%, Valid: 73.19%, Test: 73.76%, Best Valid: 74.69%, Best Test: 74.60%
+Run 07:
+Highest Train: 99.96
+Highest Valid: 74.69
+Highest Test: 75.19
+Chosen epoch: 231
+Final Train: 98.45
+Final Test: 74.60
+Epoch: 00, Loss: 2.9904, Train: 11.93%, Valid: 12.23%, Test: 11.19%, Best Valid: 12.23%, Best Test: 11.19%
+Epoch: 100, Loss: 0.4457, Train: 87.97%, Valid: 73.79%, Test: 74.83%, Best Valid: 73.91%, Best Test: 74.83%
+Epoch: 200, Loss: 0.1417, Train: 98.07%, Valid: 74.56%, Test: 75.08%, Best Valid: 75.16%, Best Test: 75.06%
+Epoch: 300, Loss: 0.0815, Train: 99.29%, Valid: 74.44%, Test: 74.81%, Best Valid: 75.16%, Best Test: 75.06%
+Epoch: 400, Loss: 0.0606, Train: 99.50%, Valid: 74.42%, Test: 74.76%, Best Valid: 75.16%, Best Test: 75.06%
+Epoch: 500, Loss: 0.0546, Train: 99.70%, Valid: 73.82%, Test: 74.36%, Best Valid: 75.16%, Best Test: 75.06%
+Epoch: 600, Loss: 0.0467, Train: 99.61%, Valid: 73.59%, Test: 74.66%, Best Valid: 75.16%, Best Test: 75.06%
+Epoch: 700, Loss: 0.0449, Train: 99.82%, Valid: 74.23%, Test: 74.73%, Best Valid: 75.16%, Best Test: 75.06%
+Epoch: 800, Loss: 0.0425, Train: 99.81%, Valid: 74.07%, Test: 74.80%, Best Valid: 75.16%, Best Test: 75.06%
+Epoch: 900, Loss: 0.0395, Train: 99.89%, Valid: 73.57%, Test: 74.50%, Best Valid: 75.16%, Best Test: 75.06%
+Epoch: 1000, Loss: 0.0388, Train: 99.75%, Valid: 74.12%, Test: 74.51%, Best Valid: 75.16%, Best Test: 75.06%
+Epoch: 1100, Loss: 0.0362, Train: 99.81%, Valid: 73.72%, Test: 74.06%, Best Valid: 75.16%, Best Test: 75.06%
+Epoch: 1200, Loss: 0.0371, Train: 99.78%, Valid: 74.03%, Test: 74.69%, Best Valid: 75.16%, Best Test: 75.06%
+Epoch: 1300, Loss: 0.0346, Train: 99.84%, Valid: 73.79%, Test: 74.69%, Best Valid: 75.16%, Best Test: 75.06%
+Epoch: 1400, Loss: 0.0355, Train: 99.77%, Valid: 73.82%, Test: 74.50%, Best Valid: 75.16%, Best Test: 75.06%
+Epoch: 1500, Loss: 0.0350, Train: 99.84%, Valid: 73.80%, Test: 74.37%, Best Valid: 75.16%, Best Test: 75.06%
+Epoch: 1600, Loss: 0.0346, Train: 99.92%, Valid: 73.40%, Test: 74.13%, Best Valid: 75.16%, Best Test: 75.06%
+Epoch: 1700, Loss: 0.0325, Train: 99.89%, Valid: 73.43%, Test: 73.93%, Best Valid: 75.16%, Best Test: 75.06%
+Epoch: 1800, Loss: 0.0320, Train: 99.92%, Valid: 73.43%, Test: 74.34%, Best Valid: 75.16%, Best Test: 75.06%
+Epoch: 1900, Loss: 0.0339, Train: 99.73%, Valid: 73.52%, Test: 74.44%, Best Valid: 75.16%, Best Test: 75.06%
+Epoch: 2000, Loss: 0.0308, Train: 99.92%, Valid: 73.31%, Test: 74.20%, Best Valid: 75.16%, Best Test: 75.06%
+Epoch: 2100, Loss: 0.0317, Train: 99.92%, Valid: 73.40%, Test: 74.16%, Best Valid: 75.16%, Best Test: 75.06%
+Epoch: 2200, Loss: 0.0323, Train: 99.89%, Valid: 73.87%, Test: 74.46%, Best Valid: 75.16%, Best Test: 75.06%
+Epoch: 2300, Loss: 0.0313, Train: 99.92%, Valid: 73.65%, Test: 74.25%, Best Valid: 75.16%, Best Test: 75.06%
+Epoch: 2400, Loss: 0.0329, Train: 99.67%, Valid: 73.40%, Test: 73.90%, Best Valid: 75.16%, Best Test: 75.06%
+Run 08:
+Highest Train: 99.97
+Highest Valid: 75.16
+Highest Test: 75.41
+Chosen epoch: 152
+Final Train: 95.45
+Final Test: 75.06
+Epoch: 00, Loss: 2.9278, Train: 21.48%, Valid: 22.19%, Test: 21.99%, Best Valid: 22.19%, Best Test: 21.99%
+Epoch: 100, Loss: 0.4395, Train: 87.32%, Valid: 74.26%, Test: 74.83%, Best Valid: 74.37%, Best Test: 74.81%
+Epoch: 200, Loss: 0.1413, Train: 97.95%, Valid: 74.14%, Test: 74.96%, Best Valid: 75.09%, Best Test: 75.61%
+Epoch: 300, Loss: 0.0804, Train: 99.25%, Valid: 73.80%, Test: 75.08%, Best Valid: 75.09%, Best Test: 75.61%
+Epoch: 400, Loss: 0.0638, Train: 99.59%, Valid: 74.03%, Test: 74.87%, Best Valid: 75.09%, Best Test: 75.61%
+Epoch: 500, Loss: 0.0522, Train: 99.69%, Valid: 74.03%, Test: 74.48%, Best Valid: 75.09%, Best Test: 75.61%
+Epoch: 600, Loss: 0.0484, Train: 99.80%, Valid: 74.03%, Test: 74.85%, Best Valid: 75.09%, Best Test: 75.61%
+Epoch: 700, Loss: 0.0458, Train: 99.91%, Valid: 73.93%, Test: 74.23%, Best Valid: 75.09%, Best Test: 75.61%
+Epoch: 800, Loss: 0.0433, Train: 99.71%, Valid: 73.84%, Test: 74.55%, Best Valid: 75.09%, Best Test: 75.61%
+Epoch: 900, Loss: 0.0389, Train: 99.85%, Valid: 74.00%, Test: 74.57%, Best Valid: 75.09%, Best Test: 75.61%
+Epoch: 1000, Loss: 0.0392, Train: 99.75%, Valid: 73.79%, Test: 74.43%, Best Valid: 75.09%, Best Test: 75.61%
+Epoch: 1100, Loss: 0.0379, Train: 99.74%, Valid: 73.73%, Test: 74.30%, Best Valid: 75.09%, Best Test: 75.61%
+Epoch: 1200, Loss: 0.0356, Train: 99.93%, Valid: 73.50%, Test: 74.18%, Best Valid: 75.09%, Best Test: 75.61%
+Epoch: 1300, Loss: 0.0371, Train: 99.81%, Valid: 73.95%, Test: 74.07%, Best Valid: 75.09%, Best Test: 75.61%
+Epoch: 1400, Loss: 0.0364, Train: 99.93%, Valid: 73.89%, Test: 74.43%, Best Valid: 75.09%, Best Test: 75.61%
+Epoch: 1500, Loss: 0.0338, Train: 99.91%, Valid: 73.84%, Test: 74.00%, Best Valid: 75.09%, Best Test: 75.61%
+Epoch: 1600, Loss: 0.0338, Train: 99.83%, Valid: 73.65%, Test: 74.09%, Best Valid: 75.09%, Best Test: 75.61%
+Epoch: 1700, Loss: 0.0354, Train: 99.90%, Valid: 73.66%, Test: 74.29%, Best Valid: 75.09%, Best Test: 75.61%
+Epoch: 1800, Loss: 0.0328, Train: 99.90%, Valid: 73.57%, Test: 74.41%, Best Valid: 75.09%, Best Test: 75.61%
+Epoch: 1900, Loss: 0.0330, Train: 99.93%, Valid: 73.47%, Test: 74.34%, Best Valid: 75.09%, Best Test: 75.61%
+Epoch: 2000, Loss: 0.0341, Train: 99.91%, Valid: 73.61%, Test: 74.18%, Best Valid: 75.09%, Best Test: 75.61%
+Epoch: 2100, Loss: 0.0314, Train: 99.88%, Valid: 73.66%, Test: 74.11%, Best Valid: 75.09%, Best Test: 75.61%
+Epoch: 2200, Loss: 0.0321, Train: 99.84%, Valid: 73.52%, Test: 74.16%, Best Valid: 75.09%, Best Test: 75.61%
+Epoch: 2300, Loss: 0.0319, Train: 99.86%, Valid: 73.42%, Test: 74.32%, Best Valid: 75.09%, Best Test: 75.61%
+Epoch: 2400, Loss: 0.0318, Train: 99.87%, Valid: 73.22%, Test: 74.23%, Best Valid: 75.09%, Best Test: 75.61%
+Run 09:
+Highest Train: 99.97
+Highest Valid: 75.09
+Highest Test: 75.82
+Chosen epoch: 148
+Final Train: 95.02
+Final Test: 75.61
+Epoch: 00, Loss: 2.9403, Train: 25.45%, Valid: 25.93%, Test: 25.31%, Best Valid: 25.93%, Best Test: 25.31%
+Epoch: 100, Loss: 0.4478, Train: 87.95%, Valid: 74.49%, Test: 72.91%, Best Valid: 74.72%, Best Test: 72.98%
+Epoch: 200, Loss: 0.1503, Train: 98.08%, Valid: 74.49%, Test: 73.35%, Best Valid: 74.88%, Best Test: 73.83%
+Epoch: 300, Loss: 0.0838, Train: 99.28%, Valid: 74.17%, Test: 73.35%, Best Valid: 74.95%, Best Test: 73.70%
+Epoch: 400, Loss: 0.0621, Train: 99.49%, Valid: 74.39%, Test: 73.33%, Best Valid: 74.95%, Best Test: 73.70%
+Epoch: 500, Loss: 0.0528, Train: 99.74%, Valid: 74.40%, Test: 73.39%, Best Valid: 74.95%, Best Test: 73.70%
+Epoch: 600, Loss: 0.0479, Train: 99.59%, Valid: 74.05%, Test: 73.44%, Best Valid: 74.95%, Best Test: 73.70%
+Epoch: 700, Loss: 0.0449, Train: 99.82%, Valid: 74.05%, Test: 73.14%, Best Valid: 74.95%, Best Test: 73.70%
+Epoch: 800, Loss: 0.0429, Train: 99.56%, Valid: 73.52%, Test: 72.93%, Best Valid: 74.95%, Best Test: 73.70%
+Epoch: 900, Loss: 0.0399, Train: 99.74%, Valid: 73.73%, Test: 73.07%, Best Valid: 74.95%, Best Test: 73.70%
+Epoch: 1000, Loss: 0.0377, Train: 99.88%, Valid: 73.61%, Test: 73.10%, Best Valid: 74.95%, Best Test: 73.70%
+Epoch: 1100, Loss: 0.0375, Train: 99.81%, Valid: 74.00%, Test: 72.75%, Best Valid: 74.95%, Best Test: 73.70%
+Epoch: 1200, Loss: 0.0345, Train: 99.82%, Valid: 73.33%, Test: 72.82%, Best Valid: 74.95%, Best Test: 73.70%
+Epoch: 1300, Loss: 0.0347, Train: 99.88%, Valid: 73.77%, Test: 72.66%, Best Valid: 74.95%, Best Test: 73.70%
+Epoch: 1400, Loss: 0.0364, Train: 99.74%, Valid: 73.95%, Test: 72.98%, Best Valid: 74.95%, Best Test: 73.70%
+Epoch: 1500, Loss: 0.0323, Train: 99.82%, Valid: 73.59%, Test: 72.63%, Best Valid: 74.95%, Best Test: 73.70%
+Epoch: 1600, Loss: 0.0336, Train: 99.84%, Valid: 74.02%, Test: 72.89%, Best Valid: 74.95%, Best Test: 73.70%
+Epoch: 1700, Loss: 0.0329, Train: 99.84%, Valid: 73.42%, Test: 72.61%, Best Valid: 74.95%, Best Test: 73.70%
+Epoch: 1800, Loss: 0.0339, Train: 99.80%, Valid: 73.66%, Test: 72.54%, Best Valid: 74.95%, Best Test: 73.70%
+Epoch: 1900, Loss: 0.0325, Train: 99.83%, Valid: 73.35%, Test: 72.94%, Best Valid: 74.95%, Best Test: 73.70%
+Epoch: 2000, Loss: 0.0325, Train: 99.89%, Valid: 73.63%, Test: 72.86%, Best Valid: 74.95%, Best Test: 73.70%
+Epoch: 2100, Loss: 0.0328, Train: 99.88%, Valid: 73.82%, Test: 72.64%, Best Valid: 74.95%, Best Test: 73.70%
+Epoch: 2200, Loss: 0.0310, Train: 99.91%, Valid: 73.98%, Test: 73.31%, Best Valid: 74.95%, Best Test: 73.70%
+Epoch: 2300, Loss: 0.0322, Train: 99.80%, Valid: 73.42%, Test: 72.54%, Best Valid: 74.95%, Best Test: 73.70%
+Epoch: 2400, Loss: 0.0327, Train: 99.90%, Valid: 73.77%, Test: 73.05%, Best Valid: 74.95%, Best Test: 73.70%
+Run 10:
+Highest Train: 99.96
+Highest Valid: 74.95
+Highest Test: 73.93
+Chosen epoch: 219
+Final Train: 98.53
+Final Test: 73.70
+All runs:
+Highest Train: 99.97 ± 0.01
+Highest Test: 75.09 ± 0.73
+Highest Valid: 75.10 ± 0.25
+  Final Train: 96.19 ± 1.52
+   Final Test: 74.69 ± 0.70
+Saving results to results_tuned/roman-empire/sgformer.csv
+Confirmed: sgformer / roman-empire

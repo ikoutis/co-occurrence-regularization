@@ -1,0 +1,1080 @@
+Fri Jul 17 22:23:21 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.159.04             Driver Version: 580.159.04     CUDA Version: 13.0     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA A100-SXM4-80GB          On  |   00000000:01:00.0 Off |                   On |
+| N/A   39C    P0            152W /  500W |    9956MiB /  81920MiB |     N/A      Default |
+|                                         |                        |              Enabled |
++-----------------------------------------+------------------------+----------------------+
+|   1  NVIDIA A100-SXM4-80GB          On  |   00000000:41:00.0 Off |                   On |
+| N/A   29C    P0             48W /  500W |     249MiB /  81920MiB |     N/A      Default |
+|                                         |                        |              Enabled |
++-----------------------------------------+------------------------+----------------------+
+|   2  NVIDIA A100-SXM4-80GB          On  |   00000000:81:00.0 Off |                   On |
+| N/A   34C    P0             78W /  500W |    2120MiB /  81920MiB |     N/A      Default |
+|                                         |                        |              Enabled |
++-----------------------------------------+------------------------+----------------------+
+|   3  NVIDIA A100-SXM4-80GB          On  |   00000000:C1:00.0 Off |                   On |
+| N/A   36C    P0            144W /  500W |    5284MiB /  81920MiB |     N/A      Default |
+|                                         |                        |              Enabled |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| MIG devices:                                                                            |
++------------------+----------------------------------+-----------+-----------------------+
+| GPU  GI  CI  MIG |              Shared Memory-Usage |        Vol|        Shared         |
+|      ID  ID  Dev |                Shared BAR1-Usage | SM     Unc| CE ENC  DEC  OFA  JPG |
+|                  |                                  |        ECC|                       |
+|==================+==================================+===========+=======================|
+|  1    3   0   0  |              71MiB / 19968MiB    | 28      0 |  2   0    1    0    0 |
+|                  |               0MiB / 12271MiB    |           |                       |
++------------------+----------------------------------+-----------+-----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0    9    0           388926      C   ...ftware/ase-new-env/bin/python       1888MiB |
+|    0    3    0          1381101      C   python                                 7804MiB |
+|    2   10    0           387029      C   ...ftware/ase-new-env/bin/python       1864MiB |
+|    3   13    0           387031      C   ...ftware/ase-new-env/bin/python       1968MiB |
+|    3   14    0           388928      C   ...ftware/ase-new-env/bin/python       1694MiB |
+|    3    5    0          1450905      C   python                                 1350MiB |
++-----------------------------------------------------------------------------------------+
+run_gnn.sh contains 42 commands
+python main.py --gnn gcn --dataset pubmed --lr 0.005 --local_layers 2 --hidden_channels 256 --weight_decay 5e-4 --dropout 0.7 --rand_split_class --valid_num 500 --test_num 1000 --seed 123 --device 0 --runs 5 --runs 10
+==========================================================
+Condition sweep: python main.py --gnn gcn --dataset pubmed --lr 0.005 --local_layers 2 --hidden_channels 256 --weight_decay 5e-4 --dropout 0.7 --rand_split_class --valid_num 500 --test_num 1000 --seed 123 --device 0 --runs 5 --runs 10
+result_dir=results/unified transforms=[none] oracle=0 baseline=1
+==========================================================
+--- baseline (no reg) ---
+Namespace(bn=False, cpu=False, data_dir='./data/', dataset='pubmed', device=0, display_step=100, dropout=0.7, epochs=500, gnn='gcn', hidden_channels=256, jk=False, label_num_per_class=20, lambda_val=0.5, ln=False, local_layers=2, lr=0.005, metric='acc', mlp_epochs=500, mlp_reg=False, model='MPNN', model_dir='models', num_heads=1, oracle_reg=False, paired_seeds=True, penalty_transform='none', pre_linear=False, pre_ln=False, rand_split=False, rand_split_class=True, reg_start_epoch=10, reg_update_freq=5, res=False, result_dir='results/unified', runs=10, save_model=False, seed=123, test_num=1000, train_prop=0.5, use_reg=False, valid_num=500, valid_prop=0.25, weight_decay=0.0005)
+pubmed
+Num nodes: 19717
+train:torch.Size([60]), valid:torch.Size([500]), test:torch.Size([1000])
+dataset pubmed | num nodes 19717 | num edge 88648 | num node feats 500 | num classes 3
+MODEL: MPNNs(
+  (h_lins): ModuleList()
+  (local_convs): ModuleList(
+    (0): GCNConv(500, 256)
+    (1): GCNConv(256, 256)
+  )
+  (lins): ModuleList(
+    (0): Linear(in_features=500, out_features=256, bias=True)
+    (1): Linear(in_features=256, out_features=256, bias=True)
+  )
+  (lns): ModuleList(
+    (0): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+    (1): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+  )
+  (bns): ModuleList(
+    (0): BatchNorm1d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (1): BatchNorm1d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (lin_in): Linear(in_features=500, out_features=256, bias=True)
+  (pred_local): Linear(in_features=256, out_features=3, bias=True)
+)
+Epoch: 00, Loss: 1.0998, Train: 33.33%, Valid: 41.80%, Test: 38.80%, Best Valid: 41.80%, Best Test: 38.80%
+Epoch: 100, Loss: 0.0197, Train: 100.00%, Valid: 75.60%, Test: 78.50%, Best Valid: 79.60%, Best Test: 81.70%
+Epoch: 200, Loss: 0.0178, Train: 100.00%, Valid: 74.80%, Test: 76.70%, Best Valid: 79.60%, Best Test: 81.70%
+Epoch: 300, Loss: 0.0146, Train: 100.00%, Valid: 74.40%, Test: 78.00%, Best Valid: 79.60%, Best Test: 81.70%
+Epoch: 400, Loss: 0.0102, Train: 100.00%, Valid: 73.20%, Test: 77.10%, Best Valid: 79.60%, Best Test: 81.70%
+Run 01:
+Highest Train: 100.00
+Highest Valid: 79.60
+Highest Test: 81.70
+Chosen epoch: 24
+Final Train: 100.00
+Final Test: 81.70
+Epoch: 00, Loss: 1.0989, Train: 65.00%, Valid: 54.40%, Test: 49.60%, Best Valid: 54.40%, Best Test: 49.60%
+Epoch: 100, Loss: 0.0125, Train: 100.00%, Valid: 76.40%, Test: 78.90%, Best Valid: 79.00%, Best Test: 81.10%
+Epoch: 200, Loss: 0.0087, Train: 100.00%, Valid: 75.60%, Test: 78.20%, Best Valid: 79.00%, Best Test: 81.10%
+Epoch: 300, Loss: 0.0123, Train: 100.00%, Valid: 73.60%, Test: 76.50%, Best Valid: 79.00%, Best Test: 81.10%
+Epoch: 400, Loss: 0.0085, Train: 100.00%, Valid: 75.20%, Test: 78.30%, Best Valid: 79.00%, Best Test: 81.10%
+Run 02:
+Highest Train: 100.00
+Highest Valid: 79.00
+Highest Test: 81.50
+Chosen epoch: 27
+Final Train: 100.00
+Final Test: 81.10
+Epoch: 00, Loss: 1.0990, Train: 50.00%, Valid: 51.20%, Test: 50.40%, Best Valid: 51.20%, Best Test: 50.40%
+Epoch: 100, Loss: 0.0100, Train: 100.00%, Valid: 75.80%, Test: 78.90%, Best Valid: 80.60%, Best Test: 81.40%
+Epoch: 200, Loss: 0.0101, Train: 100.00%, Valid: 76.80%, Test: 78.20%, Best Valid: 80.60%, Best Test: 81.40%
+Epoch: 300, Loss: 0.0084, Train: 100.00%, Valid: 76.20%, Test: 76.90%, Best Valid: 80.60%, Best Test: 81.40%
+Epoch: 400, Loss: 0.0113, Train: 100.00%, Valid: 73.60%, Test: 76.70%, Best Valid: 80.60%, Best Test: 81.40%
+Run 03:
+Highest Train: 100.00
+Highest Valid: 80.60
+Highest Test: 81.50
+Chosen epoch: 21
+Final Train: 100.00
+Final Test: 81.40
+Epoch: 00, Loss: 1.0998, Train: 33.33%, Valid: 23.20%, Test: 21.50%, Best Valid: 23.20%, Best Test: 21.50%
+Epoch: 100, Loss: 0.0156, Train: 100.00%, Valid: 74.80%, Test: 77.80%, Best Valid: 79.00%, Best Test: 79.10%
+Epoch: 200, Loss: 0.0121, Train: 100.00%, Valid: 75.80%, Test: 77.60%, Best Valid: 79.00%, Best Test: 79.10%
+Epoch: 300, Loss: 0.0064, Train: 100.00%, Valid: 74.00%, Test: 75.60%, Best Valid: 79.00%, Best Test: 79.10%
+Epoch: 400, Loss: 0.0155, Train: 100.00%, Valid: 74.40%, Test: 76.50%, Best Valid: 79.00%, Best Test: 79.10%
+Run 04:
+Highest Train: 100.00
+Highest Valid: 79.00
+Highest Test: 79.40
+Chosen epoch: 31
+Final Train: 100.00
+Final Test: 79.10
+Epoch: 00, Loss: 1.1004, Train: 33.33%, Valid: 35.00%, Test: 39.70%, Best Valid: 35.00%, Best Test: 39.70%
+Epoch: 100, Loss: 0.0166, Train: 100.00%, Valid: 75.20%, Test: 77.30%, Best Valid: 79.20%, Best Test: 79.80%
+Epoch: 200, Loss: 0.0087, Train: 100.00%, Valid: 75.60%, Test: 77.70%, Best Valid: 79.20%, Best Test: 79.80%
+Epoch: 300, Loss: 0.0084, Train: 100.00%, Valid: 73.60%, Test: 75.40%, Best Valid: 79.20%, Best Test: 79.80%
+Epoch: 400, Loss: 0.0080, Train: 100.00%, Valid: 75.20%, Test: 77.80%, Best Valid: 79.20%, Best Test: 79.80%
+Run 05:
+Highest Train: 100.00
+Highest Valid: 79.20
+Highest Test: 80.30
+Chosen epoch: 40
+Final Train: 100.00
+Final Test: 79.80
+Epoch: 00, Loss: 1.0993, Train: 33.33%, Valid: 23.20%, Test: 21.50%, Best Valid: 23.20%, Best Test: 21.50%
+Epoch: 100, Loss: 0.0151, Train: 100.00%, Valid: 75.00%, Test: 78.10%, Best Valid: 80.20%, Best Test: 80.80%
+Epoch: 200, Loss: 0.0103, Train: 100.00%, Valid: 75.20%, Test: 78.30%, Best Valid: 80.20%, Best Test: 80.80%
+Epoch: 300, Loss: 0.0143, Train: 100.00%, Valid: 75.60%, Test: 76.50%, Best Valid: 80.20%, Best Test: 80.80%
+Epoch: 400, Loss: 0.0101, Train: 100.00%, Valid: 75.40%, Test: 77.50%, Best Valid: 80.20%, Best Test: 80.80%
+Run 06:
+Highest Train: 100.00
+Highest Valid: 80.20
+Highest Test: 81.30
+Chosen epoch: 23
+Final Train: 100.00
+Final Test: 80.80
+Epoch: 00, Loss: 1.0987, Train: 35.00%, Valid: 24.00%, Test: 23.20%, Best Valid: 24.00%, Best Test: 23.20%
+Epoch: 100, Loss: 0.0197, Train: 100.00%, Valid: 78.20%, Test: 79.30%, Best Valid: 79.00%, Best Test: 78.10%
+Epoch: 200, Loss: 0.0160, Train: 100.00%, Valid: 74.40%, Test: 77.30%, Best Valid: 79.00%, Best Test: 78.10%
+Epoch: 300, Loss: 0.0207, Train: 100.00%, Valid: 74.80%, Test: 77.60%, Best Valid: 79.00%, Best Test: 78.10%
+Epoch: 400, Loss: 0.0102, Train: 100.00%, Valid: 73.80%, Test: 77.70%, Best Valid: 79.00%, Best Test: 78.10%
+Run 07:
+Highest Train: 100.00
+Highest Valid: 79.00
+Highest Test: 81.10
+Chosen epoch: 57
+Final Train: 100.00
+Final Test: 78.10
+Epoch: 00, Loss: 1.0995, Train: 33.33%, Valid: 41.60%, Test: 38.80%, Best Valid: 41.60%, Best Test: 38.80%
+Epoch: 100, Loss: 0.0202, Train: 100.00%, Valid: 77.20%, Test: 78.00%, Best Valid: 79.40%, Best Test: 79.90%
+Epoch: 200, Loss: 0.0163, Train: 100.00%, Valid: 74.20%, Test: 77.30%, Best Valid: 79.40%, Best Test: 79.90%
+Epoch: 300, Loss: 0.0090, Train: 100.00%, Valid: 75.00%, Test: 78.40%, Best Valid: 79.40%, Best Test: 79.90%
+Epoch: 400, Loss: 0.0084, Train: 100.00%, Valid: 74.40%, Test: 77.20%, Best Valid: 79.40%, Best Test: 79.90%
+Run 08:
+Highest Train: 100.00
+Highest Valid: 79.40
+Highest Test: 80.10
+Chosen epoch: 35
+Final Train: 100.00
+Final Test: 79.90
+Epoch: 00, Loss: 1.0983, Train: 33.33%, Valid: 35.00%, Test: 39.80%, Best Valid: 35.00%, Best Test: 39.80%
+Epoch: 100, Loss: 0.0216, Train: 100.00%, Valid: 76.20%, Test: 78.60%, Best Valid: 79.60%, Best Test: 80.00%
+Epoch: 200, Loss: 0.0146, Train: 100.00%, Valid: 77.20%, Test: 78.00%, Best Valid: 79.60%, Best Test: 80.00%
+Epoch: 300, Loss: 0.0098, Train: 100.00%, Valid: 75.80%, Test: 78.20%, Best Valid: 79.60%, Best Test: 80.00%
+Epoch: 400, Loss: 0.0085, Train: 100.00%, Valid: 73.60%, Test: 77.50%, Best Valid: 79.60%, Best Test: 80.00%
+Run 09:
+Highest Train: 100.00
+Highest Valid: 79.60
+Highest Test: 80.90
+Chosen epoch: 25
+Final Train: 100.00
+Final Test: 80.00
+Epoch: 00, Loss: 1.1000, Train: 33.33%, Valid: 35.00%, Test: 39.70%, Best Valid: 35.00%, Best Test: 39.70%
+Epoch: 100, Loss: 0.0147, Train: 100.00%, Valid: 75.80%, Test: 77.30%, Best Valid: 79.40%, Best Test: 79.50%
+Epoch: 200, Loss: 0.0094, Train: 100.00%, Valid: 75.20%, Test: 77.70%, Best Valid: 79.40%, Best Test: 79.50%
+Epoch: 300, Loss: 0.0076, Train: 100.00%, Valid: 75.40%, Test: 78.00%, Best Valid: 79.40%, Best Test: 79.50%
+Epoch: 400, Loss: 0.0106, Train: 100.00%, Valid: 74.60%, Test: 75.10%, Best Valid: 79.40%, Best Test: 79.50%
+Run 10:
+Highest Train: 100.00
+Highest Valid: 79.40
+Highest Test: 82.40
+Chosen epoch: 24
+Final Train: 100.00
+Final Test: 79.50
+All runs:
+Highest Train: 100.00 ± 0.00
+Highest Test: 81.02 ± 0.88
+Highest Valid: 79.50 ± 0.54
+  Final Train: 100.00 ± 0.00
+   Final Test: 80.14 ± 1.12
+Saving results to results/unified/pubmed/MPNN_gcn.csv
+--- mlp_reg | transform=none | lambda=0.01 | mlp_epochs=500 ---
+Namespace(bn=False, cpu=False, data_dir='./data/', dataset='pubmed', device=0, display_step=100, dropout=0.7, epochs=500, gnn='gcn', hidden_channels=256, jk=False, label_num_per_class=20, lambda_val=0.01, ln=False, local_layers=2, lr=0.005, metric='acc', mlp_epochs=500, mlp_reg=True, model='MPNN', model_dir='models', num_heads=1, oracle_reg=False, paired_seeds=True, penalty_transform='none', pre_linear=False, pre_ln=False, rand_split=False, rand_split_class=True, reg_start_epoch=10, reg_update_freq=5, res=False, result_dir='results/unified', runs=10, save_model=False, seed=123, test_num=1000, train_prop=0.5, use_reg=True, valid_num=500, valid_prop=0.25, weight_decay=0.0005)
+pubmed
+Num nodes: 19717
+train:torch.Size([60]), valid:torch.Size([500]), test:torch.Size([1000])
+dataset pubmed | num nodes 19717 | num edge 88648 | num node feats 500 | num classes 3
+MODEL: MPNNs(
+  (h_lins): ModuleList()
+  (local_convs): ModuleList(
+    (0): GCNConv(500, 256)
+    (1): GCNConv(256, 256)
+  )
+  (lins): ModuleList(
+    (0): Linear(in_features=500, out_features=256, bias=True)
+    (1): Linear(in_features=256, out_features=256, bias=True)
+  )
+  (lns): ModuleList(
+    (0): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+    (1): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+  )
+  (bns): ModuleList(
+    (0): BatchNorm1d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (1): BatchNorm1d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (lin_in): Linear(in_features=500, out_features=256, bias=True)
+  (pred_local): Linear(in_features=256, out_features=3, bias=True)
+)
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.1108, Train: 33.33%, Valid: 41.80%, Test: 38.80%, Best Valid: 41.80%, Best Test: 38.80%
+Epoch: 100, Loss: 0.0201, Train: 100.00%, Valid: 75.60%, Test: 78.50%, Best Valid: 79.80%, Best Test: 81.60%
+Epoch: 200, Loss: 0.0186, Train: 100.00%, Valid: 73.40%, Test: 77.50%, Best Valid: 79.80%, Best Test: 81.60%
+Epoch: 300, Loss: 0.0184, Train: 100.00%, Valid: 75.60%, Test: 77.80%, Best Valid: 79.80%, Best Test: 81.60%
+Epoch: 400, Loss: 0.0129, Train: 100.00%, Valid: 73.40%, Test: 77.00%, Best Valid: 79.80%, Best Test: 81.60%
+Run 01:
+Highest Train: 100.00
+Highest Valid: 79.80
+Highest Test: 81.90
+Chosen epoch: 24
+Final Train: 100.00
+Final Test: 81.60
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.1099, Train: 65.00%, Valid: 55.20%, Test: 50.90%, Best Valid: 55.20%, Best Test: 50.90%
+Epoch: 100, Loss: 0.0122, Train: 100.00%, Valid: 76.40%, Test: 79.10%, Best Valid: 79.20%, Best Test: 80.30%
+Epoch: 200, Loss: 0.0084, Train: 100.00%, Valid: 75.60%, Test: 78.10%, Best Valid: 79.20%, Best Test: 80.30%
+Epoch: 300, Loss: 0.0100, Train: 100.00%, Valid: 74.80%, Test: 78.30%, Best Valid: 79.20%, Best Test: 80.30%
+Epoch: 400, Loss: 0.0086, Train: 100.00%, Valid: 76.20%, Test: 78.10%, Best Valid: 79.20%, Best Test: 80.30%
+Run 02:
+Highest Train: 100.00
+Highest Valid: 79.20
+Highest Test: 81.50
+Chosen epoch: 30
+Final Train: 100.00
+Final Test: 80.30
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.1100, Train: 50.00%, Valid: 51.40%, Test: 51.00%, Best Valid: 51.40%, Best Test: 51.00%
+Epoch: 100, Loss: 0.0105, Train: 100.00%, Valid: 75.80%, Test: 78.30%, Best Valid: 80.60%, Best Test: 81.40%
+Epoch: 200, Loss: 0.0099, Train: 100.00%, Valid: 76.20%, Test: 78.30%, Best Valid: 80.60%, Best Test: 81.40%
+Epoch: 300, Loss: 0.0080, Train: 100.00%, Valid: 76.00%, Test: 76.70%, Best Valid: 80.60%, Best Test: 81.40%
+Epoch: 400, Loss: 0.0113, Train: 100.00%, Valid: 73.60%, Test: 77.10%, Best Valid: 80.60%, Best Test: 81.40%
+Run 03:
+Highest Train: 100.00
+Highest Valid: 80.60
+Highest Test: 81.50
+Chosen epoch: 20
+Final Train: 98.33
+Final Test: 81.40
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.1108, Train: 33.33%, Valid: 23.20%, Test: 21.50%, Best Valid: 23.20%, Best Test: 21.50%
+Epoch: 100, Loss: 0.0138, Train: 100.00%, Valid: 74.60%, Test: 78.20%, Best Valid: 79.20%, Best Test: 79.00%
+Epoch: 200, Loss: 0.0125, Train: 100.00%, Valid: 75.20%, Test: 77.90%, Best Valid: 79.20%, Best Test: 79.00%
+Epoch: 300, Loss: 0.0058, Train: 100.00%, Valid: 73.60%, Test: 75.50%, Best Valid: 79.20%, Best Test: 79.00%
+Epoch: 400, Loss: 0.0178, Train: 100.00%, Valid: 74.60%, Test: 76.30%, Best Valid: 79.20%, Best Test: 79.00%
+Run 04:
+Highest Train: 100.00
+Highest Valid: 79.20
+Highest Test: 79.50
+Chosen epoch: 31
+Final Train: 100.00
+Final Test: 79.00
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.1114, Train: 33.33%, Valid: 35.00%, Test: 39.70%, Best Valid: 35.00%, Best Test: 39.70%
+Epoch: 100, Loss: 0.0171, Train: 100.00%, Valid: 75.00%, Test: 77.40%, Best Valid: 79.20%, Best Test: 79.70%
+Epoch: 200, Loss: 0.0079, Train: 100.00%, Valid: 76.20%, Test: 77.40%, Best Valid: 79.20%, Best Test: 79.70%
+Epoch: 300, Loss: 0.0084, Train: 100.00%, Valid: 74.00%, Test: 75.50%, Best Valid: 79.20%, Best Test: 79.70%
+Epoch: 400, Loss: 0.0082, Train: 100.00%, Valid: 73.80%, Test: 77.90%, Best Valid: 79.20%, Best Test: 79.70%
+Run 05:
+Highest Train: 100.00
+Highest Valid: 79.20
+Highest Test: 80.00
+Chosen epoch: 40
+Final Train: 100.00
+Final Test: 79.70
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.1103, Train: 33.33%, Valid: 23.20%, Test: 21.50%, Best Valid: 23.20%, Best Test: 21.50%
+Epoch: 100, Loss: 0.0133, Train: 100.00%, Valid: 75.80%, Test: 77.90%, Best Valid: 79.80%, Best Test: 81.10%
+Epoch: 200, Loss: 0.0125, Train: 100.00%, Valid: 75.80%, Test: 78.70%, Best Valid: 79.80%, Best Test: 81.10%
+Epoch: 300, Loss: 0.0179, Train: 100.00%, Valid: 75.60%, Test: 76.50%, Best Valid: 79.80%, Best Test: 81.10%
+Epoch: 400, Loss: 0.0078, Train: 100.00%, Valid: 74.40%, Test: 77.80%, Best Valid: 79.80%, Best Test: 81.10%
+Run 06:
+Highest Train: 100.00
+Highest Valid: 79.80
+Highest Test: 81.40
+Chosen epoch: 23
+Final Train: 100.00
+Final Test: 81.10
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.1097, Train: 35.00%, Valid: 23.80%, Test: 23.20%, Best Valid: 23.80%, Best Test: 23.20%
+Epoch: 100, Loss: 0.0199, Train: 100.00%, Valid: 77.80%, Test: 79.30%, Best Valid: 79.40%, Best Test: 79.20%
+Epoch: 200, Loss: 0.0207, Train: 100.00%, Valid: 74.00%, Test: 77.50%, Best Valid: 79.40%, Best Test: 79.20%
+Epoch: 300, Loss: 0.0191, Train: 100.00%, Valid: 75.20%, Test: 77.90%, Best Valid: 79.40%, Best Test: 79.20%
+Epoch: 400, Loss: 0.0090, Train: 100.00%, Valid: 73.40%, Test: 76.30%, Best Valid: 79.40%, Best Test: 79.20%
+Run 07:
+Highest Train: 100.00
+Highest Valid: 79.40
+Highest Test: 81.00
+Chosen epoch: 44
+Final Train: 100.00
+Final Test: 79.20
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.1105, Train: 33.33%, Valid: 41.60%, Test: 38.80%, Best Valid: 41.60%, Best Test: 38.80%
+Epoch: 100, Loss: 0.0199, Train: 100.00%, Valid: 76.20%, Test: 78.20%, Best Valid: 79.40%, Best Test: 79.90%
+Epoch: 200, Loss: 0.0171, Train: 100.00%, Valid: 74.80%, Test: 78.40%, Best Valid: 79.40%, Best Test: 79.90%
+Epoch: 300, Loss: 0.0099, Train: 100.00%, Valid: 74.80%, Test: 77.60%, Best Valid: 79.40%, Best Test: 79.90%
+Epoch: 400, Loss: 0.0099, Train: 100.00%, Valid: 74.00%, Test: 78.20%, Best Valid: 79.40%, Best Test: 79.90%
+Run 08:
+Highest Train: 100.00
+Highest Valid: 79.40
+Highest Test: 80.20
+Chosen epoch: 35
+Final Train: 100.00
+Final Test: 79.90
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.1093, Train: 33.33%, Valid: 35.00%, Test: 39.70%, Best Valid: 35.00%, Best Test: 39.70%
+Epoch: 100, Loss: 0.0225, Train: 100.00%, Valid: 76.00%, Test: 78.30%, Best Valid: 79.60%, Best Test: 80.10%
+Epoch: 200, Loss: 0.0142, Train: 100.00%, Valid: 77.80%, Test: 79.20%, Best Valid: 79.60%, Best Test: 80.10%
+Epoch: 300, Loss: 0.0105, Train: 100.00%, Valid: 75.40%, Test: 77.90%, Best Valid: 79.60%, Best Test: 80.10%
+Epoch: 400, Loss: 0.0083, Train: 100.00%, Valid: 73.80%, Test: 77.40%, Best Valid: 79.60%, Best Test: 80.10%
+Run 09:
+Highest Train: 100.00
+Highest Valid: 79.60
+Highest Test: 80.90
+Chosen epoch: 25
+Final Train: 100.00
+Final Test: 80.10
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.1110, Train: 33.33%, Valid: 35.00%, Test: 39.70%, Best Valid: 35.00%, Best Test: 39.70%
+Epoch: 100, Loss: 0.0151, Train: 100.00%, Valid: 75.80%, Test: 77.20%, Best Valid: 79.60%, Best Test: 80.70%
+Epoch: 200, Loss: 0.0095, Train: 100.00%, Valid: 76.00%, Test: 77.80%, Best Valid: 79.60%, Best Test: 80.70%
+Epoch: 300, Loss: 0.0082, Train: 100.00%, Valid: 75.60%, Test: 77.90%, Best Valid: 79.60%, Best Test: 80.70%
+Epoch: 400, Loss: 0.0093, Train: 100.00%, Valid: 73.60%, Test: 75.10%, Best Valid: 79.60%, Best Test: 80.70%
+Run 10:
+Highest Train: 100.00
+Highest Valid: 79.60
+Highest Test: 82.50
+Chosen epoch: 23
+Final Train: 100.00
+Final Test: 80.70
+All runs:
+Highest Train: 100.00 ± 0.00
+Highest Test: 81.04 ± 0.92
+Highest Valid: 79.58 ± 0.43
+  Final Train: 99.83 ± 0.53
+   Final Test: 80.30 ± 0.89
+Saving results to results/unified/pubmed/MPNN_gcn.csv
+--- mlp_reg | transform=none | lambda=0.05 | mlp_epochs=500 ---
+Namespace(bn=False, cpu=False, data_dir='./data/', dataset='pubmed', device=0, display_step=100, dropout=0.7, epochs=500, gnn='gcn', hidden_channels=256, jk=False, label_num_per_class=20, lambda_val=0.05, ln=False, local_layers=2, lr=0.005, metric='acc', mlp_epochs=500, mlp_reg=True, model='MPNN', model_dir='models', num_heads=1, oracle_reg=False, paired_seeds=True, penalty_transform='none', pre_linear=False, pre_ln=False, rand_split=False, rand_split_class=True, reg_start_epoch=10, reg_update_freq=5, res=False, result_dir='results/unified', runs=10, save_model=False, seed=123, test_num=1000, train_prop=0.5, use_reg=True, valid_num=500, valid_prop=0.25, weight_decay=0.0005)
+pubmed
+Num nodes: 19717
+train:torch.Size([60]), valid:torch.Size([500]), test:torch.Size([1000])
+dataset pubmed | num nodes 19717 | num edge 88648 | num node feats 500 | num classes 3
+MODEL: MPNNs(
+  (h_lins): ModuleList()
+  (local_convs): ModuleList(
+    (0): GCNConv(500, 256)
+    (1): GCNConv(256, 256)
+  )
+  (lins): ModuleList(
+    (0): Linear(in_features=500, out_features=256, bias=True)
+    (1): Linear(in_features=256, out_features=256, bias=True)
+  )
+  (lns): ModuleList(
+    (0): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+    (1): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+  )
+  (bns): ModuleList(
+    (0): BatchNorm1d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (1): BatchNorm1d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (lin_in): Linear(in_features=500, out_features=256, bias=True)
+  (pred_local): Linear(in_features=256, out_features=3, bias=True)
+)
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.1548, Train: 33.33%, Valid: 41.80%, Test: 38.80%, Best Valid: 41.80%, Best Test: 38.80%
+Epoch: 100, Loss: 0.0195, Train: 100.00%, Valid: 75.60%, Test: 78.40%, Best Valid: 80.00%, Best Test: 81.80%
+Epoch: 200, Loss: 0.0197, Train: 100.00%, Valid: 75.60%, Test: 77.60%, Best Valid: 80.00%, Best Test: 81.80%
+Epoch: 300, Loss: 0.0169, Train: 100.00%, Valid: 75.20%, Test: 77.90%, Best Valid: 80.00%, Best Test: 81.80%
+Epoch: 400, Loss: 0.0115, Train: 100.00%, Valid: 74.20%, Test: 77.20%, Best Valid: 80.00%, Best Test: 81.80%
+Run 01:
+Highest Train: 100.00
+Highest Valid: 80.00
+Highest Test: 81.90
+Chosen epoch: 24
+Final Train: 100.00
+Final Test: 81.80
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.1539, Train: 65.00%, Valid: 55.20%, Test: 51.40%, Best Valid: 55.20%, Best Test: 51.40%
+Epoch: 100, Loss: 0.0133, Train: 100.00%, Valid: 76.40%, Test: 79.20%, Best Valid: 79.20%, Best Test: 80.40%
+Epoch: 200, Loss: 0.0086, Train: 100.00%, Valid: 76.40%, Test: 78.80%, Best Valid: 79.20%, Best Test: 80.40%
+Epoch: 300, Loss: 0.0117, Train: 100.00%, Valid: 74.40%, Test: 77.60%, Best Valid: 79.20%, Best Test: 80.40%
+Epoch: 400, Loss: 0.0101, Train: 100.00%, Valid: 74.60%, Test: 78.30%, Best Valid: 79.20%, Best Test: 80.40%
+Run 02:
+Highest Train: 100.00
+Highest Valid: 79.20
+Highest Test: 81.30
+Chosen epoch: 30
+Final Train: 100.00
+Final Test: 80.40
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.1539, Train: 50.00%, Valid: 51.20%, Test: 51.00%, Best Valid: 51.20%, Best Test: 51.00%
+Epoch: 100, Loss: 0.0103, Train: 100.00%, Valid: 75.80%, Test: 78.30%, Best Valid: 80.60%, Best Test: 80.80%
+Epoch: 200, Loss: 0.0106, Train: 100.00%, Valid: 75.80%, Test: 78.70%, Best Valid: 80.60%, Best Test: 80.80%
+Epoch: 300, Loss: 0.0091, Train: 100.00%, Valid: 74.80%, Test: 77.00%, Best Valid: 80.60%, Best Test: 80.80%
+Epoch: 400, Loss: 0.0105, Train: 100.00%, Valid: 74.20%, Test: 76.40%, Best Valid: 80.60%, Best Test: 80.80%
+Run 03:
+Highest Train: 100.00
+Highest Valid: 80.60
+Highest Test: 81.60
+Chosen epoch: 20
+Final Train: 96.67
+Final Test: 80.80
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.1548, Train: 33.33%, Valid: 23.20%, Test: 21.50%, Best Valid: 23.20%, Best Test: 21.50%
+Epoch: 100, Loss: 0.0162, Train: 100.00%, Valid: 74.60%, Test: 77.30%, Best Valid: 78.60%, Best Test: 79.00%
+Epoch: 200, Loss: 0.0124, Train: 100.00%, Valid: 76.00%, Test: 77.90%, Best Valid: 78.60%, Best Test: 79.00%
+Epoch: 300, Loss: 0.0102, Train: 100.00%, Valid: 73.20%, Test: 75.10%, Best Valid: 78.60%, Best Test: 79.00%
+Epoch: 400, Loss: 0.0216, Train: 100.00%, Valid: 74.60%, Test: 76.60%, Best Valid: 78.60%, Best Test: 79.00%
+Run 04:
+Highest Train: 100.00
+Highest Valid: 78.60
+Highest Test: 79.60
+Chosen epoch: 32
+Final Train: 100.00
+Final Test: 79.00
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.1555, Train: 33.33%, Valid: 35.00%, Test: 39.70%, Best Valid: 35.00%, Best Test: 39.70%
+Epoch: 100, Loss: 0.0165, Train: 100.00%, Valid: 75.00%, Test: 77.30%, Best Valid: 79.00%, Best Test: 79.70%
+Epoch: 200, Loss: 0.0092, Train: 100.00%, Valid: 75.40%, Test: 77.90%, Best Valid: 79.00%, Best Test: 79.70%
+Epoch: 300, Loss: 0.0083, Train: 100.00%, Valid: 72.60%, Test: 74.10%, Best Valid: 79.00%, Best Test: 79.70%
+Epoch: 400, Loss: 0.0125, Train: 100.00%, Valid: 75.00%, Test: 76.20%, Best Valid: 79.00%, Best Test: 79.70%
+Run 05:
+Highest Train: 100.00
+Highest Valid: 79.00
+Highest Test: 80.20
+Chosen epoch: 40
+Final Train: 100.00
+Final Test: 79.70
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.1543, Train: 33.33%, Valid: 23.20%, Test: 21.50%, Best Valid: 23.20%, Best Test: 21.50%
+Epoch: 100, Loss: 0.0146, Train: 100.00%, Valid: 75.00%, Test: 78.40%, Best Valid: 80.00%, Best Test: 81.20%
+Epoch: 200, Loss: 0.0118, Train: 100.00%, Valid: 75.40%, Test: 78.30%, Best Valid: 80.00%, Best Test: 81.20%
+Epoch: 300, Loss: 0.0128, Train: 100.00%, Valid: 74.60%, Test: 76.40%, Best Valid: 80.00%, Best Test: 81.20%
+Epoch: 400, Loss: 0.0095, Train: 100.00%, Valid: 75.00%, Test: 77.70%, Best Valid: 80.00%, Best Test: 81.20%
+Run 06:
+Highest Train: 100.00
+Highest Valid: 80.00
+Highest Test: 81.20
+Chosen epoch: 23
+Final Train: 100.00
+Final Test: 81.20
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.1537, Train: 61.67%, Valid: 52.40%, Test: 49.50%, Best Valid: 52.40%, Best Test: 49.50%
+Epoch: 100, Loss: 0.0197, Train: 100.00%, Valid: 77.20%, Test: 79.00%, Best Valid: 79.40%, Best Test: 79.20%
+Epoch: 200, Loss: 0.0165, Train: 100.00%, Valid: 73.60%, Test: 77.20%, Best Valid: 79.40%, Best Test: 79.20%
+Epoch: 300, Loss: 0.0257, Train: 100.00%, Valid: 75.20%, Test: 78.60%, Best Valid: 79.40%, Best Test: 79.20%
+Epoch: 400, Loss: 0.0108, Train: 100.00%, Valid: 74.60%, Test: 75.80%, Best Valid: 79.40%, Best Test: 79.20%
+Run 07:
+Highest Train: 100.00
+Highest Valid: 79.40
+Highest Test: 80.90
+Chosen epoch: 59
+Final Train: 100.00
+Final Test: 79.20
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.1545, Train: 33.33%, Valid: 41.60%, Test: 38.80%, Best Valid: 41.60%, Best Test: 38.80%
+Epoch: 100, Loss: 0.0197, Train: 100.00%, Valid: 76.40%, Test: 78.30%, Best Valid: 79.00%, Best Test: 79.80%
+Epoch: 200, Loss: 0.0230, Train: 100.00%, Valid: 74.80%, Test: 77.90%, Best Valid: 79.00%, Best Test: 79.80%
+Epoch: 300, Loss: 0.0107, Train: 100.00%, Valid: 74.60%, Test: 78.90%, Best Valid: 79.00%, Best Test: 79.80%
+Epoch: 400, Loss: 0.0085, Train: 100.00%, Valid: 74.60%, Test: 77.60%, Best Valid: 79.00%, Best Test: 79.80%
+Run 08:
+Highest Train: 100.00
+Highest Valid: 79.00
+Highest Test: 80.10
+Chosen epoch: 36
+Final Train: 100.00
+Final Test: 79.80
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.1532, Train: 33.33%, Valid: 35.00%, Test: 39.70%, Best Valid: 35.00%, Best Test: 39.70%
+Epoch: 100, Loss: 0.0216, Train: 100.00%, Valid: 75.40%, Test: 78.10%, Best Valid: 79.80%, Best Test: 80.40%
+Epoch: 200, Loss: 0.0172, Train: 100.00%, Valid: 77.80%, Test: 79.30%, Best Valid: 79.80%, Best Test: 80.40%
+Epoch: 300, Loss: 0.0096, Train: 100.00%, Valid: 75.20%, Test: 77.30%, Best Valid: 79.80%, Best Test: 80.40%
+Epoch: 400, Loss: 0.0115, Train: 100.00%, Valid: 74.40%, Test: 78.50%, Best Valid: 79.80%, Best Test: 80.40%
+Run 09:
+Highest Train: 100.00
+Highest Valid: 79.80
+Highest Test: 81.00
+Chosen epoch: 31
+Final Train: 100.00
+Final Test: 80.40
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.1550, Train: 33.33%, Valid: 35.00%, Test: 39.70%, Best Valid: 35.00%, Best Test: 39.70%
+Epoch: 100, Loss: 0.0138, Train: 100.00%, Valid: 76.00%, Test: 77.50%, Best Valid: 79.20%, Best Test: 80.90%
+Epoch: 200, Loss: 0.0095, Train: 100.00%, Valid: 74.40%, Test: 77.30%, Best Valid: 79.20%, Best Test: 80.90%
+Epoch: 300, Loss: 0.0064, Train: 100.00%, Valid: 75.40%, Test: 79.50%, Best Valid: 79.20%, Best Test: 80.90%
+Epoch: 400, Loss: 0.0071, Train: 100.00%, Valid: 75.40%, Test: 78.00%, Best Valid: 79.20%, Best Test: 80.90%
+Run 10:
+Highest Train: 100.00
+Highest Valid: 79.20
+Highest Test: 82.40
+Chosen epoch: 23
+Final Train: 100.00
+Final Test: 80.90
+All runs:
+Highest Train: 100.00 ± 0.00
+Highest Test: 81.02 ± 0.86
+Highest Valid: 79.48 ± 0.61
+  Final Train: 99.67 ± 1.05
+   Final Test: 80.32 ± 0.89
+Saving results to results/unified/pubmed/MPNN_gcn.csv
+--- mlp_reg | transform=none | lambda=0.1 | mlp_epochs=500 ---
+Namespace(bn=False, cpu=False, data_dir='./data/', dataset='pubmed', device=0, display_step=100, dropout=0.7, epochs=500, gnn='gcn', hidden_channels=256, jk=False, label_num_per_class=20, lambda_val=0.1, ln=False, local_layers=2, lr=0.005, metric='acc', mlp_epochs=500, mlp_reg=True, model='MPNN', model_dir='models', num_heads=1, oracle_reg=False, paired_seeds=True, penalty_transform='none', pre_linear=False, pre_ln=False, rand_split=False, rand_split_class=True, reg_start_epoch=10, reg_update_freq=5, res=False, result_dir='results/unified', runs=10, save_model=False, seed=123, test_num=1000, train_prop=0.5, use_reg=True, valid_num=500, valid_prop=0.25, weight_decay=0.0005)
+pubmed
+Num nodes: 19717
+train:torch.Size([60]), valid:torch.Size([500]), test:torch.Size([1000])
+dataset pubmed | num nodes 19717 | num edge 88648 | num node feats 500 | num classes 3
+MODEL: MPNNs(
+  (h_lins): ModuleList()
+  (local_convs): ModuleList(
+    (0): GCNConv(500, 256)
+    (1): GCNConv(256, 256)
+  )
+  (lins): ModuleList(
+    (0): Linear(in_features=500, out_features=256, bias=True)
+    (1): Linear(in_features=256, out_features=256, bias=True)
+  )
+  (lns): ModuleList(
+    (0): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+    (1): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+  )
+  (bns): ModuleList(
+    (0): BatchNorm1d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (1): BatchNorm1d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (lin_in): Linear(in_features=500, out_features=256, bias=True)
+  (pred_local): Linear(in_features=256, out_features=3, bias=True)
+)
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.2098, Train: 33.33%, Valid: 41.80%, Test: 38.80%, Best Valid: 41.80%, Best Test: 38.80%
+Epoch: 100, Loss: 0.0205, Train: 100.00%, Valid: 75.00%, Test: 78.10%, Best Valid: 80.20%, Best Test: 82.00%
+Epoch: 200, Loss: 0.0221, Train: 100.00%, Valid: 73.80%, Test: 76.10%, Best Valid: 80.20%, Best Test: 82.00%
+Epoch: 300, Loss: 0.0096, Train: 100.00%, Valid: 74.20%, Test: 78.50%, Best Valid: 80.20%, Best Test: 82.00%
+Epoch: 400, Loss: 0.0099, Train: 100.00%, Valid: 73.40%, Test: 77.10%, Best Valid: 80.20%, Best Test: 82.00%
+Run 01:
+Highest Train: 100.00
+Highest Valid: 80.20
+Highest Test: 82.00
+Chosen epoch: 24
+Final Train: 100.00
+Final Test: 82.00
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.2088, Train: 36.67%, Valid: 43.60%, Test: 42.00%, Best Valid: 43.60%, Best Test: 42.00%
+Epoch: 100, Loss: 0.0132, Train: 100.00%, Valid: 77.20%, Test: 78.80%, Best Valid: 79.20%, Best Test: 78.60%
+Epoch: 200, Loss: 0.0090, Train: 100.00%, Valid: 76.20%, Test: 79.00%, Best Valid: 79.20%, Best Test: 78.60%
+Epoch: 300, Loss: 0.0122, Train: 100.00%, Valid: 74.20%, Test: 77.80%, Best Valid: 79.20%, Best Test: 78.60%
+Epoch: 400, Loss: 0.0106, Train: 100.00%, Valid: 75.60%, Test: 77.70%, Best Valid: 79.20%, Best Test: 78.60%
+Run 02:
+Highest Train: 100.00
+Highest Valid: 79.20
+Highest Test: 81.30
+Chosen epoch: 14
+Final Train: 90.00
+Final Test: 78.60
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.2089, Train: 50.00%, Valid: 51.00%, Test: 49.70%, Best Valid: 51.00%, Best Test: 49.70%
+Epoch: 100, Loss: 0.0117, Train: 100.00%, Valid: 76.00%, Test: 78.30%, Best Valid: 80.80%, Best Test: 81.30%
+Epoch: 200, Loss: 0.0122, Train: 100.00%, Valid: 76.20%, Test: 78.40%, Best Valid: 80.80%, Best Test: 81.30%
+Epoch: 300, Loss: 0.0104, Train: 100.00%, Valid: 74.20%, Test: 76.90%, Best Valid: 80.80%, Best Test: 81.30%
+Epoch: 400, Loss: 0.0147, Train: 100.00%, Valid: 73.40%, Test: 76.40%, Best Valid: 80.80%, Best Test: 81.30%
+Run 03:
+Highest Train: 100.00
+Highest Valid: 80.80
+Highest Test: 81.70
+Chosen epoch: 20
+Final Train: 96.67
+Final Test: 81.30
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.2098, Train: 33.33%, Valid: 23.20%, Test: 21.50%, Best Valid: 23.20%, Best Test: 21.50%
+Epoch: 100, Loss: 0.0162, Train: 100.00%, Valid: 74.60%, Test: 77.40%, Best Valid: 79.00%, Best Test: 79.00%
+Epoch: 200, Loss: 0.0135, Train: 100.00%, Valid: 75.00%, Test: 77.70%, Best Valid: 79.00%, Best Test: 79.00%
+Epoch: 300, Loss: 0.0076, Train: 100.00%, Valid: 74.00%, Test: 76.20%, Best Valid: 79.00%, Best Test: 79.00%
+Epoch: 400, Loss: 0.0169, Train: 100.00%, Valid: 74.00%, Test: 77.40%, Best Valid: 79.00%, Best Test: 79.00%
+Run 04:
+Highest Train: 100.00
+Highest Valid: 79.00
+Highest Test: 79.60
+Chosen epoch: 31
+Final Train: 100.00
+Final Test: 79.00
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.2105, Train: 33.33%, Valid: 35.00%, Test: 39.70%, Best Valid: 35.00%, Best Test: 39.70%
+Epoch: 100, Loss: 0.0182, Train: 100.00%, Valid: 75.00%, Test: 77.70%, Best Valid: 78.60%, Best Test: 79.50%
+Epoch: 200, Loss: 0.0096, Train: 100.00%, Valid: 76.20%, Test: 77.90%, Best Valid: 78.60%, Best Test: 79.50%
+Epoch: 300, Loss: 0.0072, Train: 100.00%, Valid: 73.60%, Test: 75.40%, Best Valid: 78.60%, Best Test: 79.50%
+Epoch: 400, Loss: 0.0080, Train: 100.00%, Valid: 74.60%, Test: 78.60%, Best Valid: 78.60%, Best Test: 79.50%
+Run 05:
+Highest Train: 100.00
+Highest Valid: 78.60
+Highest Test: 80.40
+Chosen epoch: 39
+Final Train: 100.00
+Final Test: 79.50
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.2092, Train: 33.33%, Valid: 23.20%, Test: 21.50%, Best Valid: 23.20%, Best Test: 21.50%
+Epoch: 100, Loss: 0.0157, Train: 100.00%, Valid: 75.00%, Test: 78.60%, Best Valid: 80.00%, Best Test: 81.50%
+Epoch: 200, Loss: 0.0128, Train: 100.00%, Valid: 75.80%, Test: 78.50%, Best Valid: 80.00%, Best Test: 81.50%
+Epoch: 300, Loss: 0.0144, Train: 100.00%, Valid: 75.00%, Test: 76.70%, Best Valid: 80.00%, Best Test: 81.50%
+Epoch: 400, Loss: 0.0096, Train: 100.00%, Valid: 75.40%, Test: 76.30%, Best Valid: 80.00%, Best Test: 81.50%
+Run 06:
+Highest Train: 100.00
+Highest Valid: 80.00
+Highest Test: 81.50
+Chosen epoch: 23
+Final Train: 98.33
+Final Test: 81.50
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.2086, Train: 63.33%, Valid: 53.60%, Test: 50.80%, Best Valid: 53.60%, Best Test: 50.80%
+Epoch: 100, Loss: 0.0236, Train: 100.00%, Valid: 77.40%, Test: 78.80%, Best Valid: 79.40%, Best Test: 79.30%
+Epoch: 200, Loss: 0.0154, Train: 100.00%, Valid: 74.40%, Test: 77.60%, Best Valid: 79.40%, Best Test: 79.30%
+Epoch: 300, Loss: 0.0240, Train: 100.00%, Valid: 74.80%, Test: 78.10%, Best Valid: 79.40%, Best Test: 79.30%
+Epoch: 400, Loss: 0.0105, Train: 100.00%, Valid: 73.60%, Test: 75.60%, Best Valid: 79.40%, Best Test: 79.30%
+Run 07:
+Highest Train: 100.00
+Highest Valid: 79.40
+Highest Test: 80.90
+Chosen epoch: 31
+Final Train: 100.00
+Final Test: 79.30
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.2095, Train: 33.33%, Valid: 41.80%, Test: 38.80%, Best Valid: 41.80%, Best Test: 38.80%
+Epoch: 100, Loss: 0.0222, Train: 100.00%, Valid: 75.80%, Test: 78.70%, Best Valid: 78.60%, Best Test: 79.90%
+Epoch: 200, Loss: 0.0204, Train: 100.00%, Valid: 75.40%, Test: 77.80%, Best Valid: 78.60%, Best Test: 79.90%
+Epoch: 300, Loss: 0.0152, Train: 100.00%, Valid: 74.80%, Test: 77.50%, Best Valid: 78.60%, Best Test: 79.90%
+Epoch: 400, Loss: 0.0106, Train: 100.00%, Valid: 72.60%, Test: 75.60%, Best Valid: 78.60%, Best Test: 79.90%
+Run 08:
+Highest Train: 100.00
+Highest Valid: 78.60
+Highest Test: 80.20
+Chosen epoch: 35
+Final Train: 100.00
+Final Test: 79.90
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.2081, Train: 33.33%, Valid: 35.00%, Test: 39.70%, Best Valid: 35.00%, Best Test: 39.70%
+Epoch: 100, Loss: 0.0251, Train: 100.00%, Valid: 76.20%, Test: 79.10%, Best Valid: 79.40%, Best Test: 80.30%
+Epoch: 200, Loss: 0.0175, Train: 100.00%, Valid: 77.80%, Test: 79.20%, Best Valid: 79.40%, Best Test: 80.30%
+Epoch: 300, Loss: 0.0121, Train: 100.00%, Valid: 75.60%, Test: 77.80%, Best Valid: 79.40%, Best Test: 80.30%
+Epoch: 400, Loss: 0.0106, Train: 100.00%, Valid: 73.60%, Test: 77.30%, Best Valid: 79.40%, Best Test: 80.30%
+Run 09:
+Highest Train: 100.00
+Highest Valid: 79.40
+Highest Test: 81.00
+Chosen epoch: 31
+Final Train: 100.00
+Final Test: 80.30
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.2100, Train: 33.33%, Valid: 35.00%, Test: 39.70%, Best Valid: 35.00%, Best Test: 39.70%
+Epoch: 100, Loss: 0.0164, Train: 100.00%, Valid: 76.00%, Test: 77.40%, Best Valid: 79.20%, Best Test: 82.60%
+Epoch: 200, Loss: 0.0098, Train: 100.00%, Valid: 75.00%, Test: 76.90%, Best Valid: 79.20%, Best Test: 82.60%
+Epoch: 300, Loss: 0.0087, Train: 100.00%, Valid: 75.80%, Test: 78.40%, Best Valid: 79.20%, Best Test: 82.60%
+Epoch: 400, Loss: 0.0107, Train: 100.00%, Valid: 74.80%, Test: 77.20%, Best Valid: 79.20%, Best Test: 82.60%
+Run 10:
+Highest Train: 100.00
+Highest Valid: 79.20
+Highest Test: 82.60
+Chosen epoch: 22
+Final Train: 100.00
+Final Test: 82.60
+All runs:
+Highest Train: 100.00 ± 0.00
+Highest Test: 81.12 ± 0.90
+Highest Valid: 79.44 ± 0.70
+  Final Train: 98.50 ± 3.19
+   Final Test: 80.40 ± 1.37
+Saving results to results/unified/pubmed/MPNN_gcn.csv
+--- mlp_reg | transform=none | lambda=0.2 | mlp_epochs=500 ---
+Namespace(bn=False, cpu=False, data_dir='./data/', dataset='pubmed', device=0, display_step=100, dropout=0.7, epochs=500, gnn='gcn', hidden_channels=256, jk=False, label_num_per_class=20, lambda_val=0.2, ln=False, local_layers=2, lr=0.005, metric='acc', mlp_epochs=500, mlp_reg=True, model='MPNN', model_dir='models', num_heads=1, oracle_reg=False, paired_seeds=True, penalty_transform='none', pre_linear=False, pre_ln=False, rand_split=False, rand_split_class=True, reg_start_epoch=10, reg_update_freq=5, res=False, result_dir='results/unified', runs=10, save_model=False, seed=123, test_num=1000, train_prop=0.5, use_reg=True, valid_num=500, valid_prop=0.25, weight_decay=0.0005)
+pubmed
+Num nodes: 19717
+train:torch.Size([60]), valid:torch.Size([500]), test:torch.Size([1000])
+dataset pubmed | num nodes 19717 | num edge 88648 | num node feats 500 | num classes 3
+MODEL: MPNNs(
+  (h_lins): ModuleList()
+  (local_convs): ModuleList(
+    (0): GCNConv(500, 256)
+    (1): GCNConv(256, 256)
+  )
+  (lins): ModuleList(
+    (0): Linear(in_features=500, out_features=256, bias=True)
+    (1): Linear(in_features=256, out_features=256, bias=True)
+  )
+  (lns): ModuleList(
+    (0): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+    (1): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+  )
+  (bns): ModuleList(
+    (0): BatchNorm1d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (1): BatchNorm1d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (lin_in): Linear(in_features=500, out_features=256, bias=True)
+  (pred_local): Linear(in_features=256, out_features=3, bias=True)
+)
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.3198, Train: 33.33%, Valid: 41.80%, Test: 38.80%, Best Valid: 41.80%, Best Test: 38.80%
+Epoch: 100, Loss: 0.0222, Train: 100.00%, Valid: 75.20%, Test: 78.40%, Best Valid: 80.40%, Best Test: 82.30%
+Epoch: 200, Loss: 0.0201, Train: 100.00%, Valid: 74.40%, Test: 76.80%, Best Valid: 80.40%, Best Test: 82.30%
+Epoch: 300, Loss: 0.0176, Train: 100.00%, Valid: 75.40%, Test: 78.20%, Best Valid: 80.40%, Best Test: 82.30%
+Epoch: 400, Loss: 0.0118, Train: 100.00%, Valid: 74.20%, Test: 77.80%, Best Valid: 80.40%, Best Test: 82.30%
+Run 01:
+Highest Train: 100.00
+Highest Valid: 80.40
+Highest Test: 82.30
+Chosen epoch: 24
+Final Train: 98.33
+Final Test: 82.30
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.3187, Train: 33.33%, Valid: 42.60%, Test: 40.60%, Best Valid: 42.60%, Best Test: 40.60%
+Epoch: 100, Loss: 0.0123, Train: 100.00%, Valid: 77.00%, Test: 78.20%, Best Valid: 79.00%, Best Test: 81.10%
+Epoch: 200, Loss: 0.0114, Train: 100.00%, Valid: 75.00%, Test: 78.30%, Best Valid: 79.00%, Best Test: 81.10%
+Epoch: 300, Loss: 0.0193, Train: 100.00%, Valid: 76.00%, Test: 78.30%, Best Valid: 79.00%, Best Test: 81.10%
+Epoch: 400, Loss: 0.0098, Train: 100.00%, Valid: 75.20%, Test: 78.00%, Best Valid: 79.00%, Best Test: 81.10%
+Run 02:
+Highest Train: 100.00
+Highest Valid: 79.00
+Highest Test: 81.50
+Chosen epoch: 28
+Final Train: 100.00
+Final Test: 81.10
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.3188, Train: 41.67%, Valid: 48.40%, Test: 46.10%, Best Valid: 48.40%, Best Test: 46.10%
+Epoch: 100, Loss: 0.0128, Train: 100.00%, Valid: 76.20%, Test: 78.70%, Best Valid: 80.80%, Best Test: 81.70%
+Epoch: 200, Loss: 0.0138, Train: 100.00%, Valid: 77.20%, Test: 79.10%, Best Valid: 80.80%, Best Test: 81.70%
+Epoch: 300, Loss: 0.0112, Train: 100.00%, Valid: 75.40%, Test: 77.50%, Best Valid: 80.80%, Best Test: 81.70%
+Epoch: 400, Loss: 0.0115, Train: 100.00%, Valid: 72.80%, Test: 76.70%, Best Valid: 80.80%, Best Test: 81.70%
+Run 03:
+Highest Train: 100.00
+Highest Valid: 80.80
+Highest Test: 81.80
+Chosen epoch: 20
+Final Train: 96.67
+Final Test: 81.70
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.3198, Train: 33.33%, Valid: 23.20%, Test: 21.50%, Best Valid: 23.20%, Best Test: 21.50%
+Epoch: 100, Loss: 0.0160, Train: 100.00%, Valid: 75.00%, Test: 78.00%, Best Valid: 79.20%, Best Test: 78.80%
+Epoch: 200, Loss: 0.0151, Train: 100.00%, Valid: 74.60%, Test: 77.60%, Best Valid: 79.20%, Best Test: 78.80%
+Epoch: 300, Loss: 0.0090, Train: 100.00%, Valid: 73.60%, Test: 75.70%, Best Valid: 79.20%, Best Test: 78.80%
+Epoch: 400, Loss: 0.0155, Train: 100.00%, Valid: 74.20%, Test: 75.80%, Best Valid: 79.20%, Best Test: 78.80%
+Run 04:
+Highest Train: 100.00
+Highest Valid: 79.20
+Highest Test: 79.60
+Chosen epoch: 31
+Final Train: 100.00
+Final Test: 78.80
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.3205, Train: 33.33%, Valid: 35.20%, Test: 39.80%, Best Valid: 35.20%, Best Test: 39.80%
+Epoch: 100, Loss: 0.0183, Train: 100.00%, Valid: 74.60%, Test: 77.20%, Best Valid: 79.00%, Best Test: 80.00%
+Epoch: 200, Loss: 0.0114, Train: 100.00%, Valid: 74.80%, Test: 77.70%, Best Valid: 79.00%, Best Test: 80.00%
+Epoch: 300, Loss: 0.0100, Train: 100.00%, Valid: 74.00%, Test: 75.40%, Best Valid: 79.00%, Best Test: 80.00%
+Epoch: 400, Loss: 0.0085, Train: 100.00%, Valid: 75.20%, Test: 78.70%, Best Valid: 79.00%, Best Test: 80.00%
+Run 05:
+Highest Train: 100.00
+Highest Valid: 79.00
+Highest Test: 80.20
+Chosen epoch: 40
+Final Train: 100.00
+Final Test: 80.00
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.3192, Train: 33.33%, Valid: 23.20%, Test: 21.50%, Best Valid: 23.20%, Best Test: 21.50%
+Epoch: 100, Loss: 0.0167, Train: 100.00%, Valid: 75.20%, Test: 78.50%, Best Valid: 80.20%, Best Test: 81.60%
+Epoch: 200, Loss: 0.0124, Train: 100.00%, Valid: 75.20%, Test: 79.00%, Best Valid: 80.20%, Best Test: 81.60%
+Epoch: 300, Loss: 0.0143, Train: 100.00%, Valid: 74.80%, Test: 77.80%, Best Valid: 80.20%, Best Test: 81.60%
+Epoch: 400, Loss: 0.0111, Train: 100.00%, Valid: 74.20%, Test: 77.20%, Best Valid: 80.20%, Best Test: 81.60%
+Run 06:
+Highest Train: 100.00
+Highest Valid: 80.20
+Highest Test: 81.60
+Chosen epoch: 23
+Final Train: 98.33
+Final Test: 81.60
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.3185, Train: 63.33%, Valid: 56.40%, Test: 53.10%, Best Valid: 56.40%, Best Test: 53.10%
+Epoch: 100, Loss: 0.0257, Train: 100.00%, Valid: 77.80%, Test: 79.30%, Best Valid: 79.40%, Best Test: 78.90%
+Epoch: 200, Loss: 0.0390, Train: 100.00%, Valid: 74.40%, Test: 75.40%, Best Valid: 79.40%, Best Test: 78.90%
+Epoch: 300, Loss: 0.0230, Train: 100.00%, Valid: 74.80%, Test: 77.60%, Best Valid: 79.40%, Best Test: 78.90%
+Epoch: 400, Loss: 0.0112, Train: 100.00%, Valid: 74.40%, Test: 77.30%, Best Valid: 79.40%, Best Test: 78.90%
+Run 07:
+Highest Train: 100.00
+Highest Valid: 79.40
+Highest Test: 81.00
+Chosen epoch: 59
+Final Train: 100.00
+Final Test: 78.90
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.3195, Train: 33.33%, Valid: 41.80%, Test: 38.80%, Best Valid: 41.80%, Best Test: 38.80%
+Epoch: 100, Loss: 0.0226, Train: 100.00%, Valid: 76.40%, Test: 77.90%, Best Valid: 79.00%, Best Test: 79.70%
+Epoch: 200, Loss: 0.0192, Train: 100.00%, Valid: 75.20%, Test: 77.90%, Best Valid: 79.00%, Best Test: 79.70%
+Epoch: 300, Loss: 0.0223, Train: 100.00%, Valid: 75.20%, Test: 78.20%, Best Valid: 79.00%, Best Test: 79.70%
+Epoch: 400, Loss: 0.0112, Train: 100.00%, Valid: 73.60%, Test: 76.20%, Best Valid: 79.00%, Best Test: 79.70%
+Run 08:
+Highest Train: 100.00
+Highest Valid: 79.00
+Highest Test: 80.00
+Chosen epoch: 35
+Final Train: 100.00
+Final Test: 79.70
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.3179, Train: 33.33%, Valid: 35.00%, Test: 39.70%, Best Valid: 35.00%, Best Test: 39.70%
+Epoch: 100, Loss: 0.0305, Train: 100.00%, Valid: 75.60%, Test: 78.30%, Best Valid: 79.80%, Best Test: 80.20%
+Epoch: 200, Loss: 0.0223, Train: 100.00%, Valid: 77.20%, Test: 79.00%, Best Valid: 79.80%, Best Test: 80.20%
+Epoch: 300, Loss: 0.0117, Train: 100.00%, Valid: 75.60%, Test: 77.50%, Best Valid: 79.80%, Best Test: 80.20%
+Epoch: 400, Loss: 0.0103, Train: 100.00%, Valid: 74.60%, Test: 76.80%, Best Valid: 79.80%, Best Test: 80.20%
+Run 09:
+Highest Train: 100.00
+Highest Valid: 79.80
+Highest Test: 81.20
+Chosen epoch: 32
+Final Train: 100.00
+Final Test: 80.20
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.3200, Train: 33.33%, Valid: 35.00%, Test: 39.70%, Best Valid: 35.00%, Best Test: 39.70%
+Epoch: 100, Loss: 0.0141, Train: 100.00%, Valid: 76.20%, Test: 77.30%, Best Valid: 79.60%, Best Test: 81.50%
+Epoch: 200, Loss: 0.0103, Train: 100.00%, Valid: 75.00%, Test: 78.30%, Best Valid: 79.60%, Best Test: 81.50%
+Epoch: 300, Loss: 0.0077, Train: 100.00%, Valid: 76.60%, Test: 78.60%, Best Valid: 79.60%, Best Test: 81.50%
+Epoch: 400, Loss: 0.0118, Train: 100.00%, Valid: 74.20%, Test: 78.00%, Best Valid: 79.60%, Best Test: 81.50%
+Run 10:
+Highest Train: 100.00
+Highest Valid: 79.60
+Highest Test: 82.10
+Chosen epoch: 16
+Final Train: 95.00
+Final Test: 81.50
+All runs:
+Highest Train: 100.00 ± 0.00
+Highest Test: 81.13 ± 0.92
+Highest Valid: 79.64 ± 0.64
+  Final Train: 98.83 ± 1.77
+   Final Test: 80.58 ± 1.23
+Saving results to results/unified/pubmed/MPNN_gcn.csv
+--- mlp_reg | transform=none | lambda=0.4 | mlp_epochs=500 ---
+Namespace(bn=False, cpu=False, data_dir='./data/', dataset='pubmed', device=0, display_step=100, dropout=0.7, epochs=500, gnn='gcn', hidden_channels=256, jk=False, label_num_per_class=20, lambda_val=0.4, ln=False, local_layers=2, lr=0.005, metric='acc', mlp_epochs=500, mlp_reg=True, model='MPNN', model_dir='models', num_heads=1, oracle_reg=False, paired_seeds=True, penalty_transform='none', pre_linear=False, pre_ln=False, rand_split=False, rand_split_class=True, reg_start_epoch=10, reg_update_freq=5, res=False, result_dir='results/unified', runs=10, save_model=False, seed=123, test_num=1000, train_prop=0.5, use_reg=True, valid_num=500, valid_prop=0.25, weight_decay=0.0005)
+pubmed
+Num nodes: 19717
+train:torch.Size([60]), valid:torch.Size([500]), test:torch.Size([1000])
+dataset pubmed | num nodes 19717 | num edge 88648 | num node feats 500 | num classes 3
+MODEL: MPNNs(
+  (h_lins): ModuleList()
+  (local_convs): ModuleList(
+    (0): GCNConv(500, 256)
+    (1): GCNConv(256, 256)
+  )
+  (lins): ModuleList(
+    (0): Linear(in_features=500, out_features=256, bias=True)
+    (1): Linear(in_features=256, out_features=256, bias=True)
+  )
+  (lns): ModuleList(
+    (0): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+    (1): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+  )
+  (bns): ModuleList(
+    (0): BatchNorm1d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (1): BatchNorm1d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (lin_in): Linear(in_features=500, out_features=256, bias=True)
+  (pred_local): Linear(in_features=256, out_features=3, bias=True)
+)
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.5398, Train: 33.33%, Valid: 41.80%, Test: 38.80%, Best Valid: 41.80%, Best Test: 38.80%
+Epoch: 100, Loss: 0.0240, Train: 100.00%, Valid: 75.20%, Test: 78.60%, Best Valid: 80.40%, Best Test: 82.40%
+Epoch: 200, Loss: 0.0223, Train: 100.00%, Valid: 74.60%, Test: 76.80%, Best Valid: 80.40%, Best Test: 82.40%
+Epoch: 300, Loss: 0.0216, Train: 100.00%, Valid: 74.20%, Test: 78.40%, Best Valid: 80.40%, Best Test: 82.40%
+Epoch: 400, Loss: 0.0146, Train: 100.00%, Valid: 73.60%, Test: 77.30%, Best Valid: 80.40%, Best Test: 82.40%
+Run 01:
+Highest Train: 100.00
+Highest Valid: 80.40
+Highest Test: 82.60
+Chosen epoch: 24
+Final Train: 98.33
+Final Test: 82.40
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.5385, Train: 33.33%, Valid: 42.20%, Test: 39.50%, Best Valid: 42.20%, Best Test: 39.50%
+Epoch: 100, Loss: 0.0153, Train: 100.00%, Valid: 76.40%, Test: 78.20%, Best Valid: 79.80%, Best Test: 80.80%
+Epoch: 200, Loss: 0.0137, Train: 100.00%, Valid: 74.60%, Test: 77.80%, Best Valid: 79.80%, Best Test: 80.80%
+Epoch: 300, Loss: 0.0192, Train: 100.00%, Valid: 75.20%, Test: 78.00%, Best Valid: 79.80%, Best Test: 80.80%
+Epoch: 400, Loss: 0.0134, Train: 100.00%, Valid: 76.60%, Test: 78.20%, Best Valid: 79.80%, Best Test: 80.80%
+Run 02:
+Highest Train: 100.00
+Highest Valid: 79.80
+Highest Test: 81.60
+Chosen epoch: 30
+Final Train: 100.00
+Final Test: 80.80
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.5386, Train: 40.00%, Valid: 47.40%, Test: 44.10%, Best Valid: 47.40%, Best Test: 44.10%
+Epoch: 100, Loss: 0.0151, Train: 100.00%, Valid: 75.80%, Test: 78.90%, Best Valid: 81.40%, Best Test: 81.70%
+Epoch: 200, Loss: 0.0155, Train: 100.00%, Valid: 77.00%, Test: 78.80%, Best Valid: 81.40%, Best Test: 81.70%
+Epoch: 300, Loss: 0.0158, Train: 100.00%, Valid: 75.20%, Test: 77.90%, Best Valid: 81.40%, Best Test: 81.70%
+Epoch: 400, Loss: 0.0203, Train: 100.00%, Valid: 74.20%, Test: 75.90%, Best Valid: 81.40%, Best Test: 81.70%
+Run 03:
+Highest Train: 100.00
+Highest Valid: 81.40
+Highest Test: 82.00
+Chosen epoch: 21
+Final Train: 96.67
+Final Test: 81.70
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.5397, Train: 33.33%, Valid: 23.40%, Test: 21.90%, Best Valid: 23.40%, Best Test: 21.90%
+Epoch: 100, Loss: 0.0235, Train: 100.00%, Valid: 75.00%, Test: 77.70%, Best Valid: 79.20%, Best Test: 79.70%
+Epoch: 200, Loss: 0.0169, Train: 100.00%, Valid: 75.60%, Test: 77.70%, Best Valid: 79.20%, Best Test: 79.70%
+Epoch: 300, Loss: 0.0098, Train: 100.00%, Valid: 74.20%, Test: 75.30%, Best Valid: 79.20%, Best Test: 79.70%
+Epoch: 400, Loss: 0.0253, Train: 100.00%, Valid: 75.40%, Test: 77.40%, Best Valid: 79.20%, Best Test: 79.70%
+Run 04:
+Highest Train: 100.00
+Highest Valid: 79.20
+Highest Test: 80.20
+Chosen epoch: 46
+Final Train: 100.00
+Final Test: 79.70
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.5406, Train: 33.33%, Valid: 35.20%, Test: 39.90%, Best Valid: 35.20%, Best Test: 39.90%
+Epoch: 100, Loss: 0.0252, Train: 100.00%, Valid: 75.20%, Test: 77.40%, Best Valid: 79.40%, Best Test: 79.90%
+Epoch: 200, Loss: 0.0114, Train: 100.00%, Valid: 75.60%, Test: 77.70%, Best Valid: 79.40%, Best Test: 79.90%
+Epoch: 300, Loss: 0.0108, Train: 100.00%, Valid: 74.60%, Test: 77.00%, Best Valid: 79.40%, Best Test: 79.90%
+Epoch: 400, Loss: 0.0100, Train: 100.00%, Valid: 75.00%, Test: 75.90%, Best Valid: 79.40%, Best Test: 79.90%
+Run 05:
+Highest Train: 100.00
+Highest Valid: 79.40
+Highest Test: 80.20
+Chosen epoch: 40
+Final Train: 100.00
+Final Test: 79.90
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.5390, Train: 33.33%, Valid: 23.20%, Test: 21.50%, Best Valid: 23.20%, Best Test: 21.50%
+Epoch: 100, Loss: 0.0181, Train: 100.00%, Valid: 75.80%, Test: 78.30%, Best Valid: 81.00%, Best Test: 81.60%
+Epoch: 200, Loss: 0.0147, Train: 100.00%, Valid: 75.00%, Test: 78.80%, Best Valid: 81.00%, Best Test: 81.60%
+Epoch: 300, Loss: 0.0150, Train: 100.00%, Valid: 74.80%, Test: 76.90%, Best Valid: 81.00%, Best Test: 81.60%
+Epoch: 400, Loss: 0.0127, Train: 100.00%, Valid: 75.00%, Test: 78.00%, Best Valid: 81.00%, Best Test: 81.60%
+Run 06:
+Highest Train: 100.00
+Highest Valid: 81.00
+Highest Test: 81.60
+Chosen epoch: 23
+Final Train: 98.33
+Final Test: 81.60
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.5382, Train: 55.00%, Valid: 53.20%, Test: 51.90%, Best Valid: 53.20%, Best Test: 51.90%
+Epoch: 100, Loss: 0.0297, Train: 100.00%, Valid: 77.40%, Test: 79.20%, Best Valid: 79.80%, Best Test: 79.50%
+Epoch: 200, Loss: 0.0193, Train: 100.00%, Valid: 75.20%, Test: 77.40%, Best Valid: 79.80%, Best Test: 79.50%
+Epoch: 300, Loss: 0.0320, Train: 100.00%, Valid: 74.80%, Test: 77.80%, Best Valid: 79.80%, Best Test: 79.50%
+Epoch: 400, Loss: 0.0122, Train: 100.00%, Valid: 75.20%, Test: 77.80%, Best Valid: 79.80%, Best Test: 79.50%
+Run 07:
+Highest Train: 100.00
+Highest Valid: 79.80
+Highest Test: 81.80
+Chosen epoch: 59
+Final Train: 100.00
+Final Test: 79.50
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.5394, Train: 33.33%, Valid: 41.80%, Test: 38.80%, Best Valid: 41.80%, Best Test: 38.80%
+Epoch: 100, Loss: 0.0382, Train: 100.00%, Valid: 76.20%, Test: 78.00%, Best Valid: 79.00%, Best Test: 80.10%
+Epoch: 200, Loss: 0.0185, Train: 100.00%, Valid: 75.20%, Test: 77.60%, Best Valid: 79.00%, Best Test: 80.10%
+Epoch: 300, Loss: 0.0272, Train: 100.00%, Valid: 74.60%, Test: 78.50%, Best Valid: 79.00%, Best Test: 80.10%
+Epoch: 400, Loss: 0.0135, Train: 100.00%, Valid: 74.20%, Test: 77.20%, Best Valid: 79.00%, Best Test: 80.10%
+Run 08:
+Highest Train: 100.00
+Highest Valid: 79.00
+Highest Test: 80.20
+Chosen epoch: 35
+Final Train: 100.00
+Final Test: 80.10
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.5376, Train: 33.33%, Valid: 35.00%, Test: 39.70%, Best Valid: 35.00%, Best Test: 39.70%
+Epoch: 100, Loss: 0.0328, Train: 100.00%, Valid: 76.20%, Test: 78.80%, Best Valid: 79.60%, Best Test: 80.30%
+Epoch: 200, Loss: 0.0175, Train: 100.00%, Valid: 76.40%, Test: 78.40%, Best Valid: 79.60%, Best Test: 80.30%
+Epoch: 300, Loss: 0.0134, Train: 100.00%, Valid: 75.00%, Test: 77.80%, Best Valid: 79.60%, Best Test: 80.30%
+Epoch: 400, Loss: 0.0136, Train: 100.00%, Valid: 76.00%, Test: 78.50%, Best Valid: 79.60%, Best Test: 80.30%
+Run 09:
+Highest Train: 100.00
+Highest Valid: 79.60
+Highest Test: 81.30
+Chosen epoch: 31
+Final Train: 100.00
+Final Test: 80.30
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.5400, Train: 33.33%, Valid: 35.00%, Test: 39.70%, Best Valid: 35.00%, Best Test: 39.70%
+Epoch: 100, Loss: 0.0146, Train: 100.00%, Valid: 76.60%, Test: 79.00%, Best Valid: 80.40%, Best Test: 81.60%
+Epoch: 200, Loss: 0.0114, Train: 100.00%, Valid: 75.40%, Test: 77.90%, Best Valid: 80.40%, Best Test: 81.60%
+Epoch: 300, Loss: 0.0101, Train: 100.00%, Valid: 75.40%, Test: 77.10%, Best Valid: 80.40%, Best Test: 81.60%
+Epoch: 400, Loss: 0.0105, Train: 100.00%, Valid: 75.80%, Test: 77.20%, Best Valid: 80.40%, Best Test: 81.60%
+Run 10:
+Highest Train: 100.00
+Highest Valid: 80.40
+Highest Test: 82.50
+Chosen epoch: 7
+Final Train: 93.33
+Final Test: 81.60
+All runs:
+Highest Train: 100.00 ± 0.00
+Highest Test: 81.40 ± 0.92
+Highest Valid: 80.00 ± 0.78
+  Final Train: 98.67 ± 2.19
+   Final Test: 80.76 ± 1.00
+Saving results to results/unified/pubmed/MPNN_gcn.csv
+Condition sweep completed.
+Task 42 done.

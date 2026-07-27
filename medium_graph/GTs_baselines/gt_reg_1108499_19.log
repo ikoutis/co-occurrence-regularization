@@ -1,0 +1,340 @@
+Sun Jul 26 03:04:53 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.159.04             Driver Version: 580.159.04     CUDA Version: 13.0     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA A100-SXM4-80GB          On  |   00000000:01:00.0 Off |                   On |
+| N/A   56C    P0            260W /  500W |   37300MiB /  81920MiB |     N/A      Default |
+|                                         |                        |              Enabled |
++-----------------------------------------+------------------------+----------------------+
+|   1  NVIDIA A100-SXM4-80GB          On  |   00000000:41:00.0 Off |                   On |
+| N/A   25C    P0             50W /  500W |     249MiB /  81920MiB |     N/A      Default |
+|                                         |                        |              Enabled |
++-----------------------------------------+------------------------+----------------------+
+|   2  NVIDIA A100-SXM4-80GB          On  |   00000000:81:00.0 Off |                   On |
+| N/A   27C    P0             51W /  500W |     249MiB /  81920MiB |     N/A      Default |
+|                                         |                        |              Enabled |
++-----------------------------------------+------------------------+----------------------+
+|   3  NVIDIA A100-SXM4-80GB          On  |   00000000:C1:00.0 Off |                   On |
+| N/A   44C    P0            228W /  500W |   35278MiB /  81920MiB |     N/A      Default |
+|                                         |                        |              Enabled |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| MIG devices:                                                                            |
++------------------+----------------------------------+-----------+-----------------------+
+| GPU  GI  CI  MIG |              Shared Memory-Usage |        Vol|        Shared         |
+|      ID  ID  Dev |                Shared BAR1-Usage | SM     Unc| CE ENC  DEC  OFA  JPG |
+|                  |                                  |        ECC|                       |
+|==================+==================================+===========+=======================|
+|  1    5   0   0  |              71MiB / 19968MiB    | 28      0 |  2   0    1    0    0 |
+|                  |               0MiB / 12271MiB    |           |                       |
++------------------+----------------------------------+-----------+-----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0    1    0           686333      C   VLLM::EngineCore                      35018MiB |
+|    3    1    0           686332      C   VLLM::EngineCore                      35018MiB |
++-----------------------------------------------------------------------------------------+
+Reg sweep: polynormer / amazon-computer | group 3
+python main.py --model polynormer --dataset amazon-computer --hidden_channels 64 --local_epochs 200 --global_epochs 1000 --lr 0.001 --runs $RUNS --local_layers 5 --global_layers 1 --weight_decay 5e-5 --dropout 0.7 --in_dropout 0.2 --num_heads 8 --save_model --device $DEVICE $EXTRA
+==========================================================
+Condition sweep: python main.py --model polynormer --dataset amazon-computer --hidden_channels 64 --local_epochs 200 --global_epochs 1000 --lr 0.001 --runs 10 --local_layers 5 --global_layers 1 --weight_decay 5e-5 --dropout 0.7 --in_dropout 0.2 --num_heads 8 --save_model --device 0 --result_dir results_tuned --model_dir models/gt_reg_1108499_19
+result_dir=results_tuned transforms=[] oracle=1 baseline=0
+==========================================================
+--- oracle_reg | lambda=0.01 ---
+    (already completed — requeue resume, skipping)
+--- oracle_reg | lambda=0.05 ---
+    (already completed — requeue resume, skipping)
+--- oracle_reg | lambda=0.1 ---
+    (already completed — requeue resume, skipping)
+--- oracle_reg | lambda=0.2 ---
+    (already completed — requeue resume, skipping)
+--- oracle_reg | lambda=0.4 ---
+Namespace(aggregate='add', alpha=0.5, attention='gcn', beta=-1.0, bn=False, cpu=False, data_dir='../data/', dataset='amazon-computer', device=0, dim_inner=64, display_step=100, dropout=0.7, epochs=500, global_dropout=None, global_epochs=1000, global_layers=1, gnn='gcn', graph_weight=0.8, hidden_channels=64, hops=10, in_dropout=0.2, jk=False, label_num_per_class=20, lambda_val=0.4, layers=1, ln=False, local_epochs=200, local_gnn_type='GCN', local_layers=5, lr=0.001, metric='acc', mlp_epochs=500, mlp_reg=False, model='polynormer', model_dir='models/gt_reg_1108499_19', n_heads=8, num_centroids=4096, num_heads=8, oracle_reg=True, paired_seeds=True, pe_types='RWSE', penalty_transform='none', pre_linear=False, pre_ln=False, rand_split=False, rand_split_class=False, reg_start_epoch=10, reg_update_freq=5, res=False, result_dir='results_tuned', runs=10, save_model=True, save_result=False, seed=42, test_num=1000, tr_dropout=None, tr_layers=1, tr_weight_decay=None, train_prop=0.5, use_act=False, use_bn=False, use_graph=False, use_reg=True, use_residual=False, use_weight=False, valid_num=500, valid_prop=0.25, weight_decay=5e-05)
+amazon-computer
+dataset amazon-computer | num nodes 13752 | num edge 491722 | num node feats 767 | num classes 10
+MODEL: Polynormer(
+  (h_lins): ModuleList(
+    (0): Linear(in_features=512, out_features=512, bias=True)
+    (1): Linear(in_features=512, out_features=512, bias=True)
+    (2): Linear(in_features=512, out_features=512, bias=True)
+    (3): Linear(in_features=512, out_features=512, bias=True)
+    (4): Linear(in_features=512, out_features=512, bias=True)
+  )
+  (local_convs): ModuleList(
+    (0): GATConv(512, 64, heads=8)
+    (1): GATConv(512, 64, heads=8)
+    (2): GATConv(512, 64, heads=8)
+    (3): GATConv(512, 64, heads=8)
+    (4): GATConv(512, 64, heads=8)
+  )
+  (lins): ModuleList(
+    (0): Linear(in_features=512, out_features=512, bias=True)
+    (1): Linear(in_features=512, out_features=512, bias=True)
+    (2): Linear(in_features=512, out_features=512, bias=True)
+    (3): Linear(in_features=512, out_features=512, bias=True)
+    (4): Linear(in_features=512, out_features=512, bias=True)
+  )
+  (lns): ModuleList(
+    (0): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+    (1): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+    (2): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+    (3): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+    (4): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+  )
+  (lin_in): Linear(in_features=767, out_features=512, bias=True)
+  (ln): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+  (global_attn): GlobalAttn(
+    (h_lins): ModuleList(
+      (0): Linear(in_features=512, out_features=512, bias=True)
+    )
+    (k_lins): ModuleList(
+      (0): Linear(in_features=512, out_features=512, bias=True)
+    )
+    (v_lins): ModuleList(
+      (0): Linear(in_features=512, out_features=512, bias=True)
+    )
+    (lns): ModuleList(
+      (0): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+    )
+    (lin_out): Linear(in_features=512, out_features=512, bias=True)
+  )
+  (pred_local): Linear(in_features=512, out_features=10, bias=True)
+  (pred_global): Linear(in_features=512, out_features=10, bias=True)
+)
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 3.5328, Train: 37.61%, Valid: 36.18%, Test: 38.53%, Best Valid: 36.18%, Best Test: 38.53%
+Epoch: 100, Loss: 0.9612, Train: 81.94%, Valid: 81.27%, Test: 82.62%, Best Valid: 81.27%, Best Test: 82.62%
+Switching Polynormer to global attention phase.
+Epoch: 200, Loss: 3.2144, Train: 38.87%, Valid: 37.60%, Test: 39.66%, Best Valid: 89.53%, Best Test: 90.55%
+Epoch: 300, Loss: 0.4105, Train: 92.36%, Valid: 90.87%, Test: 92.11%, Best Valid: 91.38%, Best Test: 92.51%
+Epoch: 400, Loss: 0.3396, Train: 93.49%, Valid: 91.64%, Test: 92.73%, Best Valid: 91.93%, Best Test: 92.77%
+Epoch: 500, Loss: 0.3014, Train: 94.18%, Valid: 91.16%, Test: 93.38%, Best Valid: 92.18%, Best Test: 92.91%
+Epoch: 600, Loss: 0.2625, Train: 95.43%, Valid: 92.11%, Test: 93.89%, Best Valid: 92.55%, Best Test: 93.53%
+Epoch: 700, Loss: 0.2356, Train: 96.10%, Valid: 92.36%, Test: 93.86%, Best Valid: 92.55%, Best Test: 93.53%
+Epoch: 800, Loss: 0.2166, Train: 96.53%, Valid: 91.85%, Test: 93.78%, Best Valid: 92.55%, Best Test: 93.53%
+Epoch: 900, Loss: 0.1971, Train: 97.07%, Valid: 91.85%, Test: 94.00%, Best Valid: 92.55%, Best Test: 93.53%
+Epoch: 1000, Loss: 0.1846, Train: 97.49%, Valid: 91.75%, Test: 93.64%, Best Valid: 92.55%, Best Test: 93.53%
+Epoch: 1100, Loss: 0.1642, Train: 97.81%, Valid: 91.67%, Test: 93.89%, Best Valid: 92.55%, Best Test: 93.53%
+Run 01:
+Highest Train: 98.35
+Highest Valid: 92.55
+Highest Test: 94.33
+Chosen epoch: 555
+Final Train: 95.24
+Final Test: 93.53
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 3.6924, Train: 37.61%, Valid: 36.18%, Test: 38.53%, Best Valid: 36.18%, Best Test: 38.53%
+Epoch: 100, Loss: 1.1123, Train: 77.74%, Valid: 77.16%, Test: 78.23%, Best Valid: 78.69%, Best Test: 78.63%
+Switching Polynormer to global attention phase.
+Epoch: 200, Loss: 3.2236, Train: 15.79%, Valid: 16.33%, Test: 14.69%, Best Valid: 89.67%, Best Test: 90.91%
+Epoch: 300, Loss: 0.4608, Train: 90.76%, Valid: 89.75%, Test: 90.69%, Best Valid: 90.15%, Best Test: 91.68%
+Epoch: 400, Loss: 0.3754, Train: 92.50%, Valid: 90.62%, Test: 91.97%, Best Valid: 91.60%, Best Test: 92.91%
+Epoch: 500, Loss: 0.3349, Train: 93.93%, Valid: 91.09%, Test: 92.77%, Best Valid: 91.82%, Best Test: 93.38%
+Epoch: 600, Loss: 0.2968, Train: 93.96%, Valid: 91.16%, Test: 92.48%, Best Valid: 92.25%, Best Test: 93.75%
+Epoch: 700, Loss: 0.2583, Train: 95.20%, Valid: 91.31%, Test: 93.60%, Best Valid: 92.40%, Best Test: 93.64%
+Epoch: 800, Loss: 0.2473, Train: 95.82%, Valid: 92.00%, Test: 93.49%, Best Valid: 92.40%, Best Test: 93.64%
+Epoch: 900, Loss: 0.2141, Train: 96.36%, Valid: 91.89%, Test: 93.71%, Best Valid: 92.40%, Best Test: 93.64%
+Epoch: 1000, Loss: 0.2204, Train: 96.91%, Valid: 91.93%, Test: 93.82%, Best Valid: 92.40%, Best Test: 93.64%
+Epoch: 1100, Loss: 0.1932, Train: 97.47%, Valid: 91.71%, Test: 93.35%, Best Valid: 92.40%, Best Test: 93.64%
+Run 02:
+Highest Train: 97.85
+Highest Valid: 92.40
+Highest Test: 94.11
+Chosen epoch: 692
+Final Train: 95.59
+Final Test: 93.64
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 3.5883, Train: 37.61%, Valid: 36.18%, Test: 38.53%, Best Valid: 36.18%, Best Test: 38.53%
+Epoch: 100, Loss: 0.9693, Train: 80.77%, Valid: 79.53%, Test: 81.61%, Best Valid: 79.53%, Best Test: 81.61%
+Switching Polynormer to global attention phase.
+Epoch: 200, Loss: 3.2236, Train: 37.61%, Valid: 36.18%, Test: 38.53%, Best Valid: 89.38%, Best Test: 90.91%
+Epoch: 300, Loss: 0.4601, Train: 89.94%, Valid: 88.51%, Test: 89.57%, Best Valid: 89.38%, Best Test: 90.91%
+Epoch: 400, Loss: 0.3713, Train: 92.46%, Valid: 90.73%, Test: 92.37%, Best Valid: 90.73%, Best Test: 92.37%
+Epoch: 500, Loss: 0.3338, Train: 94.01%, Valid: 91.38%, Test: 92.98%, Best Valid: 91.78%, Best Test: 92.91%
+Epoch: 600, Loss: 0.3026, Train: 94.32%, Valid: 91.60%, Test: 93.42%, Best Valid: 92.11%, Best Test: 93.13%
+Epoch: 700, Loss: 0.2712, Train: 94.76%, Valid: 91.49%, Test: 93.09%, Best Valid: 92.18%, Best Test: 93.68%
+Epoch: 800, Loss: 0.2554, Train: 95.56%, Valid: 91.67%, Test: 93.53%, Best Valid: 92.18%, Best Test: 93.68%
+Epoch: 900, Loss: 0.2348, Train: 96.33%, Valid: 91.31%, Test: 93.60%, Best Valid: 92.18%, Best Test: 93.68%
+Epoch: 1000, Loss: 0.2120, Train: 96.62%, Valid: 91.13%, Test: 93.38%, Best Valid: 92.18%, Best Test: 93.68%
+Epoch: 1100, Loss: 0.1978, Train: 96.89%, Valid: 91.49%, Test: 93.42%, Best Valid: 92.18%, Best Test: 93.68%
+Run 03:
+Highest Train: 97.55
+Highest Valid: 92.18
+Highest Test: 93.97
+Chosen epoch: 678
+Final Train: 95.20
+Final Test: 93.68
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 3.6198, Train: 37.61%, Valid: 36.18%, Test: 38.53%, Best Valid: 36.18%, Best Test: 38.53%
+Epoch: 100, Loss: 1.0227, Train: 78.16%, Valid: 76.87%, Test: 79.43%, Best Valid: 79.35%, Best Test: 81.03%
+Switching Polynormer to global attention phase.
+Epoch: 200, Loss: 3.2236, Train: 37.61%, Valid: 36.18%, Test: 38.53%, Best Valid: 89.56%, Best Test: 90.99%
+Epoch: 300, Loss: 0.4058, Train: 90.22%, Valid: 88.04%, Test: 90.04%, Best Valid: 89.71%, Best Test: 91.13%
+Epoch: 400, Loss: 0.3488, Train: 92.87%, Valid: 90.95%, Test: 92.22%, Best Valid: 91.09%, Best Test: 92.51%
+Epoch: 500, Loss: 0.3196, Train: 94.02%, Valid: 91.49%, Test: 92.77%, Best Valid: 91.78%, Best Test: 92.48%
+Epoch: 600, Loss: 0.2771, Train: 94.95%, Valid: 91.38%, Test: 93.46%, Best Valid: 92.07%, Best Test: 93.35%
+Epoch: 700, Loss: 0.2527, Train: 95.48%, Valid: 91.82%, Test: 93.68%, Best Valid: 92.07%, Best Test: 93.35%
+Epoch: 800, Loss: 0.2199, Train: 96.41%, Valid: 91.71%, Test: 93.46%, Best Valid: 92.15%, Best Test: 93.89%
+Epoch: 900, Loss: 0.1974, Train: 96.22%, Valid: 91.20%, Test: 93.42%, Best Valid: 92.15%, Best Test: 93.89%
+Epoch: 1000, Loss: 0.2008, Train: 86.47%, Valid: 81.75%, Test: 84.19%, Best Valid: 92.15%, Best Test: 93.89%
+Epoch: 1100, Loss: 0.5946, Train: 88.37%, Valid: 86.73%, Test: 87.31%, Best Valid: 92.15%, Best Test: 93.89%
+Run 04:
+Highest Train: 97.27
+Highest Valid: 92.15
+Highest Test: 94.18
+Chosen epoch: 718
+Final Train: 95.86
+Final Test: 93.89
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 3.4255, Train: 37.61%, Valid: 36.18%, Test: 38.53%, Best Valid: 36.18%, Best Test: 38.53%
+Epoch: 100, Loss: 0.8067, Train: 82.16%, Valid: 81.31%, Test: 83.64%, Best Valid: 81.60%, Best Test: 82.92%
+Switching Polynormer to global attention phase.
+Epoch: 200, Loss: 3.2236, Train: 37.61%, Valid: 36.18%, Test: 38.53%, Best Valid: 89.49%, Best Test: 90.91%
+Epoch: 300, Loss: 0.4449, Train: 90.16%, Valid: 88.87%, Test: 90.33%, Best Valid: 89.67%, Best Test: 91.42%
+Epoch: 400, Loss: 0.3676, Train: 92.39%, Valid: 90.18%, Test: 92.48%, Best Valid: 91.31%, Best Test: 92.51%
+Epoch: 500, Loss: 0.3248, Train: 92.98%, Valid: 90.25%, Test: 92.15%, Best Valid: 92.04%, Best Test: 92.77%
+Epoch: 600, Loss: 0.2879, Train: 95.21%, Valid: 92.04%, Test: 93.71%, Best Valid: 92.44%, Best Test: 93.42%
+Epoch: 700, Loss: 0.2614, Train: 95.48%, Valid: 91.96%, Test: 93.60%, Best Valid: 92.51%, Best Test: 93.31%
+Epoch: 800, Loss: 0.2390, Train: 95.89%, Valid: 91.75%, Test: 93.57%, Best Valid: 92.51%, Best Test: 93.31%
+Epoch: 900, Loss: 0.2330, Train: 96.59%, Valid: 91.96%, Test: 93.35%, Best Valid: 92.51%, Best Test: 93.31%
+Epoch: 1000, Loss: 0.1919, Train: 96.95%, Valid: 91.53%, Test: 93.42%, Best Valid: 92.51%, Best Test: 93.31%
+Epoch: 1100, Loss: 0.1849, Train: 97.58%, Valid: 91.75%, Test: 93.13%, Best Valid: 92.51%, Best Test: 93.31%
+Run 05:
+Highest Train: 97.94
+Highest Valid: 92.51
+Highest Test: 94.07
+Chosen epoch: 611
+Final Train: 95.12
+Final Test: 93.31
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 3.6686, Train: 37.61%, Valid: 36.18%, Test: 38.53%, Best Valid: 36.18%, Best Test: 38.53%
+Epoch: 100, Loss: 0.8990, Train: 81.03%, Valid: 79.31%, Test: 82.01%, Best Valid: 80.36%, Best Test: 81.10%
+Switching Polynormer to global attention phase.
+Epoch: 200, Loss: 3.2236, Train: 37.61%, Valid: 36.18%, Test: 38.53%, Best Valid: 89.67%, Best Test: 90.84%
+Epoch: 300, Loss: 0.4357, Train: 91.06%, Valid: 89.60%, Test: 90.95%, Best Valid: 90.11%, Best Test: 90.91%
+Epoch: 400, Loss: 0.3665, Train: 92.23%, Valid: 90.25%, Test: 91.78%, Best Valid: 90.98%, Best Test: 92.29%
+Epoch: 500, Loss: 0.3301, Train: 93.77%, Valid: 90.91%, Test: 93.09%, Best Valid: 91.67%, Best Test: 93.42%
+Epoch: 600, Loss: 0.2980, Train: 94.47%, Valid: 91.27%, Test: 92.77%, Best Valid: 91.93%, Best Test: 93.53%
+Epoch: 700, Loss: 0.2620, Train: 95.07%, Valid: 91.31%, Test: 93.24%, Best Valid: 92.36%, Best Test: 93.57%
+Epoch: 800, Loss: 0.2300, Train: 95.93%, Valid: 92.22%, Test: 93.31%, Best Valid: 92.36%, Best Test: 93.57%
+Epoch: 900, Loss: 4.1731, Train: 37.61%, Valid: 36.18%, Test: 38.53%, Best Valid: 92.36%, Best Test: 93.57%
+Epoch: 1000, Loss: 1.5206, Train: 60.02%, Valid: 59.35%, Test: 58.60%, Best Valid: 92.36%, Best Test: 93.57%
+Epoch: 1100, Loss: 0.6284, Train: 88.84%, Valid: 86.98%, Test: 89.13%, Best Valid: 92.36%, Best Test: 93.57%
+Run 06:
+Highest Train: 96.17
+Highest Valid: 92.36
+Highest Test: 93.82
+Chosen epoch: 664
+Final Train: 95.03
+Final Test: 93.57
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 3.6987, Train: 37.61%, Valid: 36.18%, Test: 38.53%, Best Valid: 36.18%, Best Test: 38.53%
+Epoch: 100, Loss: 0.8733, Train: 81.91%, Valid: 81.27%, Test: 82.99%, Best Valid: 81.27%, Best Test: 82.99%
+Switching Polynormer to global attention phase.
+Epoch: 200, Loss: 3.2236, Train: 15.50%, Valid: 16.00%, Test: 15.38%, Best Valid: 89.38%, Best Test: 91.13%
+Epoch: 300, Loss: 0.4240, Train: 91.21%, Valid: 89.16%, Test: 90.95%, Best Valid: 90.11%, Best Test: 91.42%
+Epoch: 400, Loss: 0.3412, Train: 92.95%, Valid: 90.73%, Test: 92.62%, Best Valid: 91.64%, Best Test: 93.20%
+Epoch: 500, Loss: 0.3263, Train: 93.70%, Valid: 90.95%, Test: 93.02%, Best Valid: 91.75%, Best Test: 93.28%
+Epoch: 600, Loss: 0.2712, Train: 95.13%, Valid: 91.93%, Test: 93.46%, Best Valid: 92.36%, Best Test: 93.31%
+Epoch: 700, Loss: 0.2566, Train: 95.49%, Valid: 91.96%, Test: 93.31%, Best Valid: 92.44%, Best Test: 93.46%
+Epoch: 800, Loss: 0.2352, Train: 95.73%, Valid: 91.56%, Test: 93.68%, Best Valid: 92.47%, Best Test: 93.75%
+Epoch: 900, Loss: 4.0849, Train: 37.62%, Valid: 36.18%, Test: 38.53%, Best Valid: 92.47%, Best Test: 93.75%
+Epoch: 1000, Loss: 0.8521, Train: 71.89%, Valid: 71.67%, Test: 71.76%, Best Valid: 92.47%, Best Test: 93.75%
+Epoch: 1100, Loss: 0.5002, Train: 89.09%, Valid: 86.44%, Test: 88.48%, Best Valid: 92.47%, Best Test: 93.75%
+Run 07:
+Highest Train: 96.28
+Highest Valid: 92.47
+Highest Test: 94.00
+Chosen epoch: 749
+Final Train: 95.95
+Final Test: 93.75
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 3.4864, Train: 37.61%, Valid: 36.18%, Test: 38.53%, Best Valid: 36.18%, Best Test: 38.53%
+Epoch: 100, Loss: 0.8009, Train: 82.60%, Valid: 82.07%, Test: 83.39%, Best Valid: 83.67%, Best Test: 85.13%
+Switching Polynormer to global attention phase.
+Epoch: 200, Loss: 3.2236, Train: 37.61%, Valid: 36.18%, Test: 38.53%, Best Valid: 89.67%, Best Test: 91.06%
+Epoch: 300, Loss: 0.4164, Train: 91.06%, Valid: 89.35%, Test: 90.77%, Best Valid: 90.00%, Best Test: 91.38%
+Epoch: 400, Loss: 0.3440, Train: 93.01%, Valid: 90.91%, Test: 92.73%, Best Valid: 90.95%, Best Test: 92.55%
+Epoch: 500, Loss: 0.3145, Train: 93.61%, Valid: 90.73%, Test: 92.62%, Best Valid: 91.56%, Best Test: 92.40%
+Epoch: 600, Loss: 0.2772, Train: 95.02%, Valid: 92.04%, Test: 93.57%, Best Valid: 92.04%, Best Test: 93.57%
+Epoch: 700, Loss: 0.2480, Train: 94.98%, Valid: 91.09%, Test: 93.02%, Best Valid: 92.51%, Best Test: 93.49%
+Epoch: 800, Loss: 0.2328, Train: 95.72%, Valid: 91.38%, Test: 93.20%, Best Valid: 92.51%, Best Test: 93.49%
+Epoch: 900, Loss: 0.2111, Train: 96.30%, Valid: 91.53%, Test: 93.49%, Best Valid: 92.51%, Best Test: 93.49%
+Epoch: 1000, Loss: 0.2052, Train: 96.47%, Valid: 90.65%, Test: 93.57%, Best Valid: 92.51%, Best Test: 93.49%
+Epoch: 1100, Loss: 0.1966, Train: 97.19%, Valid: 91.27%, Test: 93.31%, Best Valid: 92.51%, Best Test: 93.49%
+Run 08:
+Highest Train: 97.66
+Highest Valid: 92.51
+Highest Test: 94.15
+Chosen epoch: 630
+Final Train: 95.37
+Final Test: 93.49
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 3.6632, Train: 37.61%, Valid: 36.18%, Test: 38.53%, Best Valid: 36.18%, Best Test: 38.53%
+Epoch: 100, Loss: 0.9829, Train: 80.32%, Valid: 79.85%, Test: 80.66%, Best Valid: 79.85%, Best Test: 80.66%
+Switching Polynormer to global attention phase.
+Epoch: 200, Loss: 3.2236, Train: 37.61%, Valid: 36.18%, Test: 38.53%, Best Valid: 89.24%, Best Test: 91.38%
+Epoch: 300, Loss: 0.4248, Train: 90.80%, Valid: 89.35%, Test: 90.91%, Best Valid: 89.56%, Best Test: 90.59%
+Epoch: 400, Loss: 0.3598, Train: 93.06%, Valid: 91.31%, Test: 92.37%, Best Valid: 91.31%, Best Test: 92.37%
+Epoch: 500, Loss: 0.4121, Train: 92.97%, Valid: 91.31%, Test: 91.82%, Best Valid: 91.93%, Best Test: 92.95%
+Epoch: 600, Loss: 0.2981, Train: 93.96%, Valid: 91.16%, Test: 92.88%, Best Valid: 91.93%, Best Test: 92.95%
+Epoch: 700, Loss: 0.2760, Train: 94.49%, Valid: 91.27%, Test: 92.55%, Best Valid: 92.22%, Best Test: 93.38%
+Epoch: 800, Loss: 0.2490, Train: 94.76%, Valid: 90.87%, Test: 92.51%, Best Valid: 92.36%, Best Test: 93.82%
+Epoch: 900, Loss: 0.2304, Train: 96.22%, Valid: 91.60%, Test: 93.38%, Best Valid: 92.36%, Best Test: 93.82%
+Epoch: 1000, Loss: 0.2094, Train: 96.70%, Valid: 91.82%, Test: 93.42%, Best Valid: 92.36%, Best Test: 93.82%
+Epoch: 1100, Loss: 0.1913, Train: 96.97%, Valid: 91.49%, Test: 93.57%, Best Valid: 92.36%, Best Test: 93.82%
+Run 09:
+Highest Train: 97.61
+Highest Valid: 92.36
+Highest Test: 94.04
+Chosen epoch: 739
+Final Train: 95.44
+Final Test: 93.82
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 3.7609, Train: 37.61%, Valid: 36.18%, Test: 38.53%, Best Valid: 36.18%, Best Test: 38.53%
+Epoch: 100, Loss: 0.8883, Train: 81.81%, Valid: 80.33%, Test: 82.66%, Best Valid: 81.05%, Best Test: 82.77%
+Switching Polynormer to global attention phase.
+Epoch: 200, Loss: 3.2236, Train: 37.61%, Valid: 36.18%, Test: 38.53%, Best Valid: 89.60%, Best Test: 91.06%
+Epoch: 300, Loss: 0.4194, Train: 89.36%, Valid: 88.11%, Test: 89.13%, Best Valid: 89.60%, Best Test: 91.06%
+Epoch: 400, Loss: 0.3483, Train: 89.48%, Valid: 87.45%, Test: 89.42%, Best Valid: 91.60%, Best Test: 92.55%
+Epoch: 500, Loss: 0.3004, Train: 94.05%, Valid: 91.89%, Test: 92.88%, Best Valid: 92.15%, Best Test: 93.24%
+Epoch: 600, Loss: 0.2730, Train: 95.15%, Valid: 91.89%, Test: 93.46%, Best Valid: 92.40%, Best Test: 93.06%
+Epoch: 700, Loss: 0.2460, Train: 95.75%, Valid: 92.18%, Test: 93.53%, Best Valid: 92.47%, Best Test: 94.18%
+Epoch: 800, Loss: 0.2271, Train: 96.01%, Valid: 92.25%, Test: 93.46%, Best Valid: 92.47%, Best Test: 94.18%
+Epoch: 900, Loss: 0.2184, Train: 96.56%, Valid: 91.78%, Test: 93.89%, Best Valid: 92.47%, Best Test: 94.18%
+Epoch: 1000, Loss: 1.1559, Train: 73.11%, Valid: 70.84%, Test: 72.41%, Best Valid: 92.47%, Best Test: 94.18%
+Epoch: 1100, Loss: 0.5948, Train: 88.32%, Valid: 85.75%, Test: 88.04%, Best Valid: 92.47%, Best Test: 94.18%
+Run 10:
+Highest Train: 97.01
+Highest Valid: 92.47
+Highest Test: 94.18
+Chosen epoch: 697
+Final Train: 95.73
+Final Test: 94.18
+All runs:
+Highest Train: 97.37 ± 0.70
+Highest Test: 94.09 ± 0.14
+Highest Valid: 92.40 ± 0.14
+  Final Train: 95.45 ± 0.32
+   Final Test: 93.69 ± 0.24
+Saving results to results_tuned/amazon-computer/polynormer.csv
+Condition sweep completed.
+Task 19 done.

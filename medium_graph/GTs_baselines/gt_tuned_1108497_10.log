@@ -1,0 +1,211 @@
+Sat Jul 18 17:02:08 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.159.04             Driver Version: 580.159.04     CUDA Version: 13.0     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA A100-SXM4-80GB          On  |   00000000:01:00.0 Off |                   On |
+| N/A   36C    P0             92W /  500W |    1535MiB /  81920MiB |     N/A      Default |
+|                                         |                        |              Enabled |
++-----------------------------------------+------------------------+----------------------+
+|   1  NVIDIA A100-SXM4-80GB          On  |   00000000:41:00.0 Off |                   On |
+| N/A   30C    P0             93W /  500W |    1409MiB /  81920MiB |     N/A      Default |
+|                                         |                        |              Enabled |
++-----------------------------------------+------------------------+----------------------+
+|   2  NVIDIA A100-SXM4-80GB          On  |   00000000:81:00.0 Off |                   On |
+| N/A   29C    P0             50W /  500W |     249MiB /  81920MiB |     N/A      Default |
+|                                         |                        |              Enabled |
++-----------------------------------------+------------------------+----------------------+
+|   3  NVIDIA A100-SXM4-80GB          On  |   00000000:C1:00.0 Off |                   On |
+| N/A   34C    P0            137W /  500W |    7345MiB /  81920MiB |     N/A      Default |
+|                                         |                        |              Enabled |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| MIG devices:                                                                            |
++------------------+----------------------------------+-----------+-----------------------+
+| GPU  GI  CI  MIG |              Shared Memory-Usage |        Vol|        Shared         |
+|      ID  ID  Dev |                Shared BAR1-Usage | SM     Unc| CE ENC  DEC  OFA  JPG |
+|                  |                                  |        ECC|                       |
+|==================+==================================+===========+=======================|
+|  2    3   0   0  |              71MiB / 19968MiB    | 28      0 |  2   0    1    0    0 |
+|                  |               0MiB / 12271MiB    |           |                       |
++------------------+----------------------------------+-----------+-----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0    5    0          1450435      C   python                                 1278MiB |
+|    1    3    0          1450435      C   python                                 1152MiB |
+|    3    5    0          1477617      C   python                                 7088MiB |
++-----------------------------------------------------------------------------------------+
+Verifying published config: sgformer / citeseer
+python main.py --model sgformer --dataset citeseer --lr 0.005 --layers 4 --tr_layers 1 --hidden_channels 64 --weight_decay 0.01 --dropout 0.5 --tr_dropout 0.3 --tr_weight_decay 0.01 --use_graph --graph_weight 0.7 --alpha 0.5 --num_heads 1 --epochs 500 --rand_split_class --valid_num 500 --test_num 1000 --seed 123 --runs $RUNS --device $DEVICE $EXTRA
+Namespace(aggregate='add', alpha=0.5, attention='gcn', beta=-1.0, bn=False, cpu=False, data_dir='../data/', dataset='citeseer', device=0, dim_inner=64, display_step=100, dropout=0.5, epochs=500, global_dropout=None, global_epochs=0, global_layers=2, gnn='gcn', graph_weight=0.7, hidden_channels=64, hops=10, in_dropout=0.0, jk=False, label_num_per_class=20, lambda_val=0.5, layers=4, ln=False, local_epochs=0, local_gnn_type='GCN', local_layers=7, lr=0.005, metric='acc', mlp_epochs=500, mlp_reg=False, model='sgformer', model_dir='models/gt_tuned_1108497_10', n_heads=1, num_centroids=4096, num_heads=1, oracle_reg=False, paired_seeds=True, pe_types='RWSE', penalty_transform='none', pre_linear=False, pre_ln=False, rand_split=False, rand_split_class=True, reg_start_epoch=10, reg_update_freq=5, res=False, result_dir='results_tuned', runs=10, save_model=False, save_result=False, seed=123, test_num=1000, tr_dropout=0.3, tr_layers=1, tr_weight_decay=0.01, train_prop=0.5, use_act=False, use_bn=False, use_graph=True, use_reg=False, use_residual=False, use_weight=False, valid_num=500, valid_prop=0.25, weight_decay=0.01)
+citeseer
+Num nodes: 3327
+train:torch.Size([120]), valid:torch.Size([500]), test:torch.Size([1000])
+dataset citeseer | num nodes 3327 | num edge 9104 | num node feats 3703 | num classes 6
+MODEL: SGFormer(
+  (trans_conv): TransConv(
+    (convs): ModuleList(
+      (0): TransConvLayer(
+        (Wk): Linear(in_features=64, out_features=64, bias=True)
+        (Wq): Linear(in_features=64, out_features=64, bias=True)
+      )
+    )
+    (fcs): ModuleList(
+      (0): Linear(in_features=3703, out_features=64, bias=True)
+    )
+    (bns): ModuleList(
+      (0): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+      (1): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+    )
+  )
+  (gnn): GCN(
+    (convs): ModuleList(
+      (0): GCNConv(3703, 64)
+      (1): GCNConv(64, 64)
+      (2): GCNConv(64, 64)
+      (3): GCNConv(64, 64)
+    )
+    (bns): ModuleList(
+      (0): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (1): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (2): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    )
+  )
+  (fc): Linear(in_features=64, out_features=6, bias=True)
+)
+Epoch: 00, Loss: 1.7945, Train: 19.17%, Valid: 16.00%, Test: 18.10%, Best Valid: 16.00%, Best Test: 18.10%
+Epoch: 100, Loss: 0.0758, Train: 99.17%, Valid: 63.20%, Test: 66.60%, Best Valid: 66.20%, Best Test: 67.80%
+Epoch: 200, Loss: 0.0720, Train: 99.17%, Valid: 66.00%, Test: 67.00%, Best Valid: 66.20%, Best Test: 67.80%
+Epoch: 300, Loss: 0.0623, Train: 99.17%, Valid: 63.60%, Test: 65.50%, Best Valid: 66.80%, Best Test: 67.60%
+Epoch: 400, Loss: 0.0578, Train: 100.00%, Valid: 65.80%, Test: 64.80%, Best Valid: 67.60%, Best Test: 68.70%
+Run 01:
+Highest Train: 100.00
+Highest Valid: 68.00
+Highest Test: 69.10
+Chosen epoch: 423
+Final Train: 100.00
+Final Test: 67.70
+Epoch: 00, Loss: 1.7942, Train: 35.00%, Valid: 22.00%, Test: 21.40%, Best Valid: 22.00%, Best Test: 21.40%
+Epoch: 100, Loss: 0.0929, Train: 99.17%, Valid: 60.60%, Test: 64.00%, Best Valid: 67.40%, Best Test: 69.20%
+Epoch: 200, Loss: 0.0591, Train: 100.00%, Valid: 60.00%, Test: 62.40%, Best Valid: 67.40%, Best Test: 69.20%
+Epoch: 300, Loss: 0.0684, Train: 99.17%, Valid: 57.00%, Test: 62.70%, Best Valid: 67.40%, Best Test: 69.20%
+Epoch: 400, Loss: 0.0486, Train: 100.00%, Valid: 60.20%, Test: 63.50%, Best Valid: 67.40%, Best Test: 69.20%
+Run 02:
+Highest Train: 100.00
+Highest Valid: 67.40
+Highest Test: 69.70
+Chosen epoch: 30
+Final Train: 99.17
+Final Test: 69.20
+Epoch: 00, Loss: 1.7937, Train: 33.33%, Valid: 26.80%, Test: 25.30%, Best Valid: 26.80%, Best Test: 25.30%
+Epoch: 100, Loss: 0.0590, Train: 100.00%, Valid: 64.40%, Test: 68.70%, Best Valid: 68.40%, Best Test: 70.80%
+Epoch: 200, Loss: 0.0583, Train: 100.00%, Valid: 66.20%, Test: 68.40%, Best Valid: 69.00%, Best Test: 71.30%
+Epoch: 300, Loss: 0.0627, Train: 100.00%, Valid: 66.20%, Test: 68.50%, Best Valid: 69.00%, Best Test: 71.30%
+Epoch: 400, Loss: 0.0541, Train: 100.00%, Valid: 67.40%, Test: 71.50%, Best Valid: 69.00%, Best Test: 71.30%
+Run 03:
+Highest Train: 100.00
+Highest Valid: 69.60
+Highest Test: 72.20
+Chosen epoch: 407
+Final Train: 100.00
+Final Test: 72.00
+Epoch: 00, Loss: 1.7947, Train: 32.50%, Valid: 10.80%, Test: 11.40%, Best Valid: 10.80%, Best Test: 11.40%
+Epoch: 100, Loss: 0.0505, Train: 100.00%, Valid: 66.80%, Test: 70.90%, Best Valid: 68.80%, Best Test: 69.90%
+Epoch: 200, Loss: 0.0481, Train: 100.00%, Valid: 64.00%, Test: 67.90%, Best Valid: 68.80%, Best Test: 69.90%
+Epoch: 300, Loss: 0.0636, Train: 100.00%, Valid: 63.60%, Test: 64.60%, Best Valid: 68.80%, Best Test: 69.90%
+Epoch: 400, Loss: 0.0525, Train: 100.00%, Valid: 64.00%, Test: 64.80%, Best Valid: 68.80%, Best Test: 69.90%
+Run 04:
+Highest Train: 100.00
+Highest Valid: 68.80
+Highest Test: 72.10
+Chosen epoch: 28
+Final Train: 99.17
+Final Test: 69.90
+Epoch: 00, Loss: 1.7906, Train: 60.83%, Valid: 30.80%, Test: 35.50%, Best Valid: 30.80%, Best Test: 35.50%
+Epoch: 100, Loss: 0.0669, Train: 100.00%, Valid: 60.60%, Test: 65.70%, Best Valid: 66.20%, Best Test: 70.90%
+Epoch: 200, Loss: 0.0575, Train: 100.00%, Valid: 62.00%, Test: 65.90%, Best Valid: 66.20%, Best Test: 70.90%
+Epoch: 300, Loss: 0.0561, Train: 98.33%, Valid: 61.60%, Test: 67.20%, Best Valid: 66.20%, Best Test: 70.90%
+Epoch: 400, Loss: 0.0468, Train: 100.00%, Valid: 60.20%, Test: 67.80%, Best Valid: 66.20%, Best Test: 70.90%
+Run 05:
+Highest Train: 100.00
+Highest Valid: 66.20
+Highest Test: 71.20
+Chosen epoch: 16
+Final Train: 99.17
+Final Test: 70.90
+Epoch: 00, Loss: 1.7923, Train: 41.67%, Valid: 22.40%, Test: 21.80%, Best Valid: 22.40%, Best Test: 21.80%
+Epoch: 100, Loss: 0.0765, Train: 100.00%, Valid: 66.80%, Test: 68.10%, Best Valid: 68.40%, Best Test: 69.30%
+Epoch: 200, Loss: 0.0637, Train: 100.00%, Valid: 63.00%, Test: 64.00%, Best Valid: 68.40%, Best Test: 69.30%
+Epoch: 300, Loss: 0.0479, Train: 100.00%, Valid: 65.20%, Test: 66.90%, Best Valid: 68.60%, Best Test: 67.70%
+Epoch: 400, Loss: 0.0489, Train: 100.00%, Valid: 64.80%, Test: 64.60%, Best Valid: 68.60%, Best Test: 67.70%
+Run 06:
+Highest Train: 100.00
+Highest Valid: 68.60
+Highest Test: 71.00
+Chosen epoch: 279
+Final Train: 99.17
+Final Test: 67.70
+Epoch: 00, Loss: 1.7985, Train: 44.17%, Valid: 21.60%, Test: 23.10%, Best Valid: 21.60%, Best Test: 23.10%
+Epoch: 100, Loss: 0.0559, Train: 100.00%, Valid: 61.00%, Test: 65.30%, Best Valid: 65.40%, Best Test: 68.50%
+Epoch: 200, Loss: 0.0715, Train: 100.00%, Valid: 58.60%, Test: 63.80%, Best Valid: 65.40%, Best Test: 68.50%
+Epoch: 300, Loss: 0.0507, Train: 100.00%, Valid: 62.60%, Test: 66.50%, Best Valid: 65.40%, Best Test: 68.50%
+Epoch: 400, Loss: 0.0746, Train: 100.00%, Valid: 61.20%, Test: 65.90%, Best Valid: 65.40%, Best Test: 68.50%
+Run 07:
+Highest Train: 100.00
+Highest Valid: 65.40
+Highest Test: 69.60
+Chosen epoch: 36
+Final Train: 99.17
+Final Test: 68.50
+Epoch: 00, Loss: 1.7935, Train: 63.33%, Valid: 40.80%, Test: 41.10%, Best Valid: 40.80%, Best Test: 41.10%
+Epoch: 100, Loss: 0.0529, Train: 100.00%, Valid: 60.60%, Test: 63.90%, Best Valid: 66.40%, Best Test: 67.60%
+Epoch: 200, Loss: 0.0722, Train: 99.17%, Valid: 62.60%, Test: 64.80%, Best Valid: 66.40%, Best Test: 67.60%
+Epoch: 300, Loss: 0.0565, Train: 100.00%, Valid: 61.60%, Test: 65.80%, Best Valid: 66.40%, Best Test: 67.60%
+Epoch: 400, Loss: 0.0617, Train: 100.00%, Valid: 62.00%, Test: 66.90%, Best Valid: 66.40%, Best Test: 67.60%
+Run 08:
+Highest Train: 100.00
+Highest Valid: 66.40
+Highest Test: 71.30
+Chosen epoch: 9
+Final Train: 98.33
+Final Test: 67.60
+Epoch: 00, Loss: 1.7943, Train: 44.17%, Valid: 14.80%, Test: 15.50%, Best Valid: 14.80%, Best Test: 15.50%
+Epoch: 100, Loss: 0.0637, Train: 100.00%, Valid: 62.80%, Test: 66.40%, Best Valid: 66.00%, Best Test: 66.80%
+Epoch: 200, Loss: 0.0528, Train: 100.00%, Valid: 62.40%, Test: 64.80%, Best Valid: 66.00%, Best Test: 66.80%
+Epoch: 300, Loss: 0.0698, Train: 100.00%, Valid: 62.20%, Test: 65.50%, Best Valid: 66.00%, Best Test: 66.80%
+Epoch: 400, Loss: 0.0550, Train: 100.00%, Valid: 61.20%, Test: 66.10%, Best Valid: 66.00%, Best Test: 66.80%
+Run 09:
+Highest Train: 100.00
+Highest Valid: 66.00
+Highest Test: 68.00
+Chosen epoch: 80
+Final Train: 100.00
+Final Test: 66.80
+Epoch: 00, Loss: 1.7936, Train: 23.33%, Valid: 16.60%, Test: 15.70%, Best Valid: 16.60%, Best Test: 15.70%
+Epoch: 100, Loss: 0.0621, Train: 100.00%, Valid: 62.00%, Test: 65.70%, Best Valid: 65.00%, Best Test: 67.50%
+Epoch: 200, Loss: 0.0535, Train: 100.00%, Valid: 62.20%, Test: 67.10%, Best Valid: 65.60%, Best Test: 66.60%
+Epoch: 300, Loss: 0.0382, Train: 100.00%, Valid: 62.80%, Test: 67.40%, Best Valid: 65.60%, Best Test: 66.60%
+Epoch: 400, Loss: 0.0536, Train: 100.00%, Valid: 62.60%, Test: 66.20%, Best Valid: 65.60%, Best Test: 66.60%
+Run 10:
+Highest Train: 100.00
+Highest Valid: 65.60
+Highest Test: 69.30
+Chosen epoch: 154
+Final Train: 100.00
+Final Test: 66.60
+All runs:
+Highest Train: 100.00 ± 0.00
+Highest Test: 70.35 ± 1.40
+Highest Valid: 67.20 ± 1.48
+  Final Train: 99.42 ± 0.56
+   Final Test: 68.69 ± 1.79
+Saving results to results_tuned/citeseer/sgformer.csv
+Done: sgformer / citeseer
