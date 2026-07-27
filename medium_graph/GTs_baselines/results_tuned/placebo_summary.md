@@ -3,112 +3,113 @@
 λ selected by mean validation accuracy; test reported at λ*.
 penalty_dist ≈ 0 ⇒ the transform barely changed the penalty and that placebo row has no power.
 
-         dataset      model     condition  lambda*  n_pairs     baseline         test paired_Δ p (Wilcoxon) penalty_dist offdiag_cv
- amazon-computer polynormer mlp/homophily     0.20       10 93.68 ± 0.14 93.61 ± 0.18    -0.07        0.844        0.312      0.302
- amazon-computer polynormer      mlp/none     0.01       10 93.68 ± 0.14 93.55 ± 0.22    -0.12        0.098        0.000      0.302
- amazon-computer polynormer   mlp/shuffle     0.40       10 93.68 ± 0.14 93.57 ± 0.21    -0.10        0.195        0.504      0.302
- amazon-computer polynormer   oracle/none     0.10       10 93.68 ± 0.14 93.62 ± 0.31    -0.05        0.432        0.000      0.349
- amazon-computer   sgformer mlp/homophily     0.40       10 83.05 ± 0.66 84.06 ± 1.37    +1.01        0.037        0.320      0.300
- amazon-computer   sgformer      mlp/none     0.20       10 83.05 ± 0.66 83.76 ± 0.48    +0.71        0.012        0.000      0.300
- amazon-computer   sgformer   mlp/shuffle     0.40       10 83.05 ± 0.66 83.28 ± 1.69    +0.23        0.492        0.521      0.300
- amazon-computer   sgformer   oracle/none     0.20       10 83.05 ± 0.66 83.90 ± 0.48    +0.85        0.004        0.000      0.349
-    amazon-photo polynormer mlp/homophily     0.40       10 96.52 ± 0.29 96.25 ± 0.34    -0.26        0.084        0.270      0.280
-    amazon-photo polynormer      mlp/none     0.01       10 96.52 ± 0.29 96.42 ± 0.24    -0.09        0.359        0.000      0.280
-    amazon-photo polynormer   mlp/shuffle     0.20       10 96.52 ± 0.29 96.50 ± 0.24    -0.02        1.000        0.577      0.280
-    amazon-photo polynormer   oracle/none     0.40       10 96.52 ± 0.29 96.58 ± 0.21    +0.07        0.625        0.000      0.371
-    amazon-photo   sgformer mlp/homophily     0.01       10 93.03 ± 0.34 93.00 ± 0.35    -0.03        0.432        0.278      0.285
-    amazon-photo   sgformer      mlp/none     0.01       10 93.03 ± 0.34 92.98 ± 0.41    -0.05        0.359        0.000      0.285
-    amazon-photo   sgformer   mlp/shuffle     0.01       10 93.03 ± 0.34 93.03 ± 0.33    +0.01        0.844        0.587      0.285
-    amazon-photo   sgformer   oracle/none     0.01       10 93.03 ± 0.34 92.92 ± 0.61    -0.11        0.570        0.000      0.371
-  amazon-ratings polynormer mlp/homophily     0.40       10 54.44 ± 0.48 55.07 ± 0.59    +0.63        0.010        0.389      0.456
-  amazon-ratings polynormer      mlp/none     0.40       10 54.44 ± 0.48 55.05 ± 0.31    +0.61        0.014        0.000      0.456
-  amazon-ratings polynormer   mlp/shuffle     0.10       10 54.44 ± 0.48 54.63 ± 0.45    +0.19        0.160        0.588      0.456
-  amazon-ratings polynormer   oracle/none     0.40       10 54.44 ± 0.48 55.11 ± 0.57    +0.67        0.004        0.000      0.411
-  amazon-ratings   sgformer mlp/homophily     0.40       10 53.98 ± 0.55 54.35 ± 0.53    +0.37        0.006        0.355      0.416
-  amazon-ratings   sgformer      mlp/none     0.40       10 53.98 ± 0.55 54.27 ± 0.54    +0.29        0.049        0.000      0.416
-  amazon-ratings   sgformer   mlp/shuffle     0.05       10 53.98 ± 0.55 54.15 ± 0.75    +0.16        0.426        0.543      0.416
-  amazon-ratings   sgformer   oracle/none     0.40       10 53.98 ± 0.55 54.34 ± 0.49    +0.36        0.064        0.000      0.411
-       chameleon polynormer mlp/homophily     0.05       10 41.79 ± 4.47 40.61 ± 3.32    -1.19        0.301        0.091      0.107
-       chameleon polynormer      mlp/none     0.10       10 41.79 ± 4.47 40.21 ± 3.86    -1.58        0.105        0.000      0.107
-       chameleon polynormer   mlp/shuffle     0.10       10 41.79 ± 4.47 39.22 ± 3.82    -2.57        0.008        0.150      0.107
-       chameleon polynormer   oracle/none     0.20       10 41.79 ± 4.47 42.15 ± 4.14    +0.36        0.641        0.000      0.210
-       chameleon   sgformer mlp/homophily     0.20       10 41.59 ± 4.28 41.51 ± 3.71    -0.07        0.426        0.089      0.106
-       chameleon   sgformer      mlp/none     0.05       10 41.59 ± 4.28 41.83 ± 3.86    +0.24        1.000        0.000      0.106
-       chameleon   sgformer   mlp/shuffle     0.40       10 41.59 ± 4.28 41.30 ± 3.76    -0.29        0.734        0.152      0.106
-       chameleon   sgformer   oracle/none     0.20       10 41.59 ± 4.28 41.49 ± 3.96    -0.10        0.922        0.000      0.210
-        citeseer polynormer mlp/homophily     0.20       10 67.94 ± 1.38 69.00 ± 1.19    +1.06        0.098        0.044      0.049
-        citeseer polynormer      mlp/none     0.10       10 67.94 ± 1.38 69.22 ± 1.25    +1.28        0.008        0.000      0.049
-        citeseer polynormer   mlp/shuffle     0.05       10 67.94 ± 1.38 68.91 ± 1.33    +0.97        0.027        0.125      0.049
-        citeseer polynormer   oracle/none     0.05       10 67.94 ± 1.38 68.20 ± 1.04    +0.26        0.232        0.000      0.207
-        citeseer   sgformer mlp/homophily     0.10       10 68.69 ± 1.79 68.79 ± 1.33    +0.10        0.652        0.054      0.060
-        citeseer   sgformer      mlp/none     0.01       10 68.69 ± 1.79 68.88 ± 1.50    +0.19        0.695        0.000      0.060
-        citeseer   sgformer   mlp/shuffle     0.05       10 68.69 ± 1.79 68.81 ± 1.18    +0.12        0.922        0.112      0.060
-        citeseer   sgformer   oracle/none     0.40       10 68.69 ± 1.79 70.94 ± 1.24    +2.25        0.002        0.000      0.207
-     coauthor-cs polynormer mlp/homophily     0.01       10 95.37 ± 0.22 95.49 ± 0.22    +0.13        0.098        0.240      0.248
-     coauthor-cs polynormer      mlp/none     0.10       10 95.37 ± 0.22 95.52 ± 0.15    +0.16        0.055        0.000      0.248
-     coauthor-cs polynormer   mlp/shuffle     0.20       10 95.37 ± 0.22 95.34 ± 0.27    -0.02        1.000        0.482      0.248
-     coauthor-cs polynormer   oracle/none     0.10       10 95.37 ± 0.22 95.43 ± 0.20    +0.07        0.375        0.000      0.437
-     coauthor-cs   sgformer mlp/homophily     0.40       10 92.93 ± 0.32 93.14 ± 0.23    +0.20        0.014        0.272      0.270
-     coauthor-cs   sgformer      mlp/none     0.20       10 92.93 ± 0.32 93.05 ± 0.22    +0.12        0.164        0.000      0.270
-     coauthor-cs   sgformer   mlp/shuffle     0.01       10 92.93 ± 0.32 92.97 ± 0.31    +0.03        0.734        0.506      0.270
-     coauthor-cs   sgformer   oracle/none     0.20       10 92.93 ± 0.32 93.11 ± 0.18    +0.17        0.105        0.000      0.437
-coauthor-physics polynormer mlp/homophily     0.01       10 97.10 ± 0.09 97.10 ± 0.05    +0.01        0.570        0.199      0.243
-coauthor-physics polynormer      mlp/none     0.10       10 97.10 ± 0.09 97.09 ± 0.08    -0.01        0.652        0.000      0.243
-coauthor-physics polynormer   mlp/shuffle     0.05       10 97.10 ± 0.09 97.14 ± 0.06    +0.04        0.195        0.650      0.243
-coauthor-physics polynormer   oracle/none     0.10       10 97.10 ± 0.09 97.11 ± 0.06    +0.01        0.820        0.000      0.245
-coauthor-physics   sgformer mlp/homophily     0.20       10 96.18 ± 0.07 96.12 ± 0.05    -0.06        0.049        0.212      0.248
-coauthor-physics   sgformer      mlp/none     0.20       10 96.18 ± 0.07 96.09 ± 0.05    -0.09        0.014        0.000      0.248
-coauthor-physics   sgformer   mlp/shuffle     0.20       10 96.18 ± 0.07 96.17 ± 0.06    -0.01        0.652        0.658      0.248
-coauthor-physics   sgformer   oracle/none     0.20       10 96.18 ± 0.07 96.08 ± 0.04    -0.10        0.006        0.000      0.245
-            cora polynormer mlp/homophily     0.40       10 83.08 ± 0.38 83.19 ± 0.82    +0.11        0.695        0.053      0.059
-            cora polynormer      mlp/none     0.10       10 83.08 ± 0.38 82.64 ± 1.08    -0.44        0.322        0.000      0.059
-            cora polynormer   mlp/shuffle     0.01       10 83.08 ± 0.38 82.63 ± 0.82    -0.45        0.203        0.168      0.059
-            cora polynormer   oracle/none     0.40       10 83.08 ± 0.38 83.93 ± 0.85    +0.85        0.010        0.000      0.303
-            cora   sgformer mlp/homophily     0.10       10 82.59 ± 1.18 82.10 ± 1.07    -0.49        0.160        0.097      0.105
-            cora   sgformer      mlp/none     0.10       10 82.59 ± 1.18 82.17 ± 1.49    -0.42        0.375        0.000      0.105
-            cora   sgformer   mlp/shuffle     0.20       10 82.59 ± 1.18 81.59 ± 1.70    -1.00        0.129        0.310      0.105
-            cora   sgformer   oracle/none     0.40       10 82.59 ± 1.18 82.93 ± 0.98    +0.34        0.820        0.000      0.303
-     minesweeper polynormer      mlp/none     0.10       10 97.24 ± 0.45 97.26 ± 0.21    +0.03        0.695        0.000      1.066
-     minesweeper polynormer   mlp/shuffle     0.05       10 97.24 ± 0.45 97.24 ± 0.46    -0.00        0.695        0.692      1.066
-     minesweeper polynormer   oracle/none     0.05       10 97.24 ± 0.45 97.27 ± 0.29    +0.04        0.922        0.000      0.938
-     minesweeper   sgformer      mlp/none     0.01       10 80.91 ± 0.73 80.85 ± 0.76    -0.06        0.037        0.000      1.054
-     minesweeper   sgformer   mlp/shuffle     0.05       10 80.91 ± 0.73 80.81 ± 0.78    -0.10        0.084        0.686      1.054
-     minesweeper   sgformer   oracle/none     0.05       10 80.91 ± 0.73 80.83 ± 0.76    -0.08        0.105        0.000      0.938
-          pubmed polynormer mlp/homophily     0.20       10 76.66 ± 1.52 76.94 ± 1.34    +0.28        0.625        0.075      0.096
-          pubmed polynormer      mlp/none     0.20       10 76.66 ± 1.52 76.20 ± 0.99    -0.46        0.322        0.000      0.096
-          pubmed polynormer   mlp/shuffle     0.10       10 76.66 ± 1.52 76.22 ± 1.20    -0.44        0.432        0.337      0.096
-          pubmed polynormer   oracle/none     0.40       10 76.66 ± 1.52 77.33 ± 1.21    +0.67        0.375        0.000      0.197
-          pubmed   sgformer mlp/homophily     0.05       10 78.62 ± 0.87 79.28 ± 0.52    +0.66        0.049        0.090      0.115
-          pubmed   sgformer      mlp/none     0.20       10 78.62 ± 0.87 78.98 ± 0.51    +0.36        0.105        0.000      0.115
-          pubmed   sgformer   mlp/shuffle     0.05       10 78.62 ± 0.87 79.03 ± 1.06    +0.41        0.322        0.380      0.115
-          pubmed   sgformer   oracle/none     0.40       10 78.62 ± 0.87 78.90 ± 1.67    +0.28        0.557        0.000      0.197
-       questions polynormer      mlp/none     0.20       10 78.43 ± 1.06 78.60 ± 0.98    +0.17        0.375        0.000      0.449
-       questions polynormer   mlp/shuffle     0.20       10 78.43 ± 1.06 78.54 ± 1.04    +0.11        0.375        0.326      0.449
-       questions polynormer   oracle/none     0.40       10 78.43 ± 1.06 78.75 ± 0.87    +0.33        0.014        0.000      1.243
-       questions   sgformer      mlp/none     0.40       10 76.43 ± 0.95 77.17 ± 1.28    +0.75        0.027        0.000      1.352
-       questions   sgformer   mlp/shuffle     0.40       10 76.43 ± 0.95 77.41 ± 1.14    +0.98        0.004        0.850      1.352
-       questions   sgformer   oracle/none     0.40       10 76.43 ± 0.95 77.41 ± 1.18    +0.98        0.006        0.000      1.243
-    roman-empire polynormer mlp/homophily     0.40       10 92.43 ± 0.23 92.42 ± 0.36    -0.01        0.910        0.252      0.247
-    roman-empire polynormer      mlp/none     0.20       10 92.43 ± 0.23 92.62 ± 0.44    +0.19        0.084        0.000      0.247
-    roman-empire polynormer   mlp/shuffle     0.05       10 92.43 ± 0.23 92.48 ± 0.37    +0.05        0.770        0.366      0.247
-    roman-empire polynormer   oracle/none     0.40       10 92.43 ± 0.23 92.50 ± 0.50    +0.07        0.492        0.000      0.605
-    roman-empire   sgformer mlp/homophily     0.10       10 74.69 ± 0.70 74.66 ± 0.71    -0.04        0.426        0.268      0.261
-    roman-empire   sgformer      mlp/none     0.05       10 74.69 ± 0.70 74.72 ± 0.81    +0.02        1.000        0.000      0.261
-    roman-empire   sgformer   mlp/shuffle     0.20       10 74.69 ± 0.70 74.68 ± 0.65    -0.02        0.625        0.391      0.261
-    roman-empire   sgformer   oracle/none     0.40       10 74.69 ± 0.70 74.91 ± 0.71    +0.22        0.131        0.000      0.605
-        squirrel polynormer mlp/homophily     0.10       10 39.29 ± 2.43 39.75 ± 1.90    +0.46        0.496        0.157      0.188
-        squirrel polynormer      mlp/none     0.10       10 39.29 ± 2.43 39.34 ± 2.41    +0.05        0.922        0.000      0.188
-        squirrel polynormer   mlp/shuffle     0.05       10 39.29 ± 2.43 39.36 ± 2.26    +0.07        0.770        0.259      0.188
-        squirrel polynormer   oracle/none     0.20       10 39.29 ± 2.43 38.88 ± 1.75    -0.41        0.557        0.000      0.044
-        squirrel   sgformer mlp/homophily     0.10       10 39.89 ± 2.77 39.65 ± 2.80    -0.23        0.742        0.158      0.189
-        squirrel   sgformer      mlp/none     0.05       10 39.89 ± 2.77 39.98 ± 2.56    +0.09        0.812        0.000      0.189
-        squirrel   sgformer   mlp/shuffle     0.40       10 39.89 ± 2.77 40.01 ± 2.44    +0.12        0.820        0.260      0.189
-        squirrel   sgformer   oracle/none     0.20       10 39.89 ± 2.77 40.23 ± 2.54    +0.34        0.492        0.000      0.044
-          wikics polynormer mlp/homophily     0.40       10 79.83 ± 0.77 80.09 ± 0.51    +0.26        0.203        0.327      0.327
-          wikics polynormer      mlp/none     0.40       10 79.83 ± 0.77 80.12 ± 0.59    +0.29        0.105        0.000      0.327
-          wikics polynormer   mlp/shuffle     0.10       10 79.83 ± 0.77 80.02 ± 0.48    +0.18        0.492        0.543      0.327
-          wikics polynormer   oracle/none     0.20       10 79.83 ± 0.77 80.04 ± 0.56    +0.21        0.322        0.000      0.347
-          wikics   sgformer mlp/homophily     0.40       10 79.12 ± 0.78 79.27 ± 0.79    +0.15        0.084        0.309      0.311
-          wikics   sgformer      mlp/none     0.40       10 79.12 ± 0.78 79.23 ± 0.72    +0.12        0.275        0.000      0.311
-          wikics   sgformer   mlp/shuffle     0.10       10 79.12 ± 0.78 79.05 ± 0.76    -0.07        0.375        0.518      0.311
-          wikics   sgformer   oracle/none     0.40       10 79.12 ± 0.78 79.32 ± 0.74    +0.21        0.014        0.000      0.347
+| dataset          | model      | condition     |   lambda* |   n_pairs | baseline     | test         |   paired_Δ |   p (Wilcoxon) |   penalty_dist |   offdiag_cv |
+|:-----------------|:-----------|:--------------|----------:|----------:|:-------------|:-------------|-----------:|---------------:|---------------:|-------------:|
+| amazon-computer  | polynormer | mlp/homophily |      0.2  |        10 | 93.68 ± 0.14 | 93.61 ± 0.18 |      -0.07 |          0.82  |          0.312 |        0.302 |
+| amazon-computer  | polynormer | mlp/none      |      0.01 |        10 | 93.68 ± 0.14 | 93.55 ± 0.22 |      -0.12 |          0.098 |          0     |        0.302 |
+| amazon-computer  | polynormer | mlp/shuffle   |      0.4  |        10 | 93.68 ± 0.14 | 93.57 ± 0.21 |      -0.1  |          0.211 |          0.504 |        0.302 |
+| amazon-computer  | polynormer | oracle/none   |      0.1  |        10 | 93.68 ± 0.14 | 93.62 ± 0.31 |      -0.05 |          0.447 |          0     |        0.349 |
+| amazon-computer  | sgformer   | mlp/homophily |      0.4  |        10 | 83.05 ± 0.66 | 84.06 ± 1.37 |       1.01 |          0.037 |          0.32  |        0.3   |
+| amazon-computer  | sgformer   | mlp/none      |      0.2  |        10 | 83.05 ± 0.66 | 83.76 ± 0.48 |       0.71 |          0.012 |          0     |        0.3   |
+| amazon-computer  | sgformer   | mlp/shuffle   |      0.4  |        10 | 83.05 ± 0.66 | 83.28 ± 1.69 |       0.23 |          0.492 |          0.521 |        0.3   |
+| amazon-computer  | sgformer   | oracle/none   |      0.2  |        10 | 83.05 ± 0.66 | 83.90 ± 0.48 |       0.85 |          0.004 |          0     |        0.349 |
+| amazon-photo     | polynormer | mlp/homophily |      0.4  |        10 | 96.52 ± 0.29 | 96.25 ± 0.34 |      -0.26 |          0.078 |          0.27  |        0.28  |
+| amazon-photo     | polynormer | mlp/none      |      0.01 |        10 | 96.52 ± 0.29 | 96.42 ± 0.24 |      -0.09 |          0.348 |          0     |        0.28  |
+| amazon-photo     | polynormer | mlp/shuffle   |      0.2  |        10 | 96.52 ± 0.29 | 96.50 ± 0.24 |      -0.02 |          0.941 |          0.577 |        0.28  |
+| amazon-photo     | polynormer | oracle/none   |      0.4  |        10 | 96.52 ± 0.29 | 96.58 ± 0.21 |       0.07 |          0.58  |          0     |        0.371 |
+| amazon-photo     | sgformer   | mlp/homophily |      0.01 |        10 | 93.03 ± 0.34 | 93.00 ± 0.35 |      -0.03 |          0.416 |          0.278 |        0.285 |
+| amazon-photo     | sgformer   | mlp/none      |      0.01 |        10 | 93.03 ± 0.34 | 92.98 ± 0.41 |      -0.05 |          0.375 |          0     |        0.285 |
+| amazon-photo     | sgformer   | mlp/shuffle   |      0.01 |        10 | 93.03 ± 0.34 | 93.03 ± 0.33 |       0.01 |          0.75  |          0.587 |        0.285 |
+| amazon-photo     | sgformer   | oracle/none   |      0.01 |        10 | 93.03 ± 0.34 | 92.92 ± 0.61 |      -0.11 |          0.594 |          0     |        0.371 |
+| amazon-ratings   | polynormer | mlp/homophily |      0.4  |        10 | 54.44 ± 0.48 | 55.07 ± 0.59 |       0.63 |          0.01  |          0.389 |        0.456 |
+| amazon-ratings   | polynormer | mlp/none      |      0.4  |        10 | 54.44 ± 0.48 | 55.05 ± 0.31 |       0.61 |          0.014 |          0     |        0.456 |
+| amazon-ratings   | polynormer | mlp/shuffle   |      0.1  |        10 | 54.44 ± 0.48 | 54.63 ± 0.45 |       0.19 |          0.16  |          0.588 |        0.456 |
+| amazon-ratings   | polynormer | oracle/none   |      0.4  |        10 | 54.44 ± 0.48 | 55.11 ± 0.57 |       0.67 |          0.004 |          0     |        0.411 |
+| amazon-ratings   | sgformer   | mlp/homophily |      0.4  |        10 | 53.98 ± 0.55 | 54.35 ± 0.53 |       0.37 |          0.006 |          0.355 |        0.416 |
+| amazon-ratings   | sgformer   | mlp/none      |      0.4  |        10 | 53.98 ± 0.55 | 54.27 ± 0.54 |       0.29 |          0.049 |          0     |        0.416 |
+| amazon-ratings   | sgformer   | mlp/shuffle   |      0.05 |        10 | 53.98 ± 0.55 | 54.15 ± 0.75 |       0.16 |          0.406 |          0.543 |        0.416 |
+| amazon-ratings   | sgformer   | oracle/none   |      0.4  |        10 | 53.98 ± 0.55 | 54.34 ± 0.49 |       0.36 |          0.064 |          0     |        0.411 |
+| chameleon        | polynormer | mlp/homophily |      0.05 |        10 | 41.79 ± 4.47 | 40.61 ± 3.32 |      -1.19 |          0.301 |          0.091 |        0.107 |
+| chameleon        | polynormer | mlp/none      |      0.1  |        10 | 41.79 ± 4.47 | 40.21 ± 3.86 |      -1.58 |          0.105 |          0     |        0.107 |
+| chameleon        | polynormer | mlp/shuffle   |      0.1  |        10 | 41.79 ± 4.47 | 39.22 ± 3.82 |      -2.57 |          0.008 |          0.15  |        0.107 |
+| chameleon        | polynormer | oracle/none   |      0.2  |        10 | 41.79 ± 4.47 | 42.15 ± 4.14 |       0.36 |          0.641 |          0     |        0.21  |
+| chameleon        | sgformer   | mlp/homophily |      0.2  |        10 | 41.59 ± 4.28 | 41.51 ± 3.71 |      -0.07 |          0.426 |          0.089 |        0.106 |
+| chameleon        | sgformer   | mlp/none      |      0.05 |        10 | 41.59 ± 4.28 | 41.83 ± 3.86 |       0.24 |          1     |          0     |        0.106 |
+| chameleon        | sgformer   | mlp/shuffle   |      0.4  |        10 | 41.59 ± 4.28 | 41.30 ± 3.76 |      -0.29 |          0.734 |          0.152 |        0.106 |
+| chameleon        | sgformer   | oracle/none   |      0.2  |        10 | 41.59 ± 4.28 | 41.49 ± 3.96 |      -0.1  |          0.922 |          0     |        0.21  |
+| citeseer         | polynormer | mlp/homophily |      0.2  |        10 | 67.94 ± 1.38 | 69.00 ± 1.19 |       1.06 |          0.078 |          0.044 |        0.049 |
+| citeseer         | polynormer | mlp/none      |      0.1  |        10 | 67.94 ± 1.38 | 69.22 ± 1.25 |       1.28 |          0.008 |          0     |        0.049 |
+| citeseer         | polynormer | mlp/shuffle   |      0.05 |        10 | 67.94 ± 1.38 | 68.91 ± 1.33 |       0.97 |          0.027 |          0.125 |        0.049 |
+| citeseer         | polynormer | oracle/none   |      0.05 |        10 | 67.94 ± 1.38 | 68.20 ± 1.04 |       0.26 |          0.232 |          0     |        0.207 |
+| citeseer         | sgformer   | mlp/homophily |      0.1  |        10 | 68.69 ± 1.79 | 68.79 ± 1.33 |       0.1  |          0.629 |          0.054 |        0.06  |
+| citeseer         | sgformer   | mlp/none      |      0.01 |        10 | 68.69 ± 1.79 | 68.88 ± 1.50 |       0.19 |          0.643 |          0     |        0.06  |
+| citeseer         | sgformer   | mlp/shuffle   |      0.05 |        10 | 68.69 ± 1.79 | 68.81 ± 1.18 |       0.12 |          0.922 |          0.112 |        0.06  |
+| citeseer         | sgformer   | oracle/none   |      0.4  |        10 | 68.69 ± 1.79 | 70.94 ± 1.24 |       2.25 |          0.002 |          0     |        0.207 |
+| coauthor-cs      | polynormer | mlp/homophily |      0.01 |        10 | 95.37 ± 0.22 | 95.49 ± 0.22 |       0.13 |          0.098 |          0.24  |        0.248 |
+| coauthor-cs      | polynormer | mlp/none      |      0.1  |        10 | 95.37 ± 0.22 | 95.52 ± 0.15 |       0.16 |          0.055 |          0     |        0.248 |
+| coauthor-cs      | polynormer | mlp/shuffle   |      0.2  |        10 | 95.37 ± 0.22 | 95.34 ± 0.27 |      -0.02 |          1     |          0.482 |        0.248 |
+| coauthor-cs      | polynormer | oracle/none   |      0.1  |        10 | 95.37 ± 0.22 | 95.43 ± 0.20 |       0.07 |          0.361 |          0     |        0.437 |
+| coauthor-cs      | sgformer   | mlp/homophily |      0.4  |        10 | 92.93 ± 0.32 | 93.14 ± 0.23 |       0.2  |          0.012 |          0.272 |        0.27  |
+| coauthor-cs      | sgformer   | mlp/none      |      0.2  |        10 | 92.93 ± 0.32 | 93.05 ± 0.22 |       0.12 |          0.164 |          0     |        0.27  |
+| coauthor-cs      | sgformer   | mlp/shuffle   |      0.01 |        10 | 92.93 ± 0.32 | 92.97 ± 0.31 |       0.03 |          0.668 |          0.506 |        0.27  |
+| coauthor-cs      | sgformer   | oracle/none   |      0.2  |        10 | 92.93 ± 0.32 | 93.11 ± 0.18 |       0.17 |          0.088 |          0     |        0.437 |
+| coauthor-physics | polynormer | mlp/homophily |      0.01 |        10 | 97.10 ± 0.09 | 97.10 ± 0.05 |       0.01 |          0.555 |          0.199 |        0.243 |
+| coauthor-physics | polynormer | mlp/none      |      0.1  |        10 | 97.10 ± 0.09 | 97.09 ± 0.08 |      -0.01 |          0.648 |          0     |        0.243 |
+| coauthor-physics | polynormer | mlp/shuffle   |      0.05 |        10 | 97.10 ± 0.09 | 97.14 ± 0.06 |       0.04 |          0.164 |          0.65  |        0.243 |
+| coauthor-physics | polynormer | oracle/none   |      0.1  |        10 | 97.10 ± 0.09 | 97.11 ± 0.06 |       0.01 |          0.82  |          0     |        0.245 |
+| coauthor-physics | sgformer   | mlp/homophily |      0.2  |        10 | 96.18 ± 0.07 | 96.12 ± 0.05 |      -0.06 |          0.045 |          0.212 |        0.248 |
+| coauthor-physics | sgformer   | mlp/none      |      0.2  |        10 | 96.18 ± 0.07 | 96.09 ± 0.05 |      -0.09 |          0.014 |          0     |        0.248 |
+| coauthor-physics | sgformer   | mlp/shuffle   |      0.2  |        10 | 96.18 ± 0.07 | 96.17 ± 0.06 |      -0.01 |          0.633 |          0.658 |        0.248 |
+| coauthor-physics | sgformer   | oracle/none   |      0.2  |        10 | 96.18 ± 0.07 | 96.08 ± 0.04 |      -0.1  |          0.006 |          0     |        0.245 |
+| cora             | polynormer | mlp/homophily |      0.4  |        10 | 83.08 ± 0.38 | 83.19 ± 0.82 |       0.11 |          0.678 |          0.053 |        0.059 |
+| cora             | polynormer | mlp/none      |      0.1  |        10 | 83.08 ± 0.38 | 82.64 ± 1.08 |      -0.44 |          0.322 |          0     |        0.059 |
+| cora             | polynormer | mlp/shuffle   |      0.01 |        10 | 83.08 ± 0.38 | 82.63 ± 0.82 |      -0.45 |          0.215 |          0.168 |        0.059 |
+| cora             | polynormer | oracle/none   |      0.4  |        10 | 83.08 ± 0.38 | 83.93 ± 0.85 |       0.85 |          0.01  |          0     |        0.303 |
+| cora             | sgformer   | mlp/homophily |      0.1  |        10 | 82.59 ± 1.18 | 82.10 ± 1.07 |      -0.49 |          0.168 |          0.097 |        0.105 |
+| cora             | sgformer   | mlp/none      |      0.1  |        10 | 82.59 ± 1.18 | 82.17 ± 1.49 |      -0.42 |          0.389 |          0     |        0.105 |
+| cora             | sgformer   | mlp/shuffle   |      0.2  |        10 | 82.59 ± 1.18 | 81.59 ± 1.70 |      -1    |          0.137 |          0.31  |        0.105 |
+| cora             | sgformer   | oracle/none   |      0.4  |        10 | 82.59 ± 1.18 | 82.93 ± 0.98 |       0.34 |          0.82  |          0     |        0.303 |
+| minesweeper      | polynormer | mlp/none      |      0.1  |        10 | 97.24 ± 0.45 | 97.26 ± 0.21 |       0.03 |          0.695 |          0     |        1.066 |
+| minesweeper      | polynormer | mlp/shuffle   |      0.05 |        10 | 97.24 ± 0.45 | 97.24 ± 0.46 |      -0    |          0.695 |          0.692 |        1.066 |
+| minesweeper      | polynormer | oracle/none   |      0.05 |        10 | 97.24 ± 0.45 | 97.27 ± 0.29 |       0.04 |          0.922 |          0     |        0.938 |
+| minesweeper      | sgformer   | mlp/none      |      0.01 |        10 | 80.91 ± 0.73 | 80.85 ± 0.76 |      -0.06 |          0.037 |          0     |        1.054 |
+| minesweeper      | sgformer   | mlp/shuffle   |      0.05 |        10 | 80.91 ± 0.73 | 80.81 ± 0.78 |      -0.1  |          0.084 |          0.686 |        1.054 |
+| minesweeper      | sgformer   | oracle/none   |      0.05 |        10 | 80.91 ± 0.73 | 80.83 ± 0.76 |      -0.08 |          0.105 |          0     |        0.938 |
+| pubmed           | polynormer | mlp/homophily |      0.2  |        10 | 76.66 ± 1.52 | 76.94 ± 1.34 |       0.28 |          0.576 |          0.075 |        0.096 |
+| pubmed           | polynormer | mlp/none      |      0.2  |        10 | 76.66 ± 1.52 | 76.20 ± 0.99 |      -0.46 |          0.334 |          0     |        0.096 |
+| pubmed           | polynormer | mlp/shuffle   |      0.1  |        10 | 76.66 ± 1.52 | 76.22 ± 1.20 |      -0.44 |          0.432 |          0.337 |        0.096 |
+| pubmed           | polynormer | oracle/none   |      0.4  |        10 | 76.66 ± 1.52 | 77.33 ± 1.21 |       0.67 |          0.334 |          0     |        0.197 |
+| pubmed           | sgformer   | mlp/homophily |      0.05 |        10 | 78.62 ± 0.87 | 79.28 ± 0.52 |       0.66 |          0.043 |          0.09  |        0.115 |
+| pubmed           | sgformer   | mlp/none      |      0.2  |        10 | 78.62 ± 0.87 | 78.98 ± 0.51 |       0.36 |          0.102 |          0     |        0.115 |
+| pubmed           | sgformer   | mlp/shuffle   |      0.05 |        10 | 78.62 ± 0.87 | 79.03 ± 1.06 |       0.41 |          0.322 |          0.38  |        0.115 |
+| pubmed           | sgformer   | oracle/none   |      0.4  |        10 | 78.62 ± 0.87 | 78.90 ± 1.67 |       0.28 |          0.557 |          0     |        0.197 |
+| questions        | polynormer | mlp/none      |      0.2  |        10 | 78.43 ± 1.06 | 78.60 ± 0.98 |       0.17 |          0.375 |          0     |        0.449 |
+| questions        | polynormer | mlp/shuffle   |      0.2  |        10 | 78.43 ± 1.06 | 78.54 ± 1.04 |       0.11 |          0.375 |          0.326 |        0.449 |
+| questions        | polynormer | oracle/none   |      0.4  |        10 | 78.43 ± 1.06 | 78.75 ± 0.87 |       0.33 |          0.014 |          0     |        1.243 |
+| questions        | sgformer   | mlp/none      |      0.4  |        10 | 76.43 ± 0.95 | 77.17 ± 1.28 |       0.75 |          0.027 |          0     |        1.352 |
+| questions        | sgformer   | mlp/shuffle   |      0.4  |        10 | 76.43 ± 0.95 | 77.41 ± 1.14 |       0.98 |          0.004 |          0.85  |        1.352 |
+| questions        | sgformer   | oracle/none   |      0.4  |        10 | 76.43 ± 0.95 | 77.41 ± 1.18 |       0.98 |          0.006 |          0     |        1.243 |
+| roman-empire     | polynormer | mlp/homophily |      0.4  |        10 | 92.43 ± 0.23 | 92.42 ± 0.36 |      -0.01 |          0.91  |          0.252 |        0.247 |
+| roman-empire     | polynormer | mlp/none      |      0.2  |        10 | 92.43 ± 0.23 | 92.62 ± 0.44 |       0.19 |          0.084 |          0     |        0.247 |
+| roman-empire     | polynormer | mlp/shuffle   |      0.05 |        10 | 92.43 ± 0.23 | 92.48 ± 0.37 |       0.05 |          0.711 |          0.366 |        0.247 |
+| roman-empire     | polynormer | oracle/none   |      0.4  |        10 | 92.43 ± 0.23 | 92.50 ± 0.50 |       0.07 |          0.492 |          0     |        0.605 |
+| roman-empire     | sgformer   | mlp/homophily |      0.1  |        10 | 74.69 ± 0.70 | 74.66 ± 0.71 |      -0.04 |          0.445 |          0.268 |        0.261 |
+| roman-empire     | sgformer   | mlp/none      |      0.05 |        10 | 74.69 ± 0.70 | 74.72 ± 0.81 |       0.02 |          1     |          0     |        0.261 |
+| roman-empire     | sgformer   | mlp/shuffle   |      0.2  |        10 | 74.69 ± 0.70 | 74.68 ± 0.65 |      -0.02 |          0.643 |          0.391 |        0.261 |
+| roman-empire     | sgformer   | oracle/none   |      0.4  |        10 | 74.69 ± 0.70 | 74.91 ± 0.71 |       0.22 |          0.125 |          0     |        0.605 |
+| squirrel         | polynormer | mlp/homophily |      0.1  |        10 | 39.29 ± 2.43 | 39.75 ± 1.90 |       0.46 |          0.496 |          0.157 |        0.188 |
+| squirrel         | polynormer | mlp/none      |      0.1  |        10 | 39.29 ± 2.43 | 39.34 ± 2.41 |       0.05 |          0.922 |          0     |        0.188 |
+| squirrel         | polynormer | mlp/shuffle   |      0.05 |        10 | 39.29 ± 2.43 | 39.36 ± 2.26 |       0.07 |          0.77  |          0.259 |        0.188 |
+| squirrel         | polynormer | oracle/none   |      0.2  |        10 | 39.29 ± 2.43 | 38.88 ± 1.75 |      -0.41 |          0.557 |          0     |        0.044 |
+| squirrel         | sgformer   | mlp/homophily |      0.1  |        10 | 39.89 ± 2.77 | 39.65 ± 2.80 |      -0.23 |          0.742 |          0.158 |        0.189 |
+| squirrel         | sgformer   | mlp/none      |      0.05 |        10 | 39.89 ± 2.77 | 39.98 ± 2.56 |       0.09 |          0.812 |          0     |        0.189 |
+| squirrel         | sgformer   | mlp/shuffle   |      0.4  |        10 | 39.89 ± 2.77 | 40.01 ± 2.44 |       0.12 |          0.82  |          0.26  |        0.189 |
+| squirrel         | sgformer   | oracle/none   |      0.2  |        10 | 39.89 ± 2.77 | 40.23 ± 2.54 |       0.34 |          0.492 |          0     |        0.044 |
+| wikics           | polynormer | mlp/homophily |      0.4  |        10 | 79.83 ± 0.77 | 80.09 ± 0.51 |       0.26 |          0.172 |          0.327 |        0.327 |
+| wikics           | polynormer | mlp/none      |      0.4  |        10 | 79.83 ± 0.77 | 80.12 ± 0.59 |       0.29 |          0.102 |          0     |        0.327 |
+| wikics           | polynormer | mlp/shuffle   |      0.1  |        10 | 79.83 ± 0.77 | 80.02 ± 0.48 |       0.18 |          0.447 |          0.543 |        0.327 |
+| wikics           | polynormer | oracle/none   |      0.2  |        10 | 79.83 ± 0.77 | 80.04 ± 0.56 |       0.21 |          0.322 |          0     |        0.347 |
+| wikics           | sgformer   | mlp/homophily |      0.4  |        10 | 79.12 ± 0.78 | 79.27 ± 0.79 |       0.15 |          0.068 |          0.309 |        0.311 |
+| wikics           | sgformer   | mlp/none      |      0.4  |        10 | 79.12 ± 0.78 | 79.23 ± 0.72 |       0.12 |          0.275 |          0     |        0.311 |
+| wikics           | sgformer   | mlp/shuffle   |      0.1  |        10 | 79.12 ± 0.78 | 79.05 ± 0.76 |      -0.07 |          0.375 |          0.518 |        0.311 |
+| wikics           | sgformer   | oracle/none   |      0.4  |        10 | 79.12 ± 0.78 | 79.32 ± 0.74 |       0.21 |          0.012 |          0     |        0.347 |
