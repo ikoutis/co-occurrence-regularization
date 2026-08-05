@@ -90,10 +90,16 @@ on the same dataset (the roman-empire/GCN failure mode). Additionally:
 the homophily transform is mathematically vacuous on binary datasets (its
 sweep groups are skipped there).
 
+## Follow-up stage now available: low-label experiment (E3.1)
+
+`medium_graph/submit_lowlabel.sbatch` + `submit_lowlabel_mv.sbatch` —
+independent of this pipeline (uses its tuned configs and its gt_search
+results); see `medium_graph/LOWLABEL_README.md`.
+
 ## Not in this submission (follow-ups)
 
-- Label-efficiency (E3.1), SBM recovery (E3.2), gradient alignment (E3.3) —
-  separate scripts, independent of this pipeline.
+- SBM recovery (E3.2), gradient alignment (E3.3) — separate scripts,
+  independent of this pipeline.
 - Scale-normalization ablation (E4.2) — needs a fixed-λ mode in main.py and
   its own λ grid.
 - gnn_gnn (dynamic penalty) re-run — deprioritized in the plan; FINDINGS §5

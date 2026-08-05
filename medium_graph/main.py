@@ -11,7 +11,7 @@ from dataset import load_dataset
 from data_utils import eval_acc, eval_rocauc, load_fixed_splits, class_rand_splits
 from eval import *
 from parse import parse_method, parser_add_main_args
-from regularization import estimate_cooccurrence_matrix, edge_loss, transform_cooccurrence_matrix, penalty_stats
+from regularization import estimate_cooccurrence_matrix, edge_loss, transform_cooccurrence_matrix, penalty_stats, count_cooccurrence_matrix
 from model import MLP
 
 def fix_seed(seed=42):
@@ -106,17 +106,46 @@ def build_penalty(co_matrix, run, meta):
               f"off-diag CV of original penalty = {offdiag_cv:.4f}")
     return penalty
 
+def subsample_per_class(idx, label, n_per_class):
+    """Deterministically (given the current RNG state) subsample idx to at
+    most n_per_class nodes per class. Uses the CPU RNG so the draw is
+    machine-independent; with --paired_seeds the same run index yields the
+    same subsample in every condition."""
+    idx = idx.to(label.device)
+    y = label.squeeze(1)[idx]
+    keep = []
+    for cls in y.unique():
+        idx_c = idx[y == cls]
+        perm = torch.randperm(idx_c.numel())
+        keep.append(idx_c[perm.to(idx_c.device)[:n_per_class]])
+    keep = torch.cat(keep)
+    return keep.sort().values
+
 ### Training loop ###
 run_meta = []
 for run in range(args.runs):
     run_meta.append({})
-    if args.dataset in ('coauthor-cs', 'coauthor-physics', 'amazon-computer', 'amazon-photo', 'cora', 'citeseer', 'pubmed'):
-        split_idx = split_idx_lst[0]
-    else:
-        split_idx = split_idx_lst[run]
-    train_idx = split_idx['train'].to(device)
+    # re-seed FIRST so per-run split resampling below is deterministic from
+    # seed+run and identical across conditions (split selection consumes no
+    # RNG in the legacy paths, so this reordering does not change them)
     if args.paired_seeds:
         fix_seed(args.seed + run)
+    if getattr(args, 'resample_split_per_run', False) and args.rand_split_class:
+        split_idx = class_rand_splits(
+            dataset.label.cpu(), args.label_num_per_class, args.valid_num, args.test_num)
+    elif args.dataset in ('coauthor-cs', 'coauthor-physics', 'amazon-computer', 'amazon-photo', 'cora', 'citeseer', 'pubmed'):
+        split_idx = split_idx_lst[0]
+    else:
+        split_idx = split_idx_lst[run % len(split_idx_lst)]
+    train_idx = split_idx['train'].to(device)
+    if getattr(args, 'train_per_class', 0) > 0:
+        train_idx = subsample_per_class(train_idx, dataset.label, args.train_per_class)
+        print(f"Label budget: {args.train_per_class}/class -> {train_idx.numel()} train nodes")
+    if getattr(args, 'valid_per_class', 0) > 0:
+        split_idx = dict(split_idx)
+        split_idx['valid'] = subsample_per_class(
+            split_idx['valid'], dataset.label, args.valid_per_class)
+        print(f"Matched-budget validation: {split_idx['valid'].numel()} valid nodes")
     model.reset_parameters()
     optimizer = torch.optim.Adam(model.parameters(),weight_decay=args.weight_decay, lr=args.lr)
     best_val = float('-inf')
@@ -135,6 +164,24 @@ for run in range(args.runs):
         co_matrix = estimate_cooccurrence_matrix(true_probs, dataset.graph['edge_index'], c, device)
         penalty_matrix = build_penalty(co_matrix, run, run_meta[run])
         print("Oracle penalty matrix frozen.")
+
+    if args.use_reg and getattr(args, 'count_reg', False):
+        print("Counting co-occurrence on train-train edges (leakage-free estimator)...")
+        with torch.no_grad():
+            if args.dataset == 'questions' and dataset.label.shape[1] > 1:
+                true_probs = dataset.label.float()
+            else:
+                true_probs = F.one_hot(dataset.label.squeeze(1), c).float()
+            train_mask = torch.zeros(n, dtype=torch.bool, device=train_idx.device)
+            train_mask[train_idx] = True
+            co_matrix, n_prior_edges = count_cooccurrence_matrix(
+                true_probs, dataset.graph['edge_index'], train_mask, args.count_smoothing)
+            penalty_matrix = build_penalty(co_matrix, run, run_meta[run])
+            run_meta[run]['n_prior_edges'] = n_prior_edges
+            co_oracle = estimate_cooccurrence_matrix(true_probs, dataset.graph['edge_index'], c, device)
+            run_meta[run]['cooc_oracle_dist'] = ((co_matrix - co_oracle).norm()
+                                                 / co_oracle.norm().clamp(min=1e-12)).item()
+        print(f"Count penalty frozen ({n_prior_edges} train-train edges).")
 
     if args.use_reg and getattr(args, 'mlp_reg', False):
         print(f"Pre-training MLP for {args.mlp_epochs} epochs to generate co-occurrence matrix...")
@@ -187,7 +234,7 @@ for run in range(args.runs):
 
     for epoch in range(args.epochs):
         
-        if args.use_reg and not getattr(args, 'mlp_reg', False) and not getattr(args, 'oracle_reg', False) and epoch >= args.reg_start_epoch and (epoch - args.reg_start_epoch) % args.reg_update_freq == 0:
+        if args.use_reg and not getattr(args, 'mlp_reg', False) and not getattr(args, 'oracle_reg', False) and not getattr(args, 'count_reg', False) and epoch >= args.reg_start_epoch and (epoch - args.reg_start_epoch) % args.reg_update_freq == 0:
             with torch.no_grad():
                 model.eval()
                 current_out = model(dataset.graph['node_feat'], dataset.graph['edge_index'])

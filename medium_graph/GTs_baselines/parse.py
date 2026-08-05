@@ -197,6 +197,26 @@ def parser_add_main_args(parser):
                         help='re-seed model init and training per run so baseline and '
                              'regularized runs are paired (enables paired statistics)')
 
+    # low-label experiment (E3.1) — see LOWLABEL_README.md
+    parser.add_argument('--count_reg', action='store_true',
+                        help='penalty from co-occurrence COUNTED on train-train edges '
+                             '(leakage-free estimator; needs true labels of train nodes only)')
+    parser.add_argument('--count_smoothing', type=float, default=1.0,
+                        help='additive smoothing for the count estimator')
+    parser.add_argument('--train_per_class', type=int, default=0,
+                        help='if >0, subsample this run\'s train split to N labeled nodes '
+                             'per class (deterministic from the run seed; use for '
+                             'fixed-split datasets)')
+    parser.add_argument('--valid_per_class', type=int, default=0,
+                        help='if >0, subsample the validation split to N nodes per class '
+                             '(matched-budget validation sensitivity check)')
+    parser.add_argument('--resample_split_per_run', action='store_true',
+                        help='with --rand_split_class: draw a fresh label sample each run '
+                             '(seeded by seed+run, so conditions stay paired) instead of '
+                             'one fixed sample for all runs')
+    parser.add_argument('--budget_tag', type=str, default='',
+                        help='free-form label budget tag written to the runs CSV')
+
     # result directory
     parser.add_argument('--result_dir', type=str, default='results', help='directory to save results')
 

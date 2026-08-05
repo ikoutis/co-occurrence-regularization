@@ -94,7 +94,8 @@ def config_string(args):
         f'wd={args.weight_decay}', f'heads={getattr(args, "num_heads", "")}',
         f'll={args.local_layers}', f'gnn={getattr(args, "gnn", "")}',
         f'ln={args.ln}', f'bn={args.bn}', f'res={args.res}',
-        f'jk={args.jk}', f'prelin={args.pre_linear}'])
+        f'jk={args.jk}', f'prelin={args.pre_linear}']
+        + ([f'vpc={args.valid_per_class}'] if getattr(args, 'valid_per_class', 0) else []))
 
 def save_runs_detail(args, logger, run_meta=None):
     """
@@ -110,25 +111,45 @@ def save_runs_detail(args, logger, run_meta=None):
     d = f'{result_dir}/{args.dataset}'
     os.makedirs(d, exist_ok=True)
     name = f'{args.model}_{args.gnn}' if args.model == 'MPNN' else f'{args.model}'
-    path = f'{d}/runs_{name}.csv'
+    tag = getattr(args, 'budget_tag', '')
+    path = f'{d}/runs_{name}_b{tag}.csv' if tag else f'{d}/runs_{name}.csv'
+    HEADER = ['dataset', 'model', 'reg_type', 'penalty_transform',
+              'lambda', 'mlp_epochs', 'seed', 'run', 'best_valid',
+              'test_at_best_valid', 'penalty_dist', 'offdiag_cv',
+              'mlp_acc', 'cooc_oracle_dist', 'budget',
+              'n_prior_edges', 'config']
+    # never append current-schema rows under a legacy (shorter) header —
+    # divert to a _v2 sibling instead (analyzers glob runs_*.csv)
+    if os.path.exists(path):
+        with open(path) as fh:
+            existing = fh.readline().strip().split(',')
+        if existing != HEADER:
+            path = path.replace('.csv', '_v2.csv')
     write_header = not os.path.exists(path)
 
     reg_type = 'none'
     if getattr(args, 'use_reg', False):
         if getattr(args, 'oracle_reg', False):
             reg_type = 'oracle'
+        elif getattr(args, 'count_reg', False):
+            reg_type = 'count'
         elif getattr(args, 'mlp_reg', False):
             reg_type = 'mlp'
         else:
             reg_type = 'dynamic'
 
     with open(path, 'a', newline='') as f:
+        # serialize concurrent appends from sibling SLURM tasks (best-effort:
+        # some filesystems lack flock; the append is a single small buffered
+        # write either way, and analyzers drop malformed rows)
+        try:
+            import fcntl
+            fcntl.flock(f, fcntl.LOCK_EX)
+        except (ImportError, OSError):
+            pass
         w = csv.writer(f)
         if write_header:
-            w.writerow(['dataset', 'model', 'reg_type', 'penalty_transform',
-                        'lambda', 'mlp_epochs', 'seed', 'run', 'best_valid',
-                        'test_at_best_valid', 'penalty_dist', 'offdiag_cv',
-                        'mlp_acc', 'cooc_oracle_dist', 'config'])
+            w.writerow(HEADER)
         for run, results in enumerate(logger.results):
             if not results:
                 continue
@@ -143,6 +164,8 @@ def save_runs_detail(args, logger, run_meta=None):
                         f'{r[ind, 1].item():.4f}', f'{r[ind, 2].item():.4f}',
                         f"{meta.get('pdist', '')}", f"{meta.get('pcv', '')}",
                         f"{meta.get('mlp_acc', '')}", f"{meta.get('cooc_oracle_dist', '')}",
+                        getattr(args, 'budget_tag', ''),
+                        f"{meta.get('n_prior_edges', '')}",
                         config_string(args)])
 
 def save_result(args, results):

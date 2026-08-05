@@ -30,6 +30,41 @@ def estimate_cooccurrence_matrix(predictions, edge_index, num_classes, device):
     
     return co_matrix
 
+def count_cooccurrence_matrix(labels_onehot, edge_index, train_mask, smoothing=1.0):
+    """
+    Leakage-free co-occurrence estimate: count class pairs only on edges
+    whose BOTH endpoints are labeled training nodes.
+
+    Args:
+        labels_onehot (Tensor): (N x C) one-hot true labels.
+        edge_index (Tensor): (2 x E) graph edges.
+        train_mask (BoolTensor): (N,) True for training nodes.
+        smoothing (float): additive (Laplace) smoothing on the raw counts —
+            with few train-train edges most class pairs are unobserved, and
+            without smoothing -log(0+eps) would assign them near-infinite
+            penalties.
+
+    Returns:
+        (co_matrix, n_edges): row-normalized (C x C) matrix and the number
+        of train-train edges it was estimated from. n_edges is the honest
+        sample size of this estimator and should be logged: at very small
+        label budgets it approaches 0 and the estimate degenerates to the
+        uniform (smoothing-only) matrix.
+    """
+    src, dst = edge_index
+    # exclude self-loops: main.py adds them for GCN aggregation, but here
+    # every train node would contribute a guaranteed diagonal count — at
+    # tiny budgets (near-zero real train-train edges) the estimate would
+    # degenerate into a pure artificial homophily prior
+    m = train_mask[src] & train_mask[dst] & (src != dst)
+    n_edges = int(m.sum().item())
+    p_src = labels_onehot[src[m]]
+    p_dst = labels_onehot[dst[m]]
+    raw = torch.matmul(p_src.t(), p_dst)
+    raw = (raw + raw.t()) / 2.0 + smoothing
+    co_matrix = raw / raw.sum(dim=1, keepdim=True).clamp(min=1e-8)
+    return co_matrix, n_edges
+
 def transform_cooccurrence_matrix(co_matrix, mode, generator=None):
     """
     Applies an ablation transform to the co-occurrence matrix before the

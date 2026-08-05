@@ -49,7 +49,9 @@ mkdir -p "$STAMP_DIR"
 run_condition () {
     local cmd="$1"
     local stamp
-    stamp="$STAMP_DIR/$(printf '%s' "$cmd" | md5sum | cut -d' ' -f1)"
+    # stamp key ignores --model_dir (contains the SLURM job id) so a
+    # resubmitted job still resumes completed conditions
+    stamp="$STAMP_DIR/$(printf '%s' "$cmd" | sed 's/--model_dir [^ ]*//' | md5sum | cut -d' ' -f1)"
     if [ -f "$stamp" ]; then
         echo "    (already completed — requeue resume, skipping)"
         return 0
