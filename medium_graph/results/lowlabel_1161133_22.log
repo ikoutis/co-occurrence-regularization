@@ -1,0 +1,1371 @@
+Wed Aug  5 15:46:28 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.159.04             Driver Version: 580.159.04     CUDA Version: 13.0     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA A100-SXM4-80GB          On  |   00000000:01:00.0 Off |                   On |
+| N/A   48C    P0            201W /  500W |    8584MiB /  81920MiB |     N/A      Default |
+|                                         |                        |              Enabled |
++-----------------------------------------+------------------------+----------------------+
+|   1  NVIDIA A100-SXM4-80GB          On  |   00000000:41:00.0 Off |                   On |
+| N/A   38C    P0            147W /  500W |    7564MiB /  81920MiB |     N/A      Default |
+|                                         |                        |              Enabled |
++-----------------------------------------+------------------------+----------------------+
+|   2  NVIDIA A100-SXM4-80GB          On  |   00000000:81:00.0 Off |                   On |
+| N/A   48C    P0            198W /  500W |    6596MiB /  81920MiB |     N/A      Default |
+|                                         |                        |              Enabled |
++-----------------------------------------+------------------------+----------------------+
+|   3  NVIDIA A100-SXM4-80GB          On  |   00000000:C1:00.0 Off |                   On |
+| N/A   32C    P0             54W /  500W |     249MiB /  81920MiB |     N/A      Default |
+|                                         |                        |              Enabled |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| MIG devices:                                                                            |
++------------------+----------------------------------+-----------+-----------------------+
+| GPU  GI  CI  MIG |              Shared Memory-Usage |        Vol|        Shared         |
+|      ID  ID  Dev |                Shared BAR1-Usage | SM     Unc| CE ENC  DEC  OFA  JPG |
+|                  |                                  |        ECC|                       |
+|==================+==================================+===========+=======================|
+|  3    5   0   0  |              71MiB / 19968MiB    | 28      0 |  2   0    1    0    0 |
+|                  |               0MiB / 12271MiB    |           |                       |
++------------------+----------------------------------+-----------+-----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0    1    0            16355      C   ...nda3/envs/spot_nsf/bin/python       7308MiB |
+|    0    5    0            27892      C   python                                 1010MiB |
+|    1    1    0            16356      C   ...nda3/envs/spot_nsf/bin/python       7306MiB |
+|    2    2    0            16357      C   ...nda3/envs/spot_nsf/bin/python       5318MiB |
+|    2    3    0            27251      C   python                                 1012MiB |
++-----------------------------------------------------------------------------------------+
+Cell: cora / gcn / budget 50 per class / group 2
+python main.py --gnn gcn --dataset cora --lr 0.001 --local_layers 3  --hidden_channels 512 --weight_decay 5e-4 --dropout 0.7 --rand_split_class --valid_num 500 --test_num 1000 --seed 123 --device 0 --runs 5 --runs 10 --label_num_per_class 50 --resample_split_per_run --budget_tag 50
+==========================================================
+Low-label sweep: python main.py --gnn gcn --dataset cora --lr 0.001 --local_layers 3  --hidden_channels 512 --weight_decay 5e-4 --dropout 0.7 --rand_split_class --valid_num 500 --test_num 1000 --seed 123 --device 0 --runs 5 --runs 10 --label_num_per_class 50 --resample_split_per_run --budget_tag 50
+result_dir=results/lowlabel conditions=[mlp]
+==========================================================
+--- mlp_reg | lambda=0.01 ---
+Namespace(bn=False, budget_tag='50', count_reg=False, count_smoothing=1.0, cpu=False, data_dir='./data/', dataset='cora', device=0, display_step=100, dropout=0.7, epochs=500, gnn='gcn', hidden_channels=512, jk=False, label_num_per_class=50, lambda_val=0.01, ln=False, local_layers=3, lr=0.001, metric='acc', mlp_epochs=500, mlp_reg=True, model='MPNN', model_dir='models', num_heads=1, oracle_reg=False, paired_seeds=True, penalty_transform='none', pre_linear=False, pre_ln=False, rand_split=False, rand_split_class=True, reg_start_epoch=10, reg_update_freq=5, res=False, resample_split_per_run=True, result_dir='results/lowlabel', runs=10, save_model=False, seed=123, test_num=1000, train_per_class=0, train_prop=0.5, use_reg=True, valid_num=500, valid_per_class=0, valid_prop=0.25, weight_decay=0.0005)
+cora
+Num nodes: 2708
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+dataset cora | num nodes 2708 | num edge 10556 | num node feats 1433 | num classes 7
+MODEL: MPNNs(
+  (h_lins): ModuleList()
+  (local_convs): ModuleList(
+    (0): GCNConv(1433, 512)
+    (1): GCNConv(512, 512)
+    (2): GCNConv(512, 512)
+  )
+  (lins): ModuleList(
+    (0): Linear(in_features=1433, out_features=512, bias=True)
+    (1): Linear(in_features=512, out_features=512, bias=True)
+    (2): Linear(in_features=512, out_features=512, bias=True)
+  )
+  (lns): ModuleList(
+    (0): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+    (1): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+    (2): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+  )
+  (bns): ModuleList(
+    (0): BatchNorm1d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (1): BatchNorm1d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): BatchNorm1d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (lin_in): Linear(in_features=1433, out_features=512, bias=True)
+  (pred_local): Linear(in_features=512, out_features=7, bias=True)
+)
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.9643, Train: 33.71%, Valid: 27.40%, Test: 26.90%, Best Valid: 27.40%, Best Test: 26.90%
+Epoch: 100, Loss: 0.0151, Train: 99.71%, Valid: 81.60%, Test: 80.60%, Best Valid: 85.80%, Best Test: 83.60%
+Epoch: 200, Loss: 0.0080, Train: 99.71%, Valid: 82.20%, Test: 81.70%, Best Valid: 85.80%, Best Test: 83.60%
+Epoch: 300, Loss: 0.0110, Train: 100.00%, Valid: 81.20%, Test: 80.30%, Best Valid: 85.80%, Best Test: 83.60%
+Epoch: 400, Loss: 0.0103, Train: 100.00%, Valid: 81.60%, Test: 80.10%, Best Valid: 85.80%, Best Test: 83.60%
+Run 01:
+Highest Train: 100.00
+Highest Valid: 85.80
+Highest Test: 84.40
+Chosen epoch: 27
+Final Train: 96.57
+Final Test: 83.60
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.9639, Train: 18.00%, Valid: 16.20%, Test: 13.70%, Best Valid: 16.20%, Best Test: 13.70%
+Epoch: 100, Loss: 0.0105, Train: 100.00%, Valid: 83.20%, Test: 81.20%, Best Valid: 83.80%, Best Test: 80.90%
+Epoch: 200, Loss: 0.0137, Train: 100.00%, Valid: 82.60%, Test: 81.10%, Best Valid: 83.80%, Best Test: 80.90%
+Epoch: 300, Loss: 0.0095, Train: 100.00%, Valid: 80.60%, Test: 80.00%, Best Valid: 83.80%, Best Test: 80.90%
+Epoch: 400, Loss: 0.0062, Train: 100.00%, Valid: 81.20%, Test: 80.30%, Best Valid: 83.80%, Best Test: 80.90%
+Run 02:
+Highest Train: 100.00
+Highest Valid: 83.80
+Highest Test: 83.80
+Chosen epoch: 99
+Final Train: 100.00
+Final Test: 80.90
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.9659, Train: 22.57%, Valid: 14.80%, Test: 15.40%, Best Valid: 14.80%, Best Test: 15.40%
+Epoch: 100, Loss: 0.0191, Train: 99.71%, Valid: 81.40%, Test: 81.90%, Best Valid: 84.60%, Best Test: 84.80%
+Epoch: 200, Loss: 0.0167, Train: 99.71%, Valid: 81.60%, Test: 82.00%, Best Valid: 84.60%, Best Test: 84.80%
+Epoch: 300, Loss: 0.0105, Train: 100.00%, Valid: 80.60%, Test: 82.60%, Best Valid: 84.60%, Best Test: 84.80%
+Epoch: 400, Loss: 0.0157, Train: 99.71%, Valid: 81.00%, Test: 81.70%, Best Valid: 84.60%, Best Test: 84.80%
+Run 03:
+Highest Train: 100.00
+Highest Valid: 84.60
+Highest Test: 84.80
+Chosen epoch: 35
+Final Train: 98.00
+Final Test: 84.80
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.9624, Train: 19.43%, Valid: 15.00%, Test: 17.70%, Best Valid: 15.00%, Best Test: 17.70%
+Epoch: 100, Loss: 0.0259, Train: 99.71%, Valid: 84.80%, Test: 79.30%, Best Valid: 88.20%, Best Test: 82.90%
+Epoch: 200, Loss: 0.0162, Train: 100.00%, Valid: 83.80%, Test: 77.90%, Best Valid: 88.20%, Best Test: 82.90%
+Epoch: 300, Loss: 0.0095, Train: 100.00%, Valid: 82.80%, Test: 76.90%, Best Valid: 88.20%, Best Test: 82.90%
+Epoch: 400, Loss: 0.0301, Train: 100.00%, Valid: 83.60%, Test: 80.20%, Best Valid: 88.20%, Best Test: 82.90%
+Run 04:
+Highest Train: 100.00
+Highest Valid: 88.20
+Highest Test: 83.70
+Chosen epoch: 25
+Final Train: 92.57
+Final Test: 82.90
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.9680, Train: 22.29%, Valid: 20.80%, Test: 20.40%, Best Valid: 20.80%, Best Test: 20.40%
+Epoch: 100, Loss: 0.0158, Train: 100.00%, Valid: 81.40%, Test: 81.20%, Best Valid: 84.20%, Best Test: 84.10%
+Epoch: 200, Loss: 0.0111, Train: 100.00%, Valid: 80.60%, Test: 79.80%, Best Valid: 84.20%, Best Test: 84.10%
+Epoch: 300, Loss: 0.0128, Train: 100.00%, Valid: 80.00%, Test: 79.60%, Best Valid: 84.20%, Best Test: 84.10%
+Epoch: 400, Loss: 0.0109, Train: 100.00%, Valid: 80.00%, Test: 78.50%, Best Valid: 84.20%, Best Test: 84.10%
+Run 05:
+Highest Train: 100.00
+Highest Valid: 84.20
+Highest Test: 84.60
+Chosen epoch: 27
+Final Train: 94.86
+Final Test: 84.10
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.9673, Train: 29.14%, Valid: 33.40%, Test: 30.00%, Best Valid: 33.40%, Best Test: 30.00%
+Epoch: 100, Loss: 0.0164, Train: 100.00%, Valid: 80.80%, Test: 79.90%, Best Valid: 84.20%, Best Test: 80.60%
+Epoch: 200, Loss: 0.0080, Train: 100.00%, Valid: 80.80%, Test: 79.00%, Best Valid: 84.20%, Best Test: 80.60%
+Epoch: 300, Loss: 0.0063, Train: 100.00%, Valid: 82.00%, Test: 80.20%, Best Valid: 84.20%, Best Test: 80.60%
+Epoch: 400, Loss: 0.0080, Train: 100.00%, Valid: 79.20%, Test: 79.10%, Best Valid: 84.20%, Best Test: 80.60%
+Run 06:
+Highest Train: 100.00
+Highest Valid: 84.20
+Highest Test: 82.00
+Chosen epoch: 32
+Final Train: 97.43
+Final Test: 80.60
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.9672, Train: 22.57%, Valid: 19.40%, Test: 18.30%, Best Valid: 19.40%, Best Test: 18.30%
+Epoch: 100, Loss: 0.0095, Train: 100.00%, Valid: 78.60%, Test: 80.40%, Best Valid: 84.00%, Best Test: 85.30%
+Epoch: 200, Loss: 0.0084, Train: 100.00%, Valid: 77.80%, Test: 79.20%, Best Valid: 84.00%, Best Test: 85.30%
+Epoch: 300, Loss: 0.0060, Train: 100.00%, Valid: 78.00%, Test: 79.30%, Best Valid: 84.00%, Best Test: 85.30%
+Epoch: 400, Loss: 0.0045, Train: 100.00%, Valid: 78.80%, Test: 79.90%, Best Valid: 84.00%, Best Test: 85.30%
+Run 07:
+Highest Train: 100.00
+Highest Valid: 84.00
+Highest Test: 85.40
+Chosen epoch: 37
+Final Train: 98.29
+Final Test: 85.30
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.9689, Train: 24.29%, Valid: 10.40%, Test: 11.80%, Best Valid: 10.40%, Best Test: 11.80%
+Epoch: 100, Loss: 0.0132, Train: 100.00%, Valid: 80.60%, Test: 81.00%, Best Valid: 85.60%, Best Test: 85.90%
+Epoch: 200, Loss: 0.0149, Train: 100.00%, Valid: 81.20%, Test: 81.80%, Best Valid: 85.60%, Best Test: 85.90%
+Epoch: 300, Loss: 0.0146, Train: 100.00%, Valid: 80.00%, Test: 80.00%, Best Valid: 85.60%, Best Test: 85.90%
+Epoch: 400, Loss: 0.0119, Train: 100.00%, Valid: 80.20%, Test: 80.70%, Best Valid: 85.60%, Best Test: 85.90%
+Run 08:
+Highest Train: 100.00
+Highest Valid: 85.60
+Highest Test: 86.20
+Chosen epoch: 25
+Final Train: 92.57
+Final Test: 85.90
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.9704, Train: 20.29%, Valid: 35.20%, Test: 37.00%, Best Valid: 35.20%, Best Test: 37.00%
+Epoch: 100, Loss: 0.0121, Train: 100.00%, Valid: 84.60%, Test: 81.10%, Best Valid: 87.40%, Best Test: 83.20%
+Epoch: 200, Loss: 0.0079, Train: 100.00%, Valid: 84.60%, Test: 78.80%, Best Valid: 87.40%, Best Test: 83.20%
+Epoch: 300, Loss: 0.0081, Train: 100.00%, Valid: 83.60%, Test: 78.10%, Best Valid: 87.40%, Best Test: 83.20%
+Epoch: 400, Loss: 0.0065, Train: 100.00%, Valid: 84.40%, Test: 78.30%, Best Valid: 87.40%, Best Test: 83.20%
+Run 09:
+Highest Train: 100.00
+Highest Valid: 87.40
+Highest Test: 84.30
+Chosen epoch: 37
+Final Train: 97.71
+Final Test: 83.20
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 1.9641, Train: 32.29%, Valid: 17.00%, Test: 19.00%, Best Valid: 17.00%, Best Test: 19.00%
+Epoch: 100, Loss: 0.0143, Train: 100.00%, Valid: 83.60%, Test: 80.20%, Best Valid: 87.80%, Best Test: 82.90%
+Epoch: 200, Loss: 0.0133, Train: 100.00%, Valid: 81.80%, Test: 79.10%, Best Valid: 87.80%, Best Test: 82.90%
+Epoch: 300, Loss: 0.0073, Train: 100.00%, Valid: 80.60%, Test: 78.60%, Best Valid: 87.80%, Best Test: 82.90%
+Epoch: 400, Loss: 0.0077, Train: 100.00%, Valid: 82.20%, Test: 79.20%, Best Valid: 87.80%, Best Test: 82.90%
+Run 10:
+Highest Train: 100.00
+Highest Valid: 87.80
+Highest Test: 82.90
+Chosen epoch: 31
+Final Train: 96.00
+Final Test: 82.90
+All runs:
+Highest Train: 100.00 ± 0.00
+Highest Test: 84.21 ± 1.20
+Highest Valid: 85.56 ± 1.69
+  Final Train: 96.40 ± 2.44
+   Final Test: 83.42 ± 1.73
+Saving results to results/lowlabel/cora/MPNN_gcn.csv
+--- mlp_reg | lambda=0.05 ---
+Namespace(bn=False, budget_tag='50', count_reg=False, count_smoothing=1.0, cpu=False, data_dir='./data/', dataset='cora', device=0, display_step=100, dropout=0.7, epochs=500, gnn='gcn', hidden_channels=512, jk=False, label_num_per_class=50, lambda_val=0.05, ln=False, local_layers=3, lr=0.001, metric='acc', mlp_epochs=500, mlp_reg=True, model='MPNN', model_dir='models', num_heads=1, oracle_reg=False, paired_seeds=True, penalty_transform='none', pre_linear=False, pre_ln=False, rand_split=False, rand_split_class=True, reg_start_epoch=10, reg_update_freq=5, res=False, resample_split_per_run=True, result_dir='results/lowlabel', runs=10, save_model=False, seed=123, test_num=1000, train_per_class=0, train_prop=0.5, use_reg=True, valid_num=500, valid_per_class=0, valid_prop=0.25, weight_decay=0.0005)
+cora
+Num nodes: 2708
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+dataset cora | num nodes 2708 | num edge 10556 | num node feats 1433 | num classes 7
+MODEL: MPNNs(
+  (h_lins): ModuleList()
+  (local_convs): ModuleList(
+    (0): GCNConv(1433, 512)
+    (1): GCNConv(512, 512)
+    (2): GCNConv(512, 512)
+  )
+  (lins): ModuleList(
+    (0): Linear(in_features=1433, out_features=512, bias=True)
+    (1): Linear(in_features=512, out_features=512, bias=True)
+    (2): Linear(in_features=512, out_features=512, bias=True)
+  )
+  (lns): ModuleList(
+    (0): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+    (1): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+    (2): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+  )
+  (bns): ModuleList(
+    (0): BatchNorm1d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (1): BatchNorm1d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): BatchNorm1d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (lin_in): Linear(in_features=1433, out_features=512, bias=True)
+  (pred_local): Linear(in_features=512, out_features=7, bias=True)
+)
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.0421, Train: 35.43%, Valid: 28.60%, Test: 26.50%, Best Valid: 28.60%, Best Test: 26.50%
+Epoch: 100, Loss: 0.0158, Train: 99.71%, Valid: 81.40%, Test: 80.70%, Best Valid: 85.80%, Best Test: 84.00%
+Epoch: 200, Loss: 0.0087, Train: 99.71%, Valid: 82.20%, Test: 81.60%, Best Valid: 85.80%, Best Test: 84.00%
+Epoch: 300, Loss: 0.0117, Train: 100.00%, Valid: 80.80%, Test: 80.40%, Best Valid: 85.80%, Best Test: 84.00%
+Epoch: 400, Loss: 0.0109, Train: 100.00%, Valid: 81.00%, Test: 80.30%, Best Valid: 85.80%, Best Test: 84.00%
+Run 01:
+Highest Train: 100.00
+Highest Valid: 85.80
+Highest Test: 84.40
+Chosen epoch: 26
+Final Train: 96.00
+Final Test: 84.00
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.0417, Train: 18.00%, Valid: 17.20%, Test: 15.50%, Best Valid: 17.20%, Best Test: 15.50%
+Epoch: 100, Loss: 0.0106, Train: 100.00%, Valid: 83.00%, Test: 80.70%, Best Valid: 83.60%, Best Test: 80.60%
+Epoch: 200, Loss: 0.0136, Train: 100.00%, Valid: 82.40%, Test: 80.80%, Best Valid: 83.80%, Best Test: 81.50%
+Epoch: 300, Loss: 0.0099, Train: 100.00%, Valid: 80.60%, Test: 80.20%, Best Valid: 84.00%, Best Test: 81.50%
+Epoch: 400, Loss: 0.0063, Train: 100.00%, Valid: 80.80%, Test: 80.30%, Best Valid: 84.00%, Best Test: 81.50%
+Run 02:
+Highest Train: 100.00
+Highest Valid: 84.00
+Highest Test: 83.60
+Chosen epoch: 258
+Final Train: 100.00
+Final Test: 81.50
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.0437, Train: 23.14%, Valid: 14.80%, Test: 15.50%, Best Valid: 14.80%, Best Test: 15.50%
+Epoch: 100, Loss: 0.0204, Train: 99.71%, Valid: 81.40%, Test: 82.10%, Best Valid: 84.60%, Best Test: 84.70%
+Epoch: 200, Loss: 0.0175, Train: 99.71%, Valid: 81.60%, Test: 82.00%, Best Valid: 84.60%, Best Test: 84.70%
+Epoch: 300, Loss: 0.0106, Train: 100.00%, Valid: 81.60%, Test: 82.80%, Best Valid: 84.60%, Best Test: 84.70%
+Epoch: 400, Loss: 0.0202, Train: 99.71%, Valid: 81.40%, Test: 81.90%, Best Valid: 84.60%, Best Test: 84.70%
+Run 03:
+Highest Train: 100.00
+Highest Valid: 84.60
+Highest Test: 84.70
+Chosen epoch: 35
+Final Train: 98.00
+Final Test: 84.70
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.0401, Train: 19.43%, Valid: 14.40%, Test: 17.70%, Best Valid: 14.40%, Best Test: 17.70%
+Epoch: 100, Loss: 0.0275, Train: 99.71%, Valid: 84.80%, Test: 79.30%, Best Valid: 88.00%, Best Test: 83.00%
+Epoch: 200, Loss: 0.0165, Train: 100.00%, Valid: 83.40%, Test: 77.50%, Best Valid: 88.00%, Best Test: 83.00%
+Epoch: 300, Loss: 0.0103, Train: 100.00%, Valid: 82.80%, Test: 76.80%, Best Valid: 88.00%, Best Test: 83.00%
+Epoch: 400, Loss: 0.0333, Train: 100.00%, Valid: 83.60%, Test: 80.20%, Best Valid: 88.00%, Best Test: 83.00%
+Run 04:
+Highest Train: 100.00
+Highest Valid: 88.00
+Highest Test: 83.50
+Chosen epoch: 25
+Final Train: 92.57
+Final Test: 83.00
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.0459, Train: 21.43%, Valid: 20.80%, Test: 20.30%, Best Valid: 20.80%, Best Test: 20.30%
+Epoch: 100, Loss: 0.0166, Train: 100.00%, Valid: 80.80%, Test: 81.20%, Best Valid: 84.20%, Best Test: 84.30%
+Epoch: 200, Loss: 0.0117, Train: 100.00%, Valid: 80.20%, Test: 79.70%, Best Valid: 84.20%, Best Test: 84.30%
+Epoch: 300, Loss: 0.0134, Train: 100.00%, Valid: 80.20%, Test: 79.90%, Best Valid: 84.20%, Best Test: 84.30%
+Epoch: 400, Loss: 0.0118, Train: 100.00%, Valid: 79.80%, Test: 78.70%, Best Valid: 84.20%, Best Test: 84.30%
+Run 05:
+Highest Train: 100.00
+Highest Valid: 84.20
+Highest Test: 84.60
+Chosen epoch: 27
+Final Train: 95.14
+Final Test: 84.30
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.0452, Train: 29.43%, Valid: 34.00%, Test: 31.20%, Best Valid: 34.00%, Best Test: 31.20%
+Epoch: 100, Loss: 0.0166, Train: 100.00%, Valid: 80.80%, Test: 79.80%, Best Valid: 84.20%, Best Test: 80.70%
+Epoch: 200, Loss: 0.0083, Train: 100.00%, Valid: 80.40%, Test: 78.90%, Best Valid: 84.20%, Best Test: 80.70%
+Epoch: 300, Loss: 0.0066, Train: 100.00%, Valid: 81.20%, Test: 80.10%, Best Valid: 84.20%, Best Test: 80.70%
+Epoch: 400, Loss: 0.0087, Train: 100.00%, Valid: 79.20%, Test: 79.30%, Best Valid: 84.20%, Best Test: 80.70%
+Run 06:
+Highest Train: 100.00
+Highest Valid: 84.20
+Highest Test: 81.90
+Chosen epoch: 32
+Final Train: 97.43
+Final Test: 80.70
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.0451, Train: 22.29%, Valid: 20.60%, Test: 19.60%, Best Valid: 20.60%, Best Test: 19.60%
+Epoch: 100, Loss: 0.0100, Train: 100.00%, Valid: 79.20%, Test: 80.50%, Best Valid: 84.20%, Best Test: 85.40%
+Epoch: 200, Loss: 0.0091, Train: 100.00%, Valid: 77.80%, Test: 79.40%, Best Valid: 84.20%, Best Test: 85.40%
+Epoch: 300, Loss: 0.0071, Train: 100.00%, Valid: 78.00%, Test: 79.40%, Best Valid: 84.20%, Best Test: 85.40%
+Epoch: 400, Loss: 0.0047, Train: 100.00%, Valid: 78.80%, Test: 79.70%, Best Valid: 84.20%, Best Test: 85.40%
+Run 07:
+Highest Train: 100.00
+Highest Valid: 84.20
+Highest Test: 85.50
+Chosen epoch: 37
+Final Train: 98.29
+Final Test: 85.40
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.0469, Train: 22.29%, Valid: 10.40%, Test: 11.60%, Best Valid: 10.40%, Best Test: 11.60%
+Epoch: 100, Loss: 0.0133, Train: 100.00%, Valid: 80.60%, Test: 81.00%, Best Valid: 85.60%, Best Test: 85.90%
+Epoch: 200, Loss: 0.0158, Train: 100.00%, Valid: 81.20%, Test: 81.60%, Best Valid: 85.60%, Best Test: 85.90%
+Epoch: 300, Loss: 0.0154, Train: 100.00%, Valid: 80.40%, Test: 80.20%, Best Valid: 85.60%, Best Test: 85.90%
+Epoch: 400, Loss: 0.0112, Train: 100.00%, Valid: 80.20%, Test: 81.10%, Best Valid: 85.60%, Best Test: 85.90%
+Run 08:
+Highest Train: 100.00
+Highest Valid: 85.60
+Highest Test: 86.30
+Chosen epoch: 25
+Final Train: 92.57
+Final Test: 85.90
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.0484, Train: 20.00%, Valid: 34.80%, Test: 36.40%, Best Valid: 34.80%, Best Test: 36.40%
+Epoch: 100, Loss: 0.0128, Train: 100.00%, Valid: 84.60%, Test: 81.20%, Best Valid: 87.40%, Best Test: 83.40%
+Epoch: 200, Loss: 0.0080, Train: 100.00%, Valid: 84.40%, Test: 78.90%, Best Valid: 87.40%, Best Test: 83.40%
+Epoch: 300, Loss: 0.0078, Train: 100.00%, Valid: 84.40%, Test: 78.60%, Best Valid: 87.40%, Best Test: 83.40%
+Epoch: 400, Loss: 0.0083, Train: 100.00%, Valid: 83.40%, Test: 77.60%, Best Valid: 87.40%, Best Test: 83.40%
+Run 09:
+Highest Train: 100.00
+Highest Valid: 87.40
+Highest Test: 84.30
+Chosen epoch: 37
+Final Train: 97.71
+Final Test: 83.40
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.0419, Train: 31.71%, Valid: 17.00%, Test: 19.40%, Best Valid: 17.00%, Best Test: 19.40%
+Epoch: 100, Loss: 0.0148, Train: 100.00%, Valid: 83.20%, Test: 80.30%, Best Valid: 87.80%, Best Test: 83.40%
+Epoch: 200, Loss: 0.0126, Train: 100.00%, Valid: 82.40%, Test: 79.50%, Best Valid: 87.80%, Best Test: 83.40%
+Epoch: 300, Loss: 0.0076, Train: 100.00%, Valid: 81.00%, Test: 78.90%, Best Valid: 87.80%, Best Test: 83.40%
+Epoch: 400, Loss: 0.0081, Train: 100.00%, Valid: 82.20%, Test: 79.10%, Best Valid: 87.80%, Best Test: 83.40%
+Run 10:
+Highest Train: 100.00
+Highest Valid: 87.80
+Highest Test: 83.40
+Chosen epoch: 31
+Final Train: 96.00
+Final Test: 83.40
+All runs:
+Highest Train: 100.00 ± 0.00
+Highest Test: 84.22 ± 1.22
+Highest Valid: 85.58 ± 1.61
+  Final Train: 96.37 ± 2.43
+   Final Test: 83.63 ± 1.62
+Saving results to results/lowlabel/cora/MPNN_gcn.csv
+--- mlp_reg | lambda=0.1 ---
+Namespace(bn=False, budget_tag='50', count_reg=False, count_smoothing=1.0, cpu=False, data_dir='./data/', dataset='cora', device=0, display_step=100, dropout=0.7, epochs=500, gnn='gcn', hidden_channels=512, jk=False, label_num_per_class=50, lambda_val=0.1, ln=False, local_layers=3, lr=0.001, metric='acc', mlp_epochs=500, mlp_reg=True, model='MPNN', model_dir='models', num_heads=1, oracle_reg=False, paired_seeds=True, penalty_transform='none', pre_linear=False, pre_ln=False, rand_split=False, rand_split_class=True, reg_start_epoch=10, reg_update_freq=5, res=False, resample_split_per_run=True, result_dir='results/lowlabel', runs=10, save_model=False, seed=123, test_num=1000, train_per_class=0, train_prop=0.5, use_reg=True, valid_num=500, valid_per_class=0, valid_prop=0.25, weight_decay=0.0005)
+cora
+Num nodes: 2708
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+dataset cora | num nodes 2708 | num edge 10556 | num node feats 1433 | num classes 7
+MODEL: MPNNs(
+  (h_lins): ModuleList()
+  (local_convs): ModuleList(
+    (0): GCNConv(1433, 512)
+    (1): GCNConv(512, 512)
+    (2): GCNConv(512, 512)
+  )
+  (lins): ModuleList(
+    (0): Linear(in_features=1433, out_features=512, bias=True)
+    (1): Linear(in_features=512, out_features=512, bias=True)
+    (2): Linear(in_features=512, out_features=512, bias=True)
+  )
+  (lns): ModuleList(
+    (0): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+    (1): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+    (2): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+  )
+  (bns): ModuleList(
+    (0): BatchNorm1d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (1): BatchNorm1d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): BatchNorm1d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (lin_in): Linear(in_features=1433, out_features=512, bias=True)
+  (pred_local): Linear(in_features=512, out_features=7, bias=True)
+)
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.1393, Train: 34.86%, Valid: 28.80%, Test: 26.80%, Best Valid: 28.80%, Best Test: 26.80%
+Epoch: 100, Loss: 0.0160, Train: 99.71%, Valid: 81.80%, Test: 80.60%, Best Valid: 85.80%, Best Test: 83.80%
+Epoch: 200, Loss: 0.0087, Train: 99.71%, Valid: 82.00%, Test: 81.70%, Best Valid: 85.80%, Best Test: 83.80%
+Epoch: 300, Loss: 0.0124, Train: 100.00%, Valid: 81.60%, Test: 80.50%, Best Valid: 85.80%, Best Test: 83.80%
+Epoch: 400, Loss: 0.0117, Train: 100.00%, Valid: 80.80%, Test: 80.20%, Best Valid: 85.80%, Best Test: 83.80%
+Run 01:
+Highest Train: 100.00
+Highest Valid: 85.80
+Highest Test: 84.40
+Chosen epoch: 34
+Final Train: 98.57
+Final Test: 83.80
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.1389, Train: 18.86%, Valid: 18.80%, Test: 18.20%, Best Valid: 18.80%, Best Test: 18.20%
+Epoch: 100, Loss: 0.0119, Train: 100.00%, Valid: 82.60%, Test: 80.80%, Best Valid: 83.20%, Best Test: 82.40%
+Epoch: 200, Loss: 0.0143, Train: 100.00%, Valid: 82.60%, Test: 80.70%, Best Valid: 83.60%, Best Test: 81.20%
+Epoch: 300, Loss: 0.0100, Train: 100.00%, Valid: 81.40%, Test: 80.30%, Best Valid: 83.60%, Best Test: 81.20%
+Epoch: 400, Loss: 0.0070, Train: 100.00%, Valid: 81.00%, Test: 80.40%, Best Valid: 83.60%, Best Test: 81.20%
+Run 02:
+Highest Train: 100.00
+Highest Valid: 83.60
+Highest Test: 83.70
+Chosen epoch: 156
+Final Train: 99.71
+Final Test: 81.20
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.1411, Train: 22.57%, Valid: 15.20%, Test: 15.60%, Best Valid: 15.20%, Best Test: 15.60%
+Epoch: 100, Loss: 0.0209, Train: 99.71%, Valid: 81.40%, Test: 82.10%, Best Valid: 84.60%, Best Test: 83.50%
+Epoch: 200, Loss: 0.0184, Train: 99.71%, Valid: 81.60%, Test: 82.00%, Best Valid: 84.60%, Best Test: 83.50%
+Epoch: 300, Loss: 0.0111, Train: 100.00%, Valid: 81.40%, Test: 82.70%, Best Valid: 84.60%, Best Test: 83.50%
+Epoch: 400, Loss: 0.0216, Train: 99.71%, Valid: 81.20%, Test: 81.60%, Best Valid: 84.60%, Best Test: 83.50%
+Run 03:
+Highest Train: 100.00
+Highest Valid: 84.60
+Highest Test: 84.90
+Chosen epoch: 36
+Final Train: 98.00
+Final Test: 83.50
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.1373, Train: 19.71%, Valid: 14.40%, Test: 17.60%, Best Valid: 14.40%, Best Test: 17.60%
+Epoch: 100, Loss: 0.0285, Train: 99.71%, Valid: 84.60%, Test: 79.30%, Best Valid: 88.00%, Best Test: 82.80%
+Epoch: 200, Loss: 0.0182, Train: 100.00%, Valid: 83.60%, Test: 77.40%, Best Valid: 88.00%, Best Test: 82.80%
+Epoch: 300, Loss: 0.0106, Train: 100.00%, Valid: 82.80%, Test: 76.80%, Best Valid: 88.00%, Best Test: 82.80%
+Epoch: 400, Loss: 0.0313, Train: 100.00%, Valid: 83.20%, Test: 80.30%, Best Valid: 88.00%, Best Test: 82.80%
+Run 04:
+Highest Train: 100.00
+Highest Valid: 88.00
+Highest Test: 83.70
+Chosen epoch: 25
+Final Train: 92.57
+Final Test: 82.80
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.1433, Train: 21.71%, Valid: 21.20%, Test: 20.50%, Best Valid: 21.20%, Best Test: 20.50%
+Epoch: 100, Loss: 0.0170, Train: 100.00%, Valid: 81.00%, Test: 81.20%, Best Valid: 84.20%, Best Test: 84.30%
+Epoch: 200, Loss: 0.0127, Train: 100.00%, Valid: 80.40%, Test: 79.80%, Best Valid: 84.20%, Best Test: 84.30%
+Epoch: 300, Loss: 0.0127, Train: 100.00%, Valid: 80.60%, Test: 79.80%, Best Valid: 84.20%, Best Test: 84.30%
+Epoch: 400, Loss: 0.0124, Train: 100.00%, Valid: 79.80%, Test: 78.70%, Best Valid: 84.20%, Best Test: 84.30%
+Run 05:
+Highest Train: 100.00
+Highest Valid: 84.20
+Highest Test: 84.50
+Chosen epoch: 27
+Final Train: 94.86
+Final Test: 84.30
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.1426, Train: 30.00%, Valid: 35.80%, Test: 31.80%, Best Valid: 35.80%, Best Test: 31.80%
+Epoch: 100, Loss: 0.0169, Train: 100.00%, Valid: 80.60%, Test: 79.80%, Best Valid: 84.80%, Best Test: 81.00%
+Epoch: 200, Loss: 0.0086, Train: 100.00%, Valid: 80.40%, Test: 78.90%, Best Valid: 84.80%, Best Test: 81.00%
+Epoch: 300, Loss: 0.0070, Train: 100.00%, Valid: 81.40%, Test: 80.00%, Best Valid: 84.80%, Best Test: 81.00%
+Epoch: 400, Loss: 0.0095, Train: 100.00%, Valid: 79.20%, Test: 79.30%, Best Valid: 84.80%, Best Test: 81.00%
+Run 06:
+Highest Train: 100.00
+Highest Valid: 84.80
+Highest Test: 82.00
+Chosen epoch: 32
+Final Train: 97.43
+Final Test: 81.00
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.1425, Train: 22.00%, Valid: 20.60%, Test: 19.40%, Best Valid: 20.60%, Best Test: 19.40%
+Epoch: 100, Loss: 0.0104, Train: 100.00%, Valid: 79.60%, Test: 80.70%, Best Valid: 84.60%, Best Test: 85.20%
+Epoch: 200, Loss: 0.0091, Train: 100.00%, Valid: 78.00%, Test: 79.50%, Best Valid: 84.60%, Best Test: 85.20%
+Epoch: 300, Loss: 0.0071, Train: 100.00%, Valid: 78.40%, Test: 79.40%, Best Valid: 84.60%, Best Test: 85.20%
+Epoch: 400, Loss: 0.0047, Train: 100.00%, Valid: 78.60%, Test: 80.10%, Best Valid: 84.60%, Best Test: 85.20%
+Run 07:
+Highest Train: 100.00
+Highest Valid: 84.60
+Highest Test: 85.60
+Chosen epoch: 38
+Final Train: 98.00
+Final Test: 85.20
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.1443, Train: 22.86%, Valid: 11.80%, Test: 12.90%, Best Valid: 11.80%, Best Test: 12.90%
+Epoch: 100, Loss: 0.0140, Train: 100.00%, Valid: 81.00%, Test: 81.00%, Best Valid: 85.60%, Best Test: 86.00%
+Epoch: 200, Loss: 0.0167, Train: 100.00%, Valid: 81.00%, Test: 81.70%, Best Valid: 85.60%, Best Test: 86.00%
+Epoch: 300, Loss: 0.0165, Train: 100.00%, Valid: 80.40%, Test: 80.10%, Best Valid: 85.60%, Best Test: 86.00%
+Epoch: 400, Loss: 0.0104, Train: 100.00%, Valid: 80.60%, Test: 80.90%, Best Valid: 85.60%, Best Test: 86.00%
+Run 08:
+Highest Train: 100.00
+Highest Valid: 85.60
+Highest Test: 86.40
+Chosen epoch: 25
+Final Train: 92.57
+Final Test: 86.00
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.1460, Train: 19.14%, Valid: 33.60%, Test: 35.50%, Best Valid: 33.60%, Best Test: 35.50%
+Epoch: 100, Loss: 0.0134, Train: 100.00%, Valid: 84.60%, Test: 81.20%, Best Valid: 87.40%, Best Test: 83.40%
+Epoch: 200, Loss: 0.0083, Train: 100.00%, Valid: 84.40%, Test: 79.00%, Best Valid: 87.40%, Best Test: 83.40%
+Epoch: 300, Loss: 0.0082, Train: 100.00%, Valid: 84.20%, Test: 78.50%, Best Valid: 87.40%, Best Test: 83.40%
+Epoch: 400, Loss: 0.0081, Train: 100.00%, Valid: 84.00%, Test: 78.40%, Best Valid: 87.40%, Best Test: 83.40%
+Run 09:
+Highest Train: 100.00
+Highest Valid: 87.40
+Highest Test: 84.40
+Chosen epoch: 38
+Final Train: 98.00
+Final Test: 83.40
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.1392, Train: 29.43%, Valid: 17.20%, Test: 18.90%, Best Valid: 17.20%, Best Test: 18.90%
+Epoch: 100, Loss: 0.0159, Train: 100.00%, Valid: 84.00%, Test: 80.50%, Best Valid: 87.80%, Best Test: 82.90%
+Epoch: 200, Loss: 0.0153, Train: 100.00%, Valid: 82.40%, Test: 79.30%, Best Valid: 87.80%, Best Test: 82.90%
+Epoch: 300, Loss: 0.0077, Train: 100.00%, Valid: 81.00%, Test: 78.90%, Best Valid: 87.80%, Best Test: 82.90%
+Epoch: 400, Loss: 0.0086, Train: 100.00%, Valid: 82.20%, Test: 79.30%, Best Valid: 87.80%, Best Test: 82.90%
+Run 10:
+Highest Train: 100.00
+Highest Valid: 87.80
+Highest Test: 83.10
+Chosen epoch: 31
+Final Train: 96.00
+Final Test: 82.90
+All runs:
+Highest Train: 100.00 ± 0.00
+Highest Test: 84.27 ± 1.25
+Highest Valid: 85.64 ± 1.58
+  Final Train: 96.57 ± 2.49
+   Final Test: 83.41 ± 1.57
+Saving results to results/lowlabel/cora/MPNN_gcn.csv
+--- mlp_reg | lambda=0.2 ---
+Namespace(bn=False, budget_tag='50', count_reg=False, count_smoothing=1.0, cpu=False, data_dir='./data/', dataset='cora', device=0, display_step=100, dropout=0.7, epochs=500, gnn='gcn', hidden_channels=512, jk=False, label_num_per_class=50, lambda_val=0.2, ln=False, local_layers=3, lr=0.001, metric='acc', mlp_epochs=500, mlp_reg=True, model='MPNN', model_dir='models', num_heads=1, oracle_reg=False, paired_seeds=True, penalty_transform='none', pre_linear=False, pre_ln=False, rand_split=False, rand_split_class=True, reg_start_epoch=10, reg_update_freq=5, res=False, resample_split_per_run=True, result_dir='results/lowlabel', runs=10, save_model=False, seed=123, test_num=1000, train_per_class=0, train_prop=0.5, use_reg=True, valid_num=500, valid_per_class=0, valid_prop=0.25, weight_decay=0.0005)
+cora
+Num nodes: 2708
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+dataset cora | num nodes 2708 | num edge 10556 | num node feats 1433 | num classes 7
+MODEL: MPNNs(
+  (h_lins): ModuleList()
+  (local_convs): ModuleList(
+    (0): GCNConv(1433, 512)
+    (1): GCNConv(512, 512)
+    (2): GCNConv(512, 512)
+  )
+  (lins): ModuleList(
+    (0): Linear(in_features=1433, out_features=512, bias=True)
+    (1): Linear(in_features=512, out_features=512, bias=True)
+    (2): Linear(in_features=512, out_features=512, bias=True)
+  )
+  (lns): ModuleList(
+    (0): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+    (1): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+    (2): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+  )
+  (bns): ModuleList(
+    (0): BatchNorm1d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (1): BatchNorm1d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): BatchNorm1d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (lin_in): Linear(in_features=1433, out_features=512, bias=True)
+  (pred_local): Linear(in_features=512, out_features=7, bias=True)
+)
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.3338, Train: 36.00%, Valid: 29.60%, Test: 27.90%, Best Valid: 29.60%, Best Test: 27.90%
+Epoch: 100, Loss: 0.0176, Train: 99.71%, Valid: 81.80%, Test: 80.60%, Best Valid: 85.80%, Best Test: 83.30%
+Epoch: 200, Loss: 0.0095, Train: 99.71%, Valid: 82.20%, Test: 81.60%, Best Valid: 85.80%, Best Test: 83.30%
+Epoch: 300, Loss: 0.0131, Train: 100.00%, Valid: 81.40%, Test: 80.70%, Best Valid: 85.80%, Best Test: 83.30%
+Epoch: 400, Loss: 0.0131, Train: 100.00%, Valid: 81.80%, Test: 80.50%, Best Valid: 85.80%, Best Test: 83.30%
+Run 01:
+Highest Train: 100.00
+Highest Valid: 85.80
+Highest Test: 84.30
+Chosen epoch: 33
+Final Train: 98.29
+Final Test: 83.30
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.3334, Train: 20.57%, Valid: 26.40%, Test: 24.60%, Best Valid: 26.40%, Best Test: 24.60%
+Epoch: 100, Loss: 0.0117, Train: 100.00%, Valid: 82.40%, Test: 80.50%, Best Valid: 83.60%, Best Test: 82.40%
+Epoch: 200, Loss: 0.0160, Train: 100.00%, Valid: 82.40%, Test: 80.80%, Best Valid: 83.60%, Best Test: 82.40%
+Epoch: 300, Loss: 0.0111, Train: 100.00%, Valid: 81.00%, Test: 80.50%, Best Valid: 83.60%, Best Test: 82.40%
+Epoch: 400, Loss: 0.0072, Train: 100.00%, Valid: 81.00%, Test: 80.30%, Best Valid: 83.80%, Best Test: 80.90%
+Run 02:
+Highest Train: 100.00
+Highest Valid: 83.80
+Highest Test: 83.30
+Chosen epoch: 365
+Final Train: 100.00
+Final Test: 80.90
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.3357, Train: 22.57%, Valid: 15.80%, Test: 15.80%, Best Valid: 15.80%, Best Test: 15.80%
+Epoch: 100, Loss: 0.0225, Train: 99.71%, Valid: 81.40%, Test: 82.10%, Best Valid: 84.20%, Best Test: 84.90%
+Epoch: 200, Loss: 0.0193, Train: 99.71%, Valid: 82.00%, Test: 82.20%, Best Valid: 84.20%, Best Test: 84.90%
+Epoch: 300, Loss: 0.0111, Train: 100.00%, Valid: 81.40%, Test: 83.10%, Best Valid: 84.20%, Best Test: 84.90%
+Epoch: 400, Loss: 0.0217, Train: 99.71%, Valid: 81.20%, Test: 82.10%, Best Valid: 84.20%, Best Test: 84.90%
+Run 03:
+Highest Train: 100.00
+Highest Valid: 84.20
+Highest Test: 84.90
+Chosen epoch: 35
+Final Train: 98.00
+Final Test: 84.90
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.3316, Train: 18.57%, Valid: 13.80%, Test: 16.20%, Best Valid: 13.80%, Best Test: 16.20%
+Epoch: 100, Loss: 0.0311, Train: 99.71%, Valid: 85.00%, Test: 79.60%, Best Valid: 87.80%, Best Test: 82.70%
+Epoch: 200, Loss: 0.0204, Train: 100.00%, Valid: 83.80%, Test: 78.00%, Best Valid: 87.80%, Best Test: 82.70%
+Epoch: 300, Loss: 0.0113, Train: 100.00%, Valid: 83.60%, Test: 77.20%, Best Valid: 87.80%, Best Test: 82.70%
+Epoch: 400, Loss: 0.0366, Train: 100.00%, Valid: 83.40%, Test: 80.50%, Best Valid: 87.80%, Best Test: 82.70%
+Run 04:
+Highest Train: 100.00
+Highest Valid: 87.80
+Highest Test: 84.20
+Chosen epoch: 25
+Final Train: 92.57
+Final Test: 82.70
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.3382, Train: 20.57%, Valid: 21.20%, Test: 20.70%, Best Valid: 21.20%, Best Test: 20.70%
+Epoch: 100, Loss: 0.0196, Train: 100.00%, Valid: 81.00%, Test: 81.60%, Best Valid: 84.20%, Best Test: 84.40%
+Epoch: 200, Loss: 0.0127, Train: 100.00%, Valid: 80.20%, Test: 80.10%, Best Valid: 84.20%, Best Test: 84.40%
+Epoch: 300, Loss: 0.0136, Train: 100.00%, Valid: 80.40%, Test: 79.90%, Best Valid: 84.20%, Best Test: 84.40%
+Epoch: 400, Loss: 0.0134, Train: 100.00%, Valid: 80.00%, Test: 78.80%, Best Valid: 84.20%, Best Test: 84.40%
+Run 05:
+Highest Train: 100.00
+Highest Valid: 84.20
+Highest Test: 84.70
+Chosen epoch: 27
+Final Train: 94.86
+Final Test: 84.40
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.3374, Train: 30.29%, Valid: 39.60%, Test: 36.60%, Best Valid: 39.60%, Best Test: 36.60%
+Epoch: 100, Loss: 0.0186, Train: 100.00%, Valid: 80.60%, Test: 79.80%, Best Valid: 85.00%, Best Test: 81.00%
+Epoch: 200, Loss: 0.0091, Train: 100.00%, Valid: 81.00%, Test: 79.10%, Best Valid: 85.00%, Best Test: 81.00%
+Epoch: 300, Loss: 0.0076, Train: 100.00%, Valid: 81.20%, Test: 80.30%, Best Valid: 85.00%, Best Test: 81.00%
+Epoch: 400, Loss: 0.0090, Train: 100.00%, Valid: 79.60%, Test: 79.50%, Best Valid: 85.00%, Best Test: 81.00%
+Run 06:
+Highest Train: 100.00
+Highest Valid: 85.00
+Highest Test: 82.00
+Chosen epoch: 32
+Final Train: 97.43
+Final Test: 81.00
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.3373, Train: 20.29%, Valid: 21.00%, Test: 19.00%, Best Valid: 21.00%, Best Test: 19.00%
+Epoch: 100, Loss: 0.0107, Train: 100.00%, Valid: 80.00%, Test: 80.70%, Best Valid: 84.80%, Best Test: 85.70%
+Epoch: 200, Loss: 0.0098, Train: 100.00%, Valid: 78.20%, Test: 80.10%, Best Valid: 84.80%, Best Test: 85.70%
+Epoch: 300, Loss: 0.0076, Train: 100.00%, Valid: 78.60%, Test: 80.00%, Best Valid: 84.80%, Best Test: 85.70%
+Epoch: 400, Loss: 0.0054, Train: 100.00%, Valid: 78.20%, Test: 80.20%, Best Valid: 84.80%, Best Test: 85.70%
+Run 07:
+Highest Train: 100.00
+Highest Valid: 84.80
+Highest Test: 85.80
+Chosen epoch: 38
+Final Train: 98.00
+Final Test: 85.70
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.3393, Train: 21.71%, Valid: 13.00%, Test: 13.40%, Best Valid: 13.00%, Best Test: 13.40%
+Epoch: 100, Loss: 0.0157, Train: 100.00%, Valid: 81.00%, Test: 81.30%, Best Valid: 85.80%, Best Test: 85.80%
+Epoch: 200, Loss: 0.0179, Train: 100.00%, Valid: 81.40%, Test: 81.60%, Best Valid: 85.80%, Best Test: 85.80%
+Epoch: 300, Loss: 0.0201, Train: 100.00%, Valid: 80.80%, Test: 80.20%, Best Valid: 85.80%, Best Test: 85.80%
+Epoch: 400, Loss: 0.0124, Train: 100.00%, Valid: 80.40%, Test: 81.00%, Best Valid: 85.80%, Best Test: 85.80%
+Run 08:
+Highest Train: 100.00
+Highest Valid: 85.80
+Highest Test: 86.40
+Chosen epoch: 24
+Final Train: 90.86
+Final Test: 85.80
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.3411, Train: 15.71%, Valid: 30.60%, Test: 33.50%, Best Valid: 30.60%, Best Test: 33.50%
+Epoch: 100, Loss: 0.0148, Train: 100.00%, Valid: 85.00%, Test: 81.70%, Best Valid: 87.60%, Best Test: 83.10%
+Epoch: 200, Loss: 0.0092, Train: 100.00%, Valid: 84.60%, Test: 79.10%, Best Valid: 87.60%, Best Test: 83.10%
+Epoch: 300, Loss: 0.0099, Train: 100.00%, Valid: 84.60%, Test: 78.70%, Best Valid: 87.60%, Best Test: 83.10%
+Epoch: 400, Loss: 0.0094, Train: 100.00%, Valid: 83.60%, Test: 78.30%, Best Valid: 87.60%, Best Test: 83.10%
+Run 09:
+Highest Train: 100.00
+Highest Valid: 87.60
+Highest Test: 84.20
+Chosen epoch: 37
+Final Train: 97.71
+Final Test: 83.10
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.3336, Train: 28.00%, Valid: 15.60%, Test: 17.60%, Best Valid: 15.60%, Best Test: 17.60%
+Epoch: 100, Loss: 0.0167, Train: 100.00%, Valid: 83.60%, Test: 80.50%, Best Valid: 88.00%, Best Test: 83.50%
+Epoch: 200, Loss: 0.0153, Train: 100.00%, Valid: 83.20%, Test: 79.40%, Best Valid: 88.00%, Best Test: 83.50%
+Epoch: 300, Loss: 0.0086, Train: 100.00%, Valid: 81.20%, Test: 78.60%, Best Valid: 88.00%, Best Test: 83.50%
+Epoch: 400, Loss: 0.0105, Train: 100.00%, Valid: 82.20%, Test: 79.50%, Best Valid: 88.00%, Best Test: 83.50%
+Run 10:
+Highest Train: 100.00
+Highest Valid: 88.00
+Highest Test: 83.50
+Chosen epoch: 31
+Final Train: 96.00
+Final Test: 83.50
+All runs:
+Highest Train: 100.00 ± 0.00
+Highest Test: 84.33 ± 1.25
+Highest Valid: 85.70 ± 1.59
+  Final Train: 96.37 ± 2.83
+   Final Test: 83.53 ± 1.72
+Saving results to results/lowlabel/cora/MPNN_gcn.csv
+--- mlp_reg | lambda=0.4 ---
+Namespace(bn=False, budget_tag='50', count_reg=False, count_smoothing=1.0, cpu=False, data_dir='./data/', dataset='cora', device=0, display_step=100, dropout=0.7, epochs=500, gnn='gcn', hidden_channels=512, jk=False, label_num_per_class=50, lambda_val=0.4, ln=False, local_layers=3, lr=0.001, metric='acc', mlp_epochs=500, mlp_reg=True, model='MPNN', model_dir='models', num_heads=1, oracle_reg=False, paired_seeds=True, penalty_transform='none', pre_linear=False, pre_ln=False, rand_split=False, rand_split_class=True, reg_start_epoch=10, reg_update_freq=5, res=False, resample_split_per_run=True, result_dir='results/lowlabel', runs=10, save_model=False, seed=123, test_num=1000, train_per_class=0, train_prop=0.5, use_reg=True, valid_num=500, valid_per_class=0, valid_prop=0.25, weight_decay=0.0005)
+cora
+Num nodes: 2708
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+dataset cora | num nodes 2708 | num edge 10556 | num node feats 1433 | num classes 7
+MODEL: MPNNs(
+  (h_lins): ModuleList()
+  (local_convs): ModuleList(
+    (0): GCNConv(1433, 512)
+    (1): GCNConv(512, 512)
+    (2): GCNConv(512, 512)
+  )
+  (lins): ModuleList(
+    (0): Linear(in_features=1433, out_features=512, bias=True)
+    (1): Linear(in_features=512, out_features=512, bias=True)
+    (2): Linear(in_features=512, out_features=512, bias=True)
+  )
+  (lns): ModuleList(
+    (0): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+    (1): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+    (2): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+  )
+  (bns): ModuleList(
+    (0): BatchNorm1d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (1): BatchNorm1d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): BatchNorm1d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (lin_in): Linear(in_features=1433, out_features=512, bias=True)
+  (pred_local): Linear(in_features=512, out_features=7, bias=True)
+)
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.7228, Train: 37.43%, Valid: 29.80%, Test: 27.80%, Best Valid: 29.80%, Best Test: 27.80%
+Epoch: 100, Loss: 0.0213, Train: 99.71%, Valid: 81.80%, Test: 80.90%, Best Valid: 85.80%, Best Test: 83.20%
+Epoch: 200, Loss: 0.0106, Train: 99.71%, Valid: 83.20%, Test: 81.70%, Best Valid: 85.80%, Best Test: 83.20%
+Epoch: 300, Loss: 0.0164, Train: 100.00%, Valid: 81.80%, Test: 80.80%, Best Valid: 85.80%, Best Test: 83.20%
+Epoch: 400, Loss: 0.0146, Train: 100.00%, Valid: 81.00%, Test: 81.00%, Best Valid: 85.80%, Best Test: 83.20%
+Run 01:
+Highest Train: 100.00
+Highest Valid: 85.80
+Highest Test: 84.40
+Chosen epoch: 33
+Final Train: 98.00
+Final Test: 83.20
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.7223, Train: 21.71%, Valid: 35.40%, Test: 31.10%, Best Valid: 35.40%, Best Test: 31.10%
+Epoch: 100, Loss: 0.0140, Train: 100.00%, Valid: 82.40%, Test: 80.80%, Best Valid: 83.60%, Best Test: 82.50%
+Epoch: 200, Loss: 0.0175, Train: 100.00%, Valid: 81.80%, Test: 80.80%, Best Valid: 83.60%, Best Test: 82.50%
+Epoch: 300, Loss: 0.0141, Train: 100.00%, Valid: 82.00%, Test: 80.50%, Best Valid: 83.60%, Best Test: 82.50%
+Epoch: 400, Loss: 0.0086, Train: 100.00%, Valid: 81.40%, Test: 80.70%, Best Valid: 83.60%, Best Test: 82.50%
+Run 02:
+Highest Train: 100.00
+Highest Valid: 83.60
+Highest Test: 83.70
+Chosen epoch: 35
+Final Train: 98.00
+Final Test: 82.50
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.7250, Train: 23.71%, Valid: 17.40%, Test: 16.70%, Best Valid: 17.40%, Best Test: 16.70%
+Epoch: 100, Loss: 0.0234, Train: 99.71%, Valid: 82.40%, Test: 82.40%, Best Valid: 84.00%, Best Test: 84.80%
+Epoch: 200, Loss: 0.0217, Train: 99.71%, Valid: 82.40%, Test: 82.60%, Best Valid: 84.00%, Best Test: 84.80%
+Epoch: 300, Loss: 0.0140, Train: 100.00%, Valid: 81.00%, Test: 83.20%, Best Valid: 84.00%, Best Test: 84.80%
+Epoch: 400, Loss: 0.0239, Train: 99.71%, Valid: 82.40%, Test: 82.30%, Best Valid: 84.00%, Best Test: 84.80%
+Run 03:
+Highest Train: 100.00
+Highest Valid: 84.00
+Highest Test: 84.80
+Chosen epoch: 35
+Final Train: 98.00
+Final Test: 84.80
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.7202, Train: 17.43%, Valid: 13.40%, Test: 15.50%, Best Valid: 13.40%, Best Test: 15.50%
+Epoch: 100, Loss: 0.0369, Train: 99.71%, Valid: 85.00%, Test: 80.00%, Best Valid: 87.80%, Best Test: 82.80%
+Epoch: 200, Loss: 0.0258, Train: 99.71%, Valid: 84.00%, Test: 78.30%, Best Valid: 87.80%, Best Test: 82.80%
+Epoch: 300, Loss: 0.0126, Train: 100.00%, Valid: 84.20%, Test: 77.40%, Best Valid: 87.80%, Best Test: 82.80%
+Epoch: 400, Loss: 0.0309, Train: 100.00%, Valid: 83.40%, Test: 80.40%, Best Valid: 87.80%, Best Test: 82.80%
+Run 04:
+Highest Train: 100.00
+Highest Valid: 87.80
+Highest Test: 83.90
+Chosen epoch: 25
+Final Train: 92.00
+Final Test: 82.80
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.7279, Train: 20.29%, Valid: 23.20%, Test: 21.90%, Best Valid: 23.20%, Best Test: 21.90%
+Epoch: 100, Loss: 0.0227, Train: 100.00%, Valid: 81.00%, Test: 81.90%, Best Valid: 84.40%, Best Test: 84.60%
+Epoch: 200, Loss: 0.0143, Train: 100.00%, Valid: 80.60%, Test: 80.70%, Best Valid: 84.40%, Best Test: 84.60%
+Epoch: 300, Loss: 0.0159, Train: 100.00%, Valid: 80.40%, Test: 79.90%, Best Valid: 84.40%, Best Test: 84.60%
+Epoch: 400, Loss: 0.0160, Train: 100.00%, Valid: 79.60%, Test: 79.20%, Best Valid: 84.40%, Best Test: 84.60%
+Run 05:
+Highest Train: 100.00
+Highest Valid: 84.40
+Highest Test: 84.60
+Chosen epoch: 27
+Final Train: 94.57
+Final Test: 84.60
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.7269, Train: 27.14%, Valid: 42.20%, Test: 38.70%, Best Valid: 42.20%, Best Test: 38.70%
+Epoch: 100, Loss: 0.0198, Train: 100.00%, Valid: 81.20%, Test: 79.80%, Best Valid: 85.00%, Best Test: 81.40%
+Epoch: 200, Loss: 0.0110, Train: 100.00%, Valid: 81.20%, Test: 79.30%, Best Valid: 85.00%, Best Test: 81.40%
+Epoch: 300, Loss: 0.0086, Train: 100.00%, Valid: 81.60%, Test: 80.30%, Best Valid: 85.00%, Best Test: 81.40%
+Epoch: 400, Loss: 0.0117, Train: 100.00%, Valid: 80.00%, Test: 79.60%, Best Valid: 85.00%, Best Test: 81.40%
+Run 06:
+Highest Train: 100.00
+Highest Valid: 85.00
+Highest Test: 81.90
+Chosen epoch: 32
+Final Train: 97.43
+Final Test: 81.40
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.7268, Train: 17.43%, Valid: 19.60%, Test: 18.80%, Best Valid: 19.60%, Best Test: 18.80%
+Epoch: 100, Loss: 0.0120, Train: 100.00%, Valid: 80.80%, Test: 81.80%, Best Valid: 84.80%, Best Test: 86.10%
+Epoch: 200, Loss: 0.0117, Train: 100.00%, Valid: 78.40%, Test: 80.50%, Best Valid: 84.80%, Best Test: 86.10%
+Epoch: 300, Loss: 0.0084, Train: 100.00%, Valid: 78.60%, Test: 80.50%, Best Valid: 84.80%, Best Test: 86.10%
+Epoch: 400, Loss: 0.0062, Train: 100.00%, Valid: 78.20%, Test: 80.40%, Best Valid: 84.80%, Best Test: 86.10%
+Run 07:
+Highest Train: 100.00
+Highest Valid: 84.80
+Highest Test: 86.30
+Chosen epoch: 38
+Final Train: 98.00
+Final Test: 86.10
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.7291, Train: 19.14%, Valid: 12.80%, Test: 14.40%, Best Valid: 12.80%, Best Test: 14.40%
+Epoch: 100, Loss: 0.0176, Train: 100.00%, Valid: 82.00%, Test: 81.50%, Best Valid: 86.00%, Best Test: 84.40%
+Epoch: 200, Loss: 0.0185, Train: 100.00%, Valid: 81.40%, Test: 81.60%, Best Valid: 86.00%, Best Test: 84.40%
+Epoch: 300, Loss: 0.0186, Train: 100.00%, Valid: 80.60%, Test: 80.70%, Best Valid: 86.00%, Best Test: 84.40%
+Epoch: 400, Loss: 0.0138, Train: 100.00%, Valid: 80.40%, Test: 81.00%, Best Valid: 86.00%, Best Test: 84.40%
+Run 08:
+Highest Train: 100.00
+Highest Valid: 86.00
+Highest Test: 86.60
+Chosen epoch: 23
+Final Train: 90.29
+Final Test: 84.40
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.7312, Train: 14.86%, Valid: 30.00%, Test: 33.10%, Best Valid: 30.00%, Best Test: 33.10%
+Epoch: 100, Loss: 0.0182, Train: 100.00%, Valid: 85.00%, Test: 82.10%, Best Valid: 87.40%, Best Test: 83.00%
+Epoch: 200, Loss: 0.0106, Train: 100.00%, Valid: 84.80%, Test: 79.60%, Best Valid: 87.40%, Best Test: 83.00%
+Epoch: 300, Loss: 0.0109, Train: 100.00%, Valid: 84.80%, Test: 79.10%, Best Valid: 87.40%, Best Test: 83.00%
+Epoch: 400, Loss: 0.0118, Train: 100.00%, Valid: 84.20%, Test: 78.50%, Best Valid: 87.40%, Best Test: 83.00%
+Run 09:
+Highest Train: 100.00
+Highest Valid: 87.40
+Highest Test: 84.10
+Chosen epoch: 50
+Final Train: 99.14
+Final Test: 83.00
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 2.7226, Train: 21.43%, Valid: 13.20%, Test: 14.90%, Best Valid: 13.20%, Best Test: 14.90%
+Epoch: 100, Loss: 0.0193, Train: 100.00%, Valid: 84.00%, Test: 81.00%, Best Valid: 88.20%, Best Test: 83.40%
+Epoch: 200, Loss: 0.0196, Train: 100.00%, Valid: 83.00%, Test: 79.50%, Best Valid: 88.20%, Best Test: 83.40%
+Epoch: 300, Loss: 0.0102, Train: 100.00%, Valid: 81.80%, Test: 78.80%, Best Valid: 88.20%, Best Test: 83.40%
+Epoch: 400, Loss: 0.0099, Train: 100.00%, Valid: 83.20%, Test: 79.50%, Best Valid: 88.20%, Best Test: 83.40%
+Run 10:
+Highest Train: 100.00
+Highest Valid: 88.20
+Highest Test: 83.40
+Chosen epoch: 31
+Final Train: 95.71
+Final Test: 83.40
+All runs:
+Highest Train: 100.00 ± 0.00
+Highest Test: 84.37 ± 1.36
+Highest Valid: 85.70 ± 1.63
+  Final Train: 96.11 ± 2.95
+   Final Test: 83.62 ± 1.36
+Saving results to results/lowlabel/cora/MPNN_gcn.csv
+--- mlp_reg | lambda=0.8 ---
+Namespace(bn=False, budget_tag='50', count_reg=False, count_smoothing=1.0, cpu=False, data_dir='./data/', dataset='cora', device=0, display_step=100, dropout=0.7, epochs=500, gnn='gcn', hidden_channels=512, jk=False, label_num_per_class=50, lambda_val=0.8, ln=False, local_layers=3, lr=0.001, metric='acc', mlp_epochs=500, mlp_reg=True, model='MPNN', model_dir='models', num_heads=1, oracle_reg=False, paired_seeds=True, penalty_transform='none', pre_linear=False, pre_ln=False, rand_split=False, rand_split_class=True, reg_start_epoch=10, reg_update_freq=5, res=False, resample_split_per_run=True, result_dir='results/lowlabel', runs=10, save_model=False, seed=123, test_num=1000, train_per_class=0, train_prop=0.5, use_reg=True, valid_num=500, valid_per_class=0, valid_prop=0.25, weight_decay=0.0005)
+cora
+Num nodes: 2708
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+dataset cora | num nodes 2708 | num edge 10556 | num node feats 1433 | num classes 7
+MODEL: MPNNs(
+  (h_lins): ModuleList()
+  (local_convs): ModuleList(
+    (0): GCNConv(1433, 512)
+    (1): GCNConv(512, 512)
+    (2): GCNConv(512, 512)
+  )
+  (lins): ModuleList(
+    (0): Linear(in_features=1433, out_features=512, bias=True)
+    (1): Linear(in_features=512, out_features=512, bias=True)
+    (2): Linear(in_features=512, out_features=512, bias=True)
+  )
+  (lns): ModuleList(
+    (0): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+    (1): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+    (2): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+  )
+  (bns): ModuleList(
+    (0): BatchNorm1d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (1): BatchNorm1d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): BatchNorm1d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (lin_in): Linear(in_features=1433, out_features=512, bias=True)
+  (pred_local): Linear(in_features=512, out_features=7, bias=True)
+)
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 3.5007, Train: 34.00%, Valid: 27.60%, Test: 25.10%, Best Valid: 27.60%, Best Test: 25.10%
+Epoch: 100, Loss: 0.0257, Train: 99.71%, Valid: 81.80%, Test: 81.20%, Best Valid: 85.60%, Best Test: 83.10%
+Epoch: 200, Loss: 0.0140, Train: 99.71%, Valid: 83.00%, Test: 82.20%, Best Valid: 85.60%, Best Test: 83.10%
+Epoch: 300, Loss: 0.0201, Train: 100.00%, Valid: 81.80%, Test: 81.20%, Best Valid: 85.60%, Best Test: 83.10%
+Epoch: 400, Loss: 0.0156, Train: 100.00%, Valid: 81.40%, Test: 81.40%, Best Valid: 85.60%, Best Test: 83.10%
+Run 01:
+Highest Train: 100.00
+Highest Valid: 85.60
+Highest Test: 84.20
+Chosen epoch: 32
+Final Train: 97.43
+Final Test: 83.10
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 3.5001, Train: 19.43%, Valid: 37.00%, Test: 33.50%, Best Valid: 37.00%, Best Test: 33.50%
+Epoch: 100, Loss: 0.0174, Train: 100.00%, Valid: 83.20%, Test: 81.40%, Best Valid: 84.60%, Best Test: 84.00%
+Epoch: 200, Loss: 0.0233, Train: 100.00%, Valid: 81.80%, Test: 80.70%, Best Valid: 84.60%, Best Test: 84.00%
+Epoch: 300, Loss: 0.0185, Train: 100.00%, Valid: 82.20%, Test: 80.50%, Best Valid: 84.60%, Best Test: 84.00%
+Epoch: 400, Loss: 0.0114, Train: 100.00%, Valid: 82.60%, Test: 81.10%, Best Valid: 84.60%, Best Test: 84.00%
+Run 02:
+Highest Train: 100.00
+Highest Valid: 84.60
+Highest Test: 84.00
+Chosen epoch: 22
+Final Train: 95.43
+Final Test: 84.00
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 3.5036, Train: 29.71%, Valid: 18.60%, Test: 19.90%, Best Valid: 18.60%, Best Test: 19.90%
+Epoch: 100, Loss: 0.0252, Train: 99.71%, Valid: 82.40%, Test: 82.60%, Best Valid: 84.00%, Best Test: 84.70%
+Epoch: 200, Loss: 0.0257, Train: 99.71%, Valid: 82.80%, Test: 82.80%, Best Valid: 84.00%, Best Test: 84.70%
+Epoch: 300, Loss: 0.0179, Train: 100.00%, Valid: 82.00%, Test: 83.30%, Best Valid: 84.00%, Best Test: 84.70%
+Epoch: 400, Loss: 0.0295, Train: 99.71%, Valid: 81.80%, Test: 82.80%, Best Valid: 84.00%, Best Test: 84.70%
+Run 03:
+Highest Train: 100.00
+Highest Valid: 84.00
+Highest Test: 84.80
+Chosen epoch: 35
+Final Train: 98.00
+Final Test: 84.70
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 3.4973, Train: 15.14%, Valid: 12.60%, Test: 14.30%, Best Valid: 12.60%, Best Test: 14.30%
+Epoch: 100, Loss: 0.0471, Train: 99.43%, Valid: 85.40%, Test: 80.10%, Best Valid: 87.80%, Best Test: 83.00%
+Epoch: 200, Loss: 0.0335, Train: 99.71%, Valid: 84.20%, Test: 78.90%, Best Valid: 87.80%, Best Test: 83.00%
+Epoch: 300, Loss: 0.0163, Train: 100.00%, Valid: 84.20%, Test: 78.20%, Best Valid: 87.80%, Best Test: 83.00%
+Epoch: 400, Loss: 0.0378, Train: 100.00%, Valid: 83.80%, Test: 80.50%, Best Valid: 87.80%, Best Test: 83.00%
+Run 04:
+Highest Train: 100.00
+Highest Valid: 87.80
+Highest Test: 83.60
+Chosen epoch: 24
+Final Train: 91.71
+Final Test: 83.00
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 3.5073, Train: 20.29%, Valid: 28.60%, Test: 26.10%, Best Valid: 28.60%, Best Test: 26.10%
+Epoch: 100, Loss: 0.0304, Train: 100.00%, Valid: 81.80%, Test: 82.00%, Best Valid: 84.80%, Best Test: 84.80%
+Epoch: 200, Loss: 0.0176, Train: 100.00%, Valid: 81.40%, Test: 81.20%, Best Valid: 84.80%, Best Test: 84.80%
+Epoch: 300, Loss: 0.0202, Train: 100.00%, Valid: 80.80%, Test: 80.60%, Best Valid: 84.80%, Best Test: 84.80%
+Epoch: 400, Loss: 0.0167, Train: 100.00%, Valid: 80.20%, Test: 79.80%, Best Valid: 84.80%, Best Test: 84.80%
+Run 05:
+Highest Train: 100.00
+Highest Valid: 84.80
+Highest Test: 84.80
+Chosen epoch: 21
+Final Train: 92.00
+Final Test: 84.80
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 3.5061, Train: 21.71%, Valid: 37.60%, Test: 36.60%, Best Valid: 37.60%, Best Test: 36.60%
+Epoch: 100, Loss: 0.0266, Train: 100.00%, Valid: 82.20%, Test: 79.90%, Best Valid: 85.40%, Best Test: 81.20%
+Epoch: 200, Loss: 0.0136, Train: 100.00%, Valid: 81.80%, Test: 80.20%, Best Valid: 85.40%, Best Test: 81.20%
+Epoch: 300, Loss: 0.0112, Train: 100.00%, Valid: 82.20%, Test: 80.30%, Best Valid: 85.40%, Best Test: 81.20%
+Epoch: 400, Loss: 0.0143, Train: 100.00%, Valid: 80.60%, Test: 79.60%, Best Valid: 85.40%, Best Test: 81.20%
+Run 06:
+Highest Train: 100.00
+Highest Valid: 85.40
+Highest Test: 81.80
+Chosen epoch: 41
+Final Train: 99.14
+Final Test: 81.20
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 3.5059, Train: 17.71%, Valid: 21.80%, Test: 20.10%, Best Valid: 21.80%, Best Test: 20.10%
+Epoch: 100, Loss: 0.0154, Train: 100.00%, Valid: 80.80%, Test: 82.10%, Best Valid: 85.00%, Best Test: 86.10%
+Epoch: 200, Loss: 0.0164, Train: 100.00%, Valid: 79.20%, Test: 81.70%, Best Valid: 85.00%, Best Test: 86.10%
+Epoch: 300, Loss: 0.0122, Train: 100.00%, Valid: 78.80%, Test: 81.60%, Best Valid: 85.00%, Best Test: 86.10%
+Epoch: 400, Loss: 0.0099, Train: 100.00%, Valid: 78.60%, Test: 82.30%, Best Valid: 85.00%, Best Test: 86.10%
+Run 07:
+Highest Train: 100.00
+Highest Valid: 85.00
+Highest Test: 86.40
+Chosen epoch: 38
+Final Train: 98.00
+Final Test: 86.10
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 3.5089, Train: 14.29%, Valid: 12.40%, Test: 13.00%, Best Valid: 12.40%, Best Test: 13.00%
+Epoch: 100, Loss: 0.0234, Train: 100.00%, Valid: 82.60%, Test: 82.10%, Best Valid: 87.20%, Best Test: 86.90%
+Epoch: 200, Loss: 0.0232, Train: 100.00%, Valid: 81.80%, Test: 81.40%, Best Valid: 87.20%, Best Test: 86.90%
+Epoch: 300, Loss: 0.0301, Train: 100.00%, Valid: 81.80%, Test: 81.30%, Best Valid: 87.20%, Best Test: 86.90%
+Epoch: 400, Loss: 0.0171, Train: 100.00%, Valid: 81.00%, Test: 81.40%, Best Valid: 87.20%, Best Test: 86.90%
+Run 08:
+Highest Train: 100.00
+Highest Valid: 87.20
+Highest Test: 86.90
+Chosen epoch: 25
+Final Train: 91.71
+Final Test: 86.90
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 3.5116, Train: 14.29%, Valid: 29.40%, Test: 32.90%, Best Valid: 29.40%, Best Test: 32.90%
+Epoch: 100, Loss: 0.0282, Train: 100.00%, Valid: 85.40%, Test: 82.70%, Best Valid: 87.20%, Best Test: 82.80%
+Epoch: 200, Loss: 0.0140, Train: 100.00%, Valid: 84.60%, Test: 80.00%, Best Valid: 87.20%, Best Test: 82.80%
+Epoch: 300, Loss: 0.0131, Train: 100.00%, Valid: 85.00%, Test: 79.40%, Best Valid: 87.20%, Best Test: 82.80%
+Epoch: 400, Loss: 0.0162, Train: 100.00%, Valid: 85.20%, Test: 79.10%, Best Valid: 87.20%, Best Test: 82.80%
+Run 09:
+Highest Train: 100.00
+Highest Valid: 87.20
+Highest Test: 83.90
+Chosen epoch: 36
+Final Train: 96.86
+Final Test: 82.80
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 3.5004, Train: 14.57%, Valid: 11.00%, Test: 13.00%, Best Valid: 11.00%, Best Test: 13.00%
+Epoch: 100, Loss: 0.0251, Train: 100.00%, Valid: 84.40%, Test: 81.00%, Best Valid: 88.00%, Best Test: 83.30%
+Epoch: 200, Loss: 0.0225, Train: 100.00%, Valid: 83.40%, Test: 80.40%, Best Valid: 88.00%, Best Test: 83.30%
+Epoch: 300, Loss: 0.0120, Train: 100.00%, Valid: 82.00%, Test: 79.30%, Best Valid: 88.00%, Best Test: 83.30%
+Epoch: 400, Loss: 0.0120, Train: 100.00%, Valid: 83.20%, Test: 79.50%, Best Valid: 88.00%, Best Test: 83.30%
+Run 10:
+Highest Train: 100.00
+Highest Valid: 88.00
+Highest Test: 83.30
+Chosen epoch: 31
+Final Train: 95.71
+Final Test: 83.30
+All runs:
+Highest Train: 100.00 ± 0.00
+Highest Test: 84.37 ± 1.48
+Highest Valid: 85.96 ± 1.45
+  Final Train: 95.60 ± 2.83
+   Final Test: 83.99 ± 1.68
+Saving results to results/lowlabel/cora/MPNN_gcn.csv
+--- mlp_reg | lambda=1.6 ---
+Namespace(bn=False, budget_tag='50', count_reg=False, count_smoothing=1.0, cpu=False, data_dir='./data/', dataset='cora', device=0, display_step=100, dropout=0.7, epochs=500, gnn='gcn', hidden_channels=512, jk=False, label_num_per_class=50, lambda_val=1.6, ln=False, local_layers=3, lr=0.001, metric='acc', mlp_epochs=500, mlp_reg=True, model='MPNN', model_dir='models', num_heads=1, oracle_reg=False, paired_seeds=True, penalty_transform='none', pre_linear=False, pre_ln=False, rand_split=False, rand_split_class=True, reg_start_epoch=10, reg_update_freq=5, res=False, resample_split_per_run=True, result_dir='results/lowlabel', runs=10, save_model=False, seed=123, test_num=1000, train_per_class=0, train_prop=0.5, use_reg=True, valid_num=500, valid_per_class=0, valid_prop=0.25, weight_decay=0.0005)
+cora
+Num nodes: 2708
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+dataset cora | num nodes 2708 | num edge 10556 | num node feats 1433 | num classes 7
+MODEL: MPNNs(
+  (h_lins): ModuleList()
+  (local_convs): ModuleList(
+    (0): GCNConv(1433, 512)
+    (1): GCNConv(512, 512)
+    (2): GCNConv(512, 512)
+  )
+  (lins): ModuleList(
+    (0): Linear(in_features=1433, out_features=512, bias=True)
+    (1): Linear(in_features=512, out_features=512, bias=True)
+    (2): Linear(in_features=512, out_features=512, bias=True)
+  )
+  (lns): ModuleList(
+    (0): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+    (1): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+    (2): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+  )
+  (bns): ModuleList(
+    (0): BatchNorm1d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (1): BatchNorm1d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): BatchNorm1d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (lin_in): Linear(in_features=1433, out_features=512, bias=True)
+  (pred_local): Linear(in_features=512, out_features=7, bias=True)
+)
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 5.0566, Train: 21.71%, Valid: 18.40%, Test: 16.30%, Best Valid: 18.40%, Best Test: 16.30%
+Epoch: 100, Loss: 0.0316, Train: 99.71%, Valid: 82.80%, Test: 82.60%, Best Valid: 86.40%, Best Test: 84.30%
+Epoch: 200, Loss: 0.0243, Train: 99.71%, Valid: 83.00%, Test: 82.70%, Best Valid: 86.40%, Best Test: 84.30%
+Epoch: 300, Loss: 0.0268, Train: 100.00%, Valid: 82.00%, Test: 81.90%, Best Valid: 86.40%, Best Test: 84.30%
+Epoch: 400, Loss: 0.0211, Train: 100.00%, Valid: 82.60%, Test: 82.00%, Best Valid: 86.40%, Best Test: 84.30%
+Run 01:
+Highest Train: 100.00
+Highest Valid: 86.40
+Highest Test: 84.40
+Chosen epoch: 38
+Final Train: 96.29
+Final Test: 84.30
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 5.0557, Train: 14.29%, Valid: 33.60%, Test: 32.00%, Best Valid: 33.60%, Best Test: 32.00%
+Epoch: 100, Loss: 0.0382, Train: 99.71%, Valid: 83.80%, Test: 82.10%, Best Valid: 85.40%, Best Test: 82.60%
+Epoch: 200, Loss: 0.0276, Train: 100.00%, Valid: 82.40%, Test: 81.30%, Best Valid: 85.40%, Best Test: 82.60%
+Epoch: 300, Loss: 0.0184, Train: 100.00%, Valid: 83.00%, Test: 81.30%, Best Valid: 85.40%, Best Test: 82.60%
+Epoch: 400, Loss: 0.0235, Train: 100.00%, Valid: 82.80%, Test: 81.10%, Best Valid: 85.40%, Best Test: 82.60%
+Run 02:
+Highest Train: 100.00
+Highest Valid: 85.40
+Highest Test: 84.70
+Chosen epoch: 64
+Final Train: 98.86
+Final Test: 82.60
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 5.0607, Train: 28.86%, Valid: 22.00%, Test: 19.30%, Best Valid: 22.00%, Best Test: 19.30%
+Epoch: 100, Loss: 0.0353, Train: 99.71%, Valid: 80.60%, Test: 81.80%, Best Valid: 81.80%, Best Test: 83.90%
+Epoch: 200, Loss: 0.0421, Train: 100.00%, Valid: 79.80%, Test: 83.00%, Best Valid: 81.80%, Best Test: 83.90%
+Epoch: 300, Loss: 0.0371, Train: 100.00%, Valid: 80.60%, Test: 82.60%, Best Valid: 82.00%, Best Test: 83.00%
+Epoch: 400, Loss: 0.0396, Train: 100.00%, Valid: 81.20%, Test: 82.20%, Best Valid: 82.00%, Best Test: 83.00%
+Run 03:
+Highest Train: 100.00
+Highest Valid: 82.00
+Highest Test: 84.20
+Chosen epoch: 217
+Final Train: 100.00
+Final Test: 83.00
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 5.0517, Train: 14.29%, Valid: 12.20%, Test: 13.60%, Best Valid: 12.20%, Best Test: 13.60%
+Epoch: 100, Loss: 0.0952, Train: 99.14%, Valid: 85.80%, Test: 80.60%, Best Valid: 88.60%, Best Test: 81.70%
+Epoch: 200, Loss: 0.0470, Train: 99.71%, Valid: 85.20%, Test: 80.50%, Best Valid: 88.60%, Best Test: 81.70%
+Epoch: 300, Loss: 0.0351, Train: 100.00%, Valid: 85.20%, Test: 79.60%, Best Valid: 88.60%, Best Test: 81.70%
+Epoch: 400, Loss: 0.0456, Train: 100.00%, Valid: 85.00%, Test: 80.40%, Best Valid: 88.60%, Best Test: 81.70%
+Run 04:
+Highest Train: 100.00
+Highest Valid: 88.60
+Highest Test: 84.90
+Chosen epoch: 43
+Final Train: 95.14
+Final Test: 81.70
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 5.0661, Train: 27.71%, Valid: 36.40%, Test: 36.80%, Best Valid: 36.40%, Best Test: 36.80%
+Epoch: 100, Loss: 0.0495, Train: 100.00%, Valid: 82.80%, Test: 83.00%, Best Valid: 85.20%, Best Test: 84.90%
+Epoch: 200, Loss: 0.0260, Train: 100.00%, Valid: 82.60%, Test: 82.80%, Best Valid: 85.20%, Best Test: 84.90%
+Epoch: 300, Loss: 0.0287, Train: 100.00%, Valid: 82.00%, Test: 81.50%, Best Valid: 85.20%, Best Test: 84.90%
+Epoch: 400, Loss: 0.0334, Train: 100.00%, Valid: 81.20%, Test: 80.60%, Best Valid: 85.20%, Best Test: 84.90%
+Run 05:
+Highest Train: 100.00
+Highest Valid: 85.20
+Highest Test: 85.40
+Chosen epoch: 34
+Final Train: 94.29
+Final Test: 84.90
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 5.0643, Train: 14.86%, Valid: 32.00%, Test: 33.70%, Best Valid: 32.00%, Best Test: 33.70%
+Epoch: 100, Loss: 0.0331, Train: 100.00%, Valid: 83.40%, Test: 81.60%, Best Valid: 85.40%, Best Test: 81.90%
+Epoch: 200, Loss: 0.0208, Train: 100.00%, Valid: 83.60%, Test: 81.10%, Best Valid: 85.40%, Best Test: 81.90%
+Epoch: 300, Loss: 0.0167, Train: 100.00%, Valid: 83.80%, Test: 81.10%, Best Valid: 85.40%, Best Test: 81.90%
+Epoch: 400, Loss: 0.0218, Train: 100.00%, Valid: 83.40%, Test: 81.10%, Best Valid: 85.40%, Best Test: 81.90%
+Run 06:
+Highest Train: 100.00
+Highest Valid: 85.40
+Highest Test: 82.50
+Chosen epoch: 53
+Final Train: 98.57
+Final Test: 81.90
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 5.0641, Train: 20.57%, Valid: 25.40%, Test: 24.00%, Best Valid: 25.40%, Best Test: 24.00%
+Epoch: 100, Loss: 0.0613, Train: 99.71%, Valid: 83.00%, Test: 83.90%, Best Valid: 84.40%, Best Test: 85.70%
+Epoch: 200, Loss: 0.0285, Train: 100.00%, Valid: 81.20%, Test: 83.20%, Best Valid: 84.40%, Best Test: 85.70%
+Epoch: 300, Loss: 0.0169, Train: 100.00%, Valid: 79.80%, Test: 82.90%, Best Valid: 84.40%, Best Test: 85.70%
+Epoch: 400, Loss: 0.0229, Train: 100.00%, Valid: 80.40%, Test: 82.80%, Best Valid: 84.40%, Best Test: 85.70%
+Run 07:
+Highest Train: 100.00
+Highest Valid: 84.40
+Highest Test: 88.00
+Chosen epoch: 54
+Final Train: 98.29
+Final Test: 85.70
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 5.0684, Train: 14.29%, Valid: 12.40%, Test: 12.90%, Best Valid: 12.40%, Best Test: 12.90%
+Epoch: 100, Loss: 0.0496, Train: 100.00%, Valid: 82.60%, Test: 82.30%, Best Valid: 86.80%, Best Test: 86.70%
+Epoch: 200, Loss: 0.0337, Train: 100.00%, Valid: 82.20%, Test: 82.10%, Best Valid: 86.80%, Best Test: 86.70%
+Epoch: 300, Loss: 0.0440, Train: 100.00%, Valid: 81.00%, Test: 82.00%, Best Valid: 86.80%, Best Test: 86.70%
+Epoch: 400, Loss: 0.0260, Train: 100.00%, Valid: 81.00%, Test: 82.90%, Best Valid: 86.80%, Best Test: 86.70%
+Run 08:
+Highest Train: 100.00
+Highest Valid: 86.80
+Highest Test: 86.70
+Chosen epoch: 44
+Final Train: 94.86
+Final Test: 86.70
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 5.0723, Train: 14.29%, Valid: 29.20%, Test: 32.90%, Best Valid: 29.20%, Best Test: 32.90%
+Epoch: 100, Loss: 0.0591, Train: 100.00%, Valid: 86.00%, Test: 83.00%, Best Valid: 88.20%, Best Test: 83.80%
+Epoch: 200, Loss: 0.0185, Train: 100.00%, Valid: 86.00%, Test: 82.10%, Best Valid: 88.20%, Best Test: 83.80%
+Epoch: 300, Loss: 0.0274, Train: 100.00%, Valid: 85.00%, Test: 80.50%, Best Valid: 88.20%, Best Test: 83.80%
+Epoch: 400, Loss: 0.0217, Train: 100.00%, Valid: 85.60%, Test: 80.80%, Best Valid: 88.20%, Best Test: 83.80%
+Run 09:
+Highest Train: 100.00
+Highest Valid: 88.20
+Highest Test: 84.20
+Chosen epoch: 80
+Final Train: 99.71
+Final Test: 83.80
+train:torch.Size([350]), valid:torch.Size([500]), test:torch.Size([1000])
+Pre-training MLP for 500 epochs to generate co-occurrence matrix...
+MLP pre-training complete. Penalty matrix frozen.
+Epoch: 00, Loss: 5.0562, Train: 14.29%, Valid: 10.80%, Test: 13.00%, Best Valid: 10.80%, Best Test: 13.00%
+Epoch: 100, Loss: 0.0524, Train: 100.00%, Valid: 84.80%, Test: 81.70%, Best Valid: 88.00%, Best Test: 83.70%
+Epoch: 200, Loss: 0.0343, Train: 100.00%, Valid: 84.00%, Test: 81.20%, Best Valid: 88.00%, Best Test: 83.70%
+Epoch: 300, Loss: 0.0218, Train: 100.00%, Valid: 84.40%, Test: 80.60%, Best Valid: 88.00%, Best Test: 83.70%
+Epoch: 400, Loss: 0.0168, Train: 100.00%, Valid: 83.20%, Test: 80.40%, Best Valid: 88.00%, Best Test: 83.70%
+Run 10:
+Highest Train: 100.00
+Highest Valid: 88.00
+Highest Test: 84.40
+Chosen epoch: 40
+Final Train: 95.71
+Final Test: 83.70
+All runs:
+Highest Train: 100.00 ± 0.00
+Highest Test: 84.94 ± 1.50
+Highest Valid: 86.04 ± 2.01
+  Final Train: 97.17 ± 2.14
+   Final Test: 83.83 ± 1.62
+Saving results to results/lowlabel/cora/MPNN_gcn.csv
+Low-label sweep completed.
+Task 22 done.

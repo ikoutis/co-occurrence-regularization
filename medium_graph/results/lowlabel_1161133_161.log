@@ -1,0 +1,1705 @@
+Thu Aug  6 03:27:08 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.159.04             Driver Version: 580.159.04     CUDA Version: 13.0     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA A100-SXM4-80GB          On  |   00000000:01:00.0 Off |                   On |
+| N/A   34C    P0            129W /  500W |    4391MiB /  81920MiB |     N/A      Default |
+|                                         |                        |              Enabled |
++-----------------------------------------+------------------------+----------------------+
+|   1  NVIDIA A100-SXM4-80GB          On  |   00000000:41:00.0 Off |                   On |
+| N/A   27C    P0             48W /  500W |     249MiB /  81920MiB |     N/A      Default |
+|                                         |                        |              Enabled |
++-----------------------------------------+------------------------+----------------------+
+|   2  NVIDIA A100-SXM4-80GB          On  |   00000000:81:00.0 Off |                   On |
+| N/A   34C    P0            106W /  500W |     837MiB /  81920MiB |     N/A      Default |
+|                                         |                        |              Enabled |
++-----------------------------------------+------------------------+----------------------+
+|   3  NVIDIA A100-SXM4-80GB          On  |   00000000:C1:00.0 Off |                   On |
+| N/A   30C    P0            112W /  500W |     837MiB /  81920MiB |     N/A      Default |
+|                                         |                        |              Enabled |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| MIG devices:                                                                            |
++------------------+----------------------------------+-----------+-----------------------+
+| GPU  GI  CI  MIG |              Shared Memory-Usage |        Vol|        Shared         |
+|      ID  ID  Dev |                Shared BAR1-Usage | SM     Unc| CE ENC  DEC  OFA  JPG |
+|                  |                                  |        ECC|                       |
+|==================+==================================+===========+=======================|
+|  1    3   0   0  |              71MiB / 19968MiB    | 28      0 |  2   0    1    0    0 |
+|                  |               0MiB / 12271MiB    |           |                       |
++------------------+----------------------------------+-----------+-----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0    3    0           491351      C   python                                 4134MiB |
+|    2    3    0           490331      C   ...envs/torch-cuda-mm/bin/python        580MiB |
+|    3    5    0           491355      C   ...envs/torch-cuda-mm/bin/python        580MiB |
++-----------------------------------------------------------------------------------------+
+Cell: amazon-computer / gcn / budget 10 per class / group 1
+python main.py --gnn gcn --dataset amazon-computer --hidden_channels 512 --epochs 1000 --lr 0.001 --runs 3 --local_layers 3 --weight_decay 5e-5 --dropout 0.5 --device 0 --ln --runs 10 --train_per_class 10 --budget_tag 10
+==========================================================
+Low-label sweep: python main.py --gnn gcn --dataset amazon-computer --hidden_channels 512 --epochs 1000 --lr 0.001 --runs 3 --local_layers 3 --weight_decay 5e-5 --dropout 0.5 --device 0 --ln --runs 10 --train_per_class 10 --budget_tag 10
+result_dir=results/lowlabel conditions=[count]
+==========================================================
+--- count_reg | lambda=0.01 ---
+Namespace(bn=False, budget_tag='10', count_reg=True, count_smoothing=1.0, cpu=False, data_dir='./data/', dataset='amazon-computer', device=0, display_step=100, dropout=0.5, epochs=1000, gnn='gcn', hidden_channels=512, jk=False, label_num_per_class=20, lambda_val=0.01, ln=True, local_layers=3, lr=0.001, metric='acc', mlp_epochs=500, mlp_reg=False, model='MPNN', model_dir='models', num_heads=1, oracle_reg=False, paired_seeds=True, penalty_transform='none', pre_linear=False, pre_ln=False, rand_split=False, rand_split_class=False, reg_start_epoch=10, reg_update_freq=5, res=False, resample_split_per_run=False, result_dir='results/lowlabel', runs=10, save_model=False, seed=42, test_num=1000, train_per_class=10, train_prop=0.5, use_reg=True, valid_num=500, valid_per_class=0, valid_prop=0.25, weight_decay=5e-05)
+amazon-computer
+dataset amazon-computer | num nodes 13752 | num edge 491722 | num node feats 767 | num classes 10
+MODEL: MPNNs(
+  (h_lins): ModuleList()
+  (local_convs): ModuleList(
+    (0): GCNConv(767, 512)
+    (1): GCNConv(512, 512)
+    (2): GCNConv(512, 512)
+  )
+  (lins): ModuleList(
+    (0): Linear(in_features=767, out_features=512, bias=True)
+    (1): Linear(in_features=512, out_features=512, bias=True)
+    (2): Linear(in_features=512, out_features=512, bias=True)
+  )
+  (lns): ModuleList(
+    (0): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+    (1): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+    (2): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+  )
+  (bns): ModuleList(
+    (0): BatchNorm1d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (1): BatchNorm1d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): BatchNorm1d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (lin_in): Linear(in_features=767, out_features=512, bias=True)
+  (pred_local): Linear(in_features=512, out_features=10, bias=True)
+)
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (46 train-train edges).
+Epoch: 00, Loss: 2.5399, Train: 8.21%, Valid: 8.69%, Test: 8.91%, Best Valid: 8.69%, Best Test: 8.91%
+Epoch: 100, Loss: 0.0647, Train: 75.99%, Valid: 77.78%, Test: 76.88%, Best Valid: 83.20%, Best Test: 84.04%
+Epoch: 200, Loss: 0.0094, Train: 76.39%, Valid: 78.07%, Test: 77.21%, Best Valid: 83.20%, Best Test: 84.04%
+Epoch: 300, Loss: 0.0028, Train: 77.06%, Valid: 78.62%, Test: 78.52%, Best Valid: 83.20%, Best Test: 84.04%
+Epoch: 400, Loss: 0.0006, Train: 76.94%, Valid: 78.62%, Test: 78.44%, Best Valid: 83.20%, Best Test: 84.04%
+Epoch: 500, Loss: 0.0004, Train: 77.03%, Valid: 78.73%, Test: 78.52%, Best Valid: 83.20%, Best Test: 84.04%
+Epoch: 600, Loss: 0.0003, Train: 77.14%, Valid: 78.98%, Test: 78.84%, Best Valid: 83.20%, Best Test: 84.04%
+Epoch: 700, Loss: 0.0003, Train: 77.25%, Valid: 78.98%, Test: 78.74%, Best Valid: 83.20%, Best Test: 84.04%
+Epoch: 800, Loss: 0.0004, Train: 76.57%, Valid: 78.33%, Test: 78.01%, Best Valid: 83.20%, Best Test: 84.04%
+Epoch: 900, Loss: 0.0002, Train: 77.01%, Valid: 79.02%, Test: 78.55%, Best Valid: 83.20%, Best Test: 84.04%
+Run 01:
+Highest Train: 83.06
+Highest Valid: 83.20
+Highest Test: 84.62
+Chosen epoch: 57
+Final Train: 82.40
+Final Test: 84.04
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (40 train-train edges).
+Epoch: 00, Loss: 2.3530, Train: 17.38%, Valid: 17.53%, Test: 17.45%, Best Valid: 17.53%, Best Test: 17.45%
+Epoch: 100, Loss: 0.0092, Train: 75.78%, Valid: 75.85%, Test: 75.61%, Best Valid: 80.18%, Best Test: 80.04%
+Epoch: 200, Loss: 0.0197, Train: 76.56%, Valid: 76.55%, Test: 77.17%, Best Valid: 80.87%, Best Test: 82.19%
+Epoch: 300, Loss: 0.0011, Train: 76.54%, Valid: 76.73%, Test: 76.19%, Best Valid: 81.35%, Best Test: 81.50%
+Epoch: 400, Loss: 0.0006, Train: 77.07%, Valid: 77.16%, Test: 76.55%, Best Valid: 81.35%, Best Test: 81.50%
+Epoch: 500, Loss: 0.0004, Train: 77.00%, Valid: 77.05%, Test: 76.70%, Best Valid: 81.35%, Best Test: 81.50%
+Epoch: 600, Loss: 0.0005, Train: 77.09%, Valid: 77.02%, Test: 76.30%, Best Valid: 81.35%, Best Test: 81.50%
+Epoch: 700, Loss: 0.0002, Train: 76.89%, Valid: 77.05%, Test: 76.30%, Best Valid: 81.35%, Best Test: 81.50%
+Epoch: 800, Loss: 0.0004, Train: 77.45%, Valid: 77.45%, Test: 77.10%, Best Valid: 81.35%, Best Test: 81.50%
+Epoch: 900, Loss: 0.0002, Train: 77.25%, Valid: 77.27%, Test: 76.66%, Best Valid: 81.35%, Best Test: 81.50%
+Run 02:
+Highest Train: 81.92
+Highest Valid: 81.35
+Highest Test: 82.19
+Chosen epoch: 204
+Final Train: 81.20
+Final Test: 81.50
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (34 train-train edges).
+Epoch: 00, Loss: 2.4076, Train: 15.74%, Valid: 16.25%, Test: 14.65%, Best Valid: 16.25%, Best Test: 14.65%
+Epoch: 100, Loss: 0.0187, Train: 78.43%, Valid: 78.58%, Test: 79.50%, Best Valid: 83.05%, Best Test: 84.15%
+Epoch: 200, Loss: 0.0017, Train: 79.44%, Valid: 79.82%, Test: 80.48%, Best Valid: 83.05%, Best Test: 84.15%
+Epoch: 300, Loss: 0.0008, Train: 80.17%, Valid: 80.47%, Test: 81.39%, Best Valid: 83.05%, Best Test: 84.15%
+Epoch: 400, Loss: 0.0006, Train: 80.23%, Valid: 80.76%, Test: 81.39%, Best Valid: 83.05%, Best Test: 84.15%
+Epoch: 500, Loss: 0.0004, Train: 80.52%, Valid: 81.02%, Test: 81.32%, Best Valid: 83.05%, Best Test: 84.15%
+Epoch: 600, Loss: 0.0004, Train: 80.75%, Valid: 81.09%, Test: 81.79%, Best Valid: 83.05%, Best Test: 84.15%
+Epoch: 700, Loss: 0.0004, Train: 80.75%, Valid: 81.24%, Test: 82.04%, Best Valid: 83.05%, Best Test: 84.15%
+Epoch: 800, Loss: 0.0003, Train: 80.83%, Valid: 81.16%, Test: 82.04%, Best Valid: 83.05%, Best Test: 84.15%
+Epoch: 900, Loss: 0.0003, Train: 81.03%, Valid: 81.13%, Test: 82.04%, Best Valid: 83.05%, Best Test: 84.15%
+Run 03:
+Highest Train: 82.81
+Highest Valid: 83.05
+Highest Test: 84.62
+Chosen epoch: 77
+Final Train: 82.81
+Final Test: 84.15
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (28 train-train edges).
+Epoch: 00, Loss: 2.5232, Train: 6.35%, Valid: 6.87%, Test: 6.76%, Best Valid: 6.87%, Best Test: 6.76%
+Epoch: 100, Loss: 0.0353, Train: 75.88%, Valid: 77.02%, Test: 75.94%, Best Valid: 81.45%, Best Test: 81.82%
+Epoch: 200, Loss: 0.0015, Train: 78.72%, Valid: 78.98%, Test: 79.43%, Best Valid: 81.45%, Best Test: 81.82%
+Epoch: 300, Loss: 0.0011, Train: 79.31%, Valid: 79.38%, Test: 79.64%, Best Valid: 81.45%, Best Test: 81.82%
+Epoch: 400, Loss: 0.0005, Train: 78.78%, Valid: 78.51%, Test: 79.10%, Best Valid: 81.45%, Best Test: 81.82%
+Epoch: 500, Loss: 0.0006, Train: 78.81%, Valid: 78.76%, Test: 79.57%, Best Valid: 81.45%, Best Test: 81.82%
+Epoch: 600, Loss: 0.0003, Train: 78.72%, Valid: 78.84%, Test: 79.17%, Best Valid: 81.45%, Best Test: 81.82%
+Epoch: 700, Loss: 0.0004, Train: 78.91%, Valid: 78.95%, Test: 79.50%, Best Valid: 81.45%, Best Test: 81.82%
+Epoch: 800, Loss: 0.0003, Train: 79.01%, Valid: 79.09%, Test: 79.53%, Best Valid: 81.45%, Best Test: 81.82%
+Epoch: 900, Loss: 0.0003, Train: 79.17%, Valid: 79.35%, Test: 79.46%, Best Valid: 81.45%, Best Test: 81.82%
+Run 04:
+Highest Train: 81.64
+Highest Valid: 81.45
+Highest Test: 82.01
+Chosen epoch: 44
+Final Train: 81.54
+Final Test: 81.82
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (40 train-train edges).
+Epoch: 00, Loss: 2.5223, Train: 12.16%, Valid: 11.64%, Test: 12.03%, Best Valid: 11.64%, Best Test: 12.03%
+Epoch: 100, Loss: 0.0562, Train: 77.11%, Valid: 76.47%, Test: 77.50%, Best Valid: 79.13%, Best Test: 80.37%
+Epoch: 200, Loss: 0.0364, Train: 79.14%, Valid: 78.22%, Test: 79.86%, Best Valid: 79.71%, Best Test: 80.33%
+Epoch: 300, Loss: 0.0012, Train: 78.06%, Valid: 78.76%, Test: 80.41%, Best Valid: 80.07%, Best Test: 81.21%
+Epoch: 400, Loss: 0.0010, Train: 77.60%, Valid: 78.33%, Test: 79.61%, Best Valid: 80.07%, Best Test: 81.21%
+Epoch: 500, Loss: 0.0006, Train: 77.43%, Valid: 78.00%, Test: 79.21%, Best Valid: 80.07%, Best Test: 81.21%
+Epoch: 600, Loss: 0.0006, Train: 77.88%, Valid: 78.51%, Test: 79.35%, Best Valid: 80.07%, Best Test: 81.21%
+Epoch: 700, Loss: 0.0003, Train: 78.09%, Valid: 78.73%, Test: 79.90%, Best Valid: 80.07%, Best Test: 81.21%
+Epoch: 800, Loss: 0.0004, Train: 77.14%, Valid: 77.82%, Test: 78.92%, Best Valid: 80.07%, Best Test: 81.21%
+Epoch: 900, Loss: 0.0005, Train: 78.01%, Valid: 78.84%, Test: 79.53%, Best Valid: 80.07%, Best Test: 81.21%
+Run 05:
+Highest Train: 79.87
+Highest Valid: 80.07
+Highest Test: 81.21
+Chosen epoch: 265
+Final Train: 79.35
+Final Test: 81.21
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (26 train-train edges).
+Epoch: 00, Loss: 2.5107, Train: 15.50%, Valid: 16.04%, Test: 15.38%, Best Valid: 16.04%, Best Test: 15.38%
+Epoch: 100, Loss: 0.0701, Train: 79.92%, Valid: 80.11%, Test: 81.42%, Best Valid: 83.16%, Best Test: 84.99%
+Epoch: 200, Loss: 0.0728, Train: 79.71%, Valid: 80.00%, Test: 82.04%, Best Valid: 83.49%, Best Test: 84.51%
+Epoch: 300, Loss: 0.0052, Train: 80.33%, Valid: 80.69%, Test: 82.30%, Best Valid: 83.49%, Best Test: 84.51%
+Epoch: 400, Loss: 0.0006, Train: 80.12%, Valid: 80.69%, Test: 82.48%, Best Valid: 83.49%, Best Test: 84.51%
+Epoch: 500, Loss: 0.0015, Train: 81.42%, Valid: 81.67%, Test: 83.72%, Best Valid: 83.49%, Best Test: 84.51%
+Epoch: 600, Loss: 0.0003, Train: 80.23%, Valid: 80.84%, Test: 82.55%, Best Valid: 83.49%, Best Test: 84.51%
+Epoch: 700, Loss: 0.0003, Train: 80.60%, Valid: 81.13%, Test: 83.10%, Best Valid: 83.49%, Best Test: 84.51%
+Epoch: 800, Loss: 0.0002, Train: 80.78%, Valid: 81.31%, Test: 83.10%, Best Valid: 83.49%, Best Test: 84.51%
+Epoch: 900, Loss: 0.0002, Train: 81.12%, Valid: 81.56%, Test: 83.68%, Best Valid: 83.49%, Best Test: 84.51%
+Run 06:
+Highest Train: 83.63
+Highest Valid: 83.49
+Highest Test: 85.24
+Chosen epoch: 188
+Final Train: 83.04
+Final Test: 84.51
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (26 train-train edges).
+Epoch: 00, Loss: 2.4073, Train: 35.97%, Valid: 34.29%, Test: 37.66%, Best Valid: 34.29%, Best Test: 37.66%
+Epoch: 100, Loss: 0.0359, Train: 78.08%, Valid: 78.18%, Test: 79.90%, Best Valid: 81.09%, Best Test: 82.70%
+Epoch: 200, Loss: 0.0090, Train: 78.49%, Valid: 78.98%, Test: 80.33%, Best Valid: 81.85%, Best Test: 83.02%
+Epoch: 300, Loss: 0.0099, Train: 78.72%, Valid: 79.35%, Test: 80.26%, Best Valid: 81.85%, Best Test: 83.02%
+Epoch: 400, Loss: 0.0170, Train: 77.97%, Valid: 78.40%, Test: 79.32%, Best Valid: 81.85%, Best Test: 83.02%
+Epoch: 500, Loss: 0.0170, Train: 79.82%, Valid: 79.56%, Test: 81.03%, Best Valid: 81.85%, Best Test: 83.02%
+Epoch: 600, Loss: 0.0094, Train: 78.96%, Valid: 79.49%, Test: 80.41%, Best Valid: 81.85%, Best Test: 83.02%
+Epoch: 700, Loss: 0.0006, Train: 78.11%, Valid: 78.44%, Test: 79.64%, Best Valid: 81.85%, Best Test: 83.02%
+Epoch: 800, Loss: 0.0004, Train: 77.64%, Valid: 78.00%, Test: 78.84%, Best Valid: 81.85%, Best Test: 83.02%
+Epoch: 900, Loss: 0.0009, Train: 77.72%, Valid: 78.55%, Test: 79.10%, Best Valid: 81.85%, Best Test: 83.02%
+Run 07:
+Highest Train: 81.95
+Highest Valid: 81.85
+Highest Test: 83.02
+Chosen epoch: 135
+Final Train: 81.95
+Final Test: 83.02
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (44 train-train edges).
+Epoch: 00, Loss: 2.4674, Train: 40.03%, Valid: 38.76%, Test: 41.58%, Best Valid: 38.76%, Best Test: 41.58%
+Epoch: 100, Loss: 0.2127, Train: 82.16%, Valid: 81.96%, Test: 84.11%, Best Valid: 83.31%, Best Test: 85.13%
+Epoch: 200, Loss: 0.0886, Train: 82.17%, Valid: 82.22%, Test: 84.88%, Best Valid: 83.71%, Best Test: 86.44%
+Epoch: 300, Loss: 0.0744, Train: 83.04%, Valid: 83.13%, Test: 85.31%, Best Valid: 83.71%, Best Test: 86.44%
+Epoch: 400, Loss: 0.0861, Train: 82.18%, Valid: 82.47%, Test: 85.28%, Best Valid: 83.71%, Best Test: 86.44%
+Epoch: 500, Loss: 0.0274, Train: 82.01%, Valid: 81.56%, Test: 84.55%, Best Valid: 83.71%, Best Test: 86.44%
+Epoch: 600, Loss: 0.1000, Train: 82.43%, Valid: 82.87%, Test: 85.13%, Best Valid: 83.71%, Best Test: 86.44%
+Epoch: 700, Loss: 0.0044, Train: 82.07%, Valid: 81.60%, Test: 85.06%, Best Valid: 83.71%, Best Test: 86.44%
+Epoch: 800, Loss: 0.0008, Train: 82.15%, Valid: 81.78%, Test: 85.24%, Best Valid: 83.71%, Best Test: 86.44%
+Epoch: 900, Loss: 0.0005, Train: 81.99%, Valid: 82.07%, Test: 85.06%, Best Valid: 83.71%, Best Test: 86.44%
+Run 08:
+Highest Train: 83.75
+Highest Valid: 83.71
+Highest Test: 86.44
+Chosen epoch: 120
+Final Train: 83.51
+Final Test: 86.44
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (18 train-train edges).
+Epoch: 00, Loss: 2.5478, Train: 2.39%, Valid: 2.51%, Test: 2.47%, Best Valid: 2.51%, Best Test: 2.47%
+Epoch: 100, Loss: 0.0621, Train: 74.21%, Valid: 75.31%, Test: 75.46%, Best Valid: 77.49%, Best Test: 76.59%
+Epoch: 200, Loss: 0.0111, Train: 74.51%, Valid: 74.80%, Test: 74.19%, Best Valid: 77.49%, Best Test: 76.59%
+Epoch: 300, Loss: 0.1271, Train: 71.60%, Valid: 72.04%, Test: 73.10%, Best Valid: 77.49%, Best Test: 76.59%
+Epoch: 400, Loss: 0.0242, Train: 70.86%, Valid: 71.31%, Test: 71.28%, Best Valid: 77.49%, Best Test: 76.59%
+Epoch: 500, Loss: 0.0004, Train: 75.20%, Valid: 75.67%, Test: 75.86%, Best Valid: 77.49%, Best Test: 76.59%
+Epoch: 600, Loss: 0.0003, Train: 75.20%, Valid: 75.93%, Test: 75.86%, Best Valid: 77.49%, Best Test: 76.59%
+Epoch: 700, Loss: 0.0002, Train: 75.26%, Valid: 75.93%, Test: 76.08%, Best Valid: 77.49%, Best Test: 76.59%
+Epoch: 800, Loss: 0.0002, Train: 75.19%, Valid: 75.82%, Test: 75.65%, Best Valid: 77.49%, Best Test: 76.59%
+Epoch: 900, Loss: 0.0003, Train: 75.30%, Valid: 75.96%, Test: 76.01%, Best Valid: 77.49%, Best Test: 76.59%
+Run 09:
+Highest Train: 76.43
+Highest Valid: 77.49
+Highest Test: 77.03
+Chosen epoch: 97
+Final Train: 76.43
+Final Test: 76.59
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (40 train-train edges).
+Epoch: 00, Loss: 2.5090, Train: 2.12%, Valid: 2.65%, Test: 2.33%, Best Valid: 2.65%, Best Test: 2.33%
+Epoch: 100, Loss: 0.1085, Train: 74.08%, Valid: 75.09%, Test: 74.88%, Best Valid: 76.76%, Best Test: 76.55%
+Epoch: 200, Loss: 0.0848, Train: 72.11%, Valid: 72.44%, Test: 72.05%, Best Valid: 76.76%, Best Test: 76.55%
+Epoch: 300, Loss: 0.0073, Train: 72.16%, Valid: 72.80%, Test: 72.63%, Best Valid: 76.76%, Best Test: 76.55%
+Epoch: 400, Loss: 0.0013, Train: 73.34%, Valid: 74.04%, Test: 73.68%, Best Valid: 76.76%, Best Test: 76.55%
+Epoch: 500, Loss: 0.0007, Train: 72.99%, Valid: 73.78%, Test: 73.46%, Best Valid: 76.76%, Best Test: 76.55%
+Epoch: 600, Loss: 0.0004, Train: 73.29%, Valid: 73.93%, Test: 73.79%, Best Valid: 76.76%, Best Test: 76.55%
+Epoch: 700, Loss: 0.0004, Train: 72.69%, Valid: 73.45%, Test: 73.32%, Best Valid: 76.76%, Best Test: 76.55%
+Epoch: 800, Loss: 0.0004, Train: 73.71%, Valid: 74.58%, Test: 74.26%, Best Valid: 76.76%, Best Test: 76.55%
+Epoch: 900, Loss: 0.0003, Train: 73.29%, Valid: 74.11%, Test: 73.54%, Best Valid: 76.76%, Best Test: 76.55%
+Run 10:
+Highest Train: 76.29
+Highest Valid: 76.76
+Highest Test: 77.90
+Chosen epoch: 79
+Final Train: 75.55
+Final Test: 76.55
+All runs:
+Highest Train: 81.13 ± 2.75
+Highest Test: 82.43 ± 3.08
+Highest Valid: 81.24 ± 2.45
+  Final Train: 80.78 ± 2.78
+   Final Test: 81.98 ± 3.26
+Saving results to results/lowlabel/amazon-computer/MPNN_gcn.csv
+--- count_reg | lambda=0.05 ---
+Namespace(bn=False, budget_tag='10', count_reg=True, count_smoothing=1.0, cpu=False, data_dir='./data/', dataset='amazon-computer', device=0, display_step=100, dropout=0.5, epochs=1000, gnn='gcn', hidden_channels=512, jk=False, label_num_per_class=20, lambda_val=0.05, ln=True, local_layers=3, lr=0.001, metric='acc', mlp_epochs=500, mlp_reg=False, model='MPNN', model_dir='models', num_heads=1, oracle_reg=False, paired_seeds=True, penalty_transform='none', pre_linear=False, pre_ln=False, rand_split=False, rand_split_class=False, reg_start_epoch=10, reg_update_freq=5, res=False, resample_split_per_run=False, result_dir='results/lowlabel', runs=10, save_model=False, seed=42, test_num=1000, train_per_class=10, train_prop=0.5, use_reg=True, valid_num=500, valid_per_class=0, valid_prop=0.25, weight_decay=5e-05)
+amazon-computer
+dataset amazon-computer | num nodes 13752 | num edge 491722 | num node feats 767 | num classes 10
+MODEL: MPNNs(
+  (h_lins): ModuleList()
+  (local_convs): ModuleList(
+    (0): GCNConv(767, 512)
+    (1): GCNConv(512, 512)
+    (2): GCNConv(512, 512)
+  )
+  (lins): ModuleList(
+    (0): Linear(in_features=767, out_features=512, bias=True)
+    (1): Linear(in_features=512, out_features=512, bias=True)
+    (2): Linear(in_features=512, out_features=512, bias=True)
+  )
+  (lns): ModuleList(
+    (0): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+    (1): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+    (2): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+  )
+  (bns): ModuleList(
+    (0): BatchNorm1d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (1): BatchNorm1d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): BatchNorm1d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (lin_in): Linear(in_features=767, out_features=512, bias=True)
+  (pred_local): Linear(in_features=512, out_features=10, bias=True)
+)
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (46 train-train edges).
+Epoch: 00, Loss: 2.6405, Train: 7.68%, Valid: 7.93%, Test: 8.40%, Best Valid: 7.93%, Best Test: 8.40%
+Epoch: 100, Loss: 0.0680, Train: 78.01%, Valid: 78.87%, Test: 79.68%, Best Valid: 83.49%, Best Test: 84.77%
+Epoch: 200, Loss: 0.1099, Train: 77.72%, Valid: 78.47%, Test: 78.44%, Best Valid: 83.49%, Best Test: 84.77%
+Epoch: 300, Loss: 0.0027, Train: 77.23%, Valid: 78.87%, Test: 79.17%, Best Valid: 83.49%, Best Test: 84.77%
+Epoch: 400, Loss: 0.0006, Train: 77.15%, Valid: 78.73%, Test: 78.55%, Best Valid: 83.49%, Best Test: 84.77%
+Epoch: 500, Loss: 0.0004, Train: 76.85%, Valid: 78.40%, Test: 78.30%, Best Valid: 83.49%, Best Test: 84.77%
+Epoch: 600, Loss: 0.0004, Train: 77.01%, Valid: 78.44%, Test: 78.37%, Best Valid: 83.49%, Best Test: 84.77%
+Epoch: 700, Loss: 0.0004, Train: 77.20%, Valid: 78.65%, Test: 78.77%, Best Valid: 83.49%, Best Test: 84.77%
+Epoch: 800, Loss: 0.0005, Train: 77.13%, Valid: 78.76%, Test: 78.59%, Best Valid: 83.49%, Best Test: 84.77%
+Epoch: 900, Loss: 0.0003, Train: 77.02%, Valid: 78.62%, Test: 78.26%, Best Valid: 83.49%, Best Test: 84.77%
+Run 01:
+Highest Train: 82.97
+Highest Valid: 83.49
+Highest Test: 84.77
+Chosen epoch: 57
+Final Train: 82.97
+Final Test: 84.77
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (40 train-train edges).
+Epoch: 00, Loss: 2.4462, Train: 17.33%, Valid: 17.45%, Test: 17.41%, Best Valid: 17.45%, Best Test: 17.41%
+Epoch: 100, Loss: 0.0208, Train: 70.71%, Valid: 72.18%, Test: 70.41%, Best Valid: 80.44%, Best Test: 82.08%
+Epoch: 200, Loss: 0.0023, Train: 74.80%, Valid: 75.09%, Test: 74.81%, Best Valid: 80.55%, Best Test: 80.26%
+Epoch: 300, Loss: 0.0013, Train: 76.98%, Valid: 77.38%, Test: 76.55%, Best Valid: 80.55%, Best Test: 80.26%
+Epoch: 400, Loss: 0.0006, Train: 77.06%, Valid: 77.31%, Test: 76.66%, Best Valid: 80.55%, Best Test: 80.26%
+Epoch: 500, Loss: 0.0003, Train: 76.77%, Valid: 76.95%, Test: 76.63%, Best Valid: 80.55%, Best Test: 80.26%
+Epoch: 600, Loss: 0.0004, Train: 76.78%, Valid: 76.87%, Test: 76.34%, Best Valid: 80.55%, Best Test: 80.26%
+Epoch: 700, Loss: 0.0002, Train: 75.95%, Valid: 76.22%, Test: 75.54%, Best Valid: 80.55%, Best Test: 80.26%
+Epoch: 800, Loss: 0.0004, Train: 76.45%, Valid: 76.76%, Test: 76.44%, Best Valid: 80.55%, Best Test: 80.26%
+Epoch: 900, Loss: 0.0002, Train: 77.19%, Valid: 77.49%, Test: 77.03%, Best Valid: 80.55%, Best Test: 80.26%
+Run 02:
+Highest Train: 81.20
+Highest Valid: 80.55
+Highest Test: 82.08
+Chosen epoch: 145
+Final Train: 80.09
+Final Test: 80.26
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (34 train-train edges).
+Epoch: 00, Loss: 2.5029, Train: 15.74%, Valid: 16.25%, Test: 14.65%, Best Valid: 16.25%, Best Test: 14.65%
+Epoch: 100, Loss: 0.0097, Train: 81.37%, Valid: 81.60%, Test: 82.70%, Best Valid: 82.22%, Best Test: 83.21%
+Epoch: 200, Loss: 0.0016, Train: 80.62%, Valid: 80.58%, Test: 81.53%, Best Valid: 82.62%, Best Test: 83.57%
+Epoch: 300, Loss: 0.0008, Train: 80.90%, Valid: 81.64%, Test: 82.01%, Best Valid: 82.62%, Best Test: 83.57%
+Epoch: 400, Loss: 0.0148, Train: 77.69%, Valid: 77.85%, Test: 78.08%, Best Valid: 82.62%, Best Test: 83.57%
+Epoch: 500, Loss: 0.0058, Train: 79.46%, Valid: 79.27%, Test: 80.52%, Best Valid: 82.62%, Best Test: 83.57%
+Epoch: 600, Loss: 0.0008, Train: 79.08%, Valid: 78.95%, Test: 80.01%, Best Valid: 82.62%, Best Test: 83.57%
+Epoch: 700, Loss: 0.0007, Train: 79.11%, Valid: 78.87%, Test: 80.01%, Best Valid: 82.62%, Best Test: 83.57%
+Epoch: 800, Loss: 0.0005, Train: 79.01%, Valid: 78.98%, Test: 80.12%, Best Valid: 82.62%, Best Test: 83.57%
+Epoch: 900, Loss: 0.0005, Train: 78.74%, Valid: 78.62%, Test: 79.86%, Best Valid: 82.62%, Best Test: 83.57%
+Run 03:
+Highest Train: 82.38
+Highest Valid: 82.62
+Highest Test: 83.57
+Chosen epoch: 109
+Final Train: 82.38
+Final Test: 83.57
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (28 train-train edges).
+Epoch: 00, Loss: 2.6231, Train: 6.91%, Valid: 7.24%, Test: 7.56%, Best Valid: 7.24%, Best Test: 7.56%
+Epoch: 100, Loss: 0.0267, Train: 77.68%, Valid: 77.96%, Test: 78.01%, Best Valid: 81.16%, Best Test: 81.90%
+Epoch: 200, Loss: 0.0014, Train: 79.20%, Valid: 79.53%, Test: 79.64%, Best Valid: 81.16%, Best Test: 81.90%
+Epoch: 300, Loss: 0.0011, Train: 79.71%, Valid: 79.64%, Test: 80.15%, Best Valid: 81.16%, Best Test: 81.90%
+Epoch: 400, Loss: 0.0005, Train: 79.09%, Valid: 79.20%, Test: 79.43%, Best Valid: 81.16%, Best Test: 81.90%
+Epoch: 500, Loss: 0.0005, Train: 80.03%, Valid: 79.64%, Test: 80.41%, Best Valid: 81.16%, Best Test: 81.90%
+Epoch: 600, Loss: 0.0003, Train: 79.28%, Valid: 79.56%, Test: 79.86%, Best Valid: 81.16%, Best Test: 81.90%
+Epoch: 700, Loss: 0.0004, Train: 79.60%, Valid: 79.49%, Test: 80.12%, Best Valid: 81.16%, Best Test: 81.90%
+Epoch: 800, Loss: 0.0003, Train: 79.49%, Valid: 79.60%, Test: 79.75%, Best Valid: 81.16%, Best Test: 81.90%
+Epoch: 900, Loss: 0.0003, Train: 79.64%, Valid: 79.75%, Test: 80.12%, Best Valid: 81.16%, Best Test: 81.90%
+Run 04:
+Highest Train: 81.38
+Highest Valid: 81.16
+Highest Test: 81.90
+Chosen epoch: 38
+Final Train: 81.38
+Final Test: 81.90
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (40 train-train edges).
+Epoch: 00, Loss: 2.6222, Train: 17.46%, Valid: 17.24%, Test: 17.56%, Best Valid: 17.24%, Best Test: 17.56%
+Epoch: 100, Loss: 0.0541, Train: 76.62%, Valid: 76.25%, Test: 77.10%, Best Valid: 79.60%, Best Test: 80.08%
+Epoch: 200, Loss: 0.0354, Train: 76.85%, Valid: 77.60%, Test: 79.10%, Best Valid: 80.73%, Best Test: 81.64%
+Epoch: 300, Loss: 0.2893, Train: 59.81%, Valid: 59.75%, Test: 60.92%, Best Valid: 81.05%, Best Test: 82.08%
+Epoch: 400, Loss: 0.0084, Train: 78.77%, Valid: 79.56%, Test: 80.63%, Best Valid: 81.05%, Best Test: 82.08%
+Epoch: 500, Loss: 0.0010, Train: 78.72%, Valid: 79.64%, Test: 80.55%, Best Valid: 81.05%, Best Test: 82.08%
+Epoch: 600, Loss: 0.0010, Train: 78.71%, Valid: 79.64%, Test: 80.55%, Best Valid: 81.05%, Best Test: 82.08%
+Epoch: 700, Loss: 0.0003, Train: 78.71%, Valid: 79.71%, Test: 80.66%, Best Valid: 81.05%, Best Test: 82.08%
+Epoch: 800, Loss: 0.0003, Train: 78.58%, Valid: 79.56%, Test: 80.33%, Best Valid: 81.05%, Best Test: 82.08%
+Epoch: 900, Loss: 0.0004, Train: 78.72%, Valid: 79.85%, Test: 80.73%, Best Valid: 81.05%, Best Test: 82.08%
+Run 05:
+Highest Train: 80.78
+Highest Valid: 81.05
+Highest Test: 82.37
+Chosen epoch: 295
+Final Train: 80.78
+Final Test: 82.08
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (26 train-train edges).
+Epoch: 00, Loss: 2.6101, Train: 15.51%, Valid: 16.04%, Test: 15.38%, Best Valid: 16.04%, Best Test: 15.38%
+Epoch: 100, Loss: 0.1330, Train: 80.05%, Valid: 80.36%, Test: 81.50%, Best Valid: 82.65%, Best Test: 83.82%
+Epoch: 200, Loss: 0.0066, Train: 75.19%, Valid: 75.42%, Test: 76.81%, Best Valid: 83.20%, Best Test: 84.51%
+Epoch: 300, Loss: 0.0101, Train: 79.53%, Valid: 79.71%, Test: 81.24%, Best Valid: 83.20%, Best Test: 84.51%
+Epoch: 400, Loss: 0.0007, Train: 81.04%, Valid: 81.53%, Test: 83.10%, Best Valid: 83.20%, Best Test: 84.51%
+Epoch: 500, Loss: 0.0006, Train: 80.43%, Valid: 81.05%, Test: 82.66%, Best Valid: 83.20%, Best Test: 84.51%
+Epoch: 600, Loss: 0.0003, Train: 80.77%, Valid: 81.42%, Test: 83.24%, Best Valid: 83.20%, Best Test: 84.51%
+Epoch: 700, Loss: 0.0003, Train: 80.45%, Valid: 81.09%, Test: 82.70%, Best Valid: 83.20%, Best Test: 84.51%
+Epoch: 800, Loss: 0.0002, Train: 80.69%, Valid: 81.27%, Test: 82.95%, Best Valid: 83.20%, Best Test: 84.51%
+Epoch: 900, Loss: 0.0002, Train: 80.60%, Valid: 81.13%, Test: 82.84%, Best Valid: 83.20%, Best Test: 84.51%
+Run 06:
+Highest Train: 83.35
+Highest Valid: 83.20
+Highest Test: 85.02
+Chosen epoch: 194
+Final Train: 83.11
+Final Test: 84.51
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (26 train-train edges).
+Epoch: 00, Loss: 2.5026, Train: 35.58%, Valid: 34.07%, Test: 37.62%, Best Valid: 34.07%, Best Test: 37.62%
+Epoch: 100, Loss: 0.0634, Train: 78.83%, Valid: 79.24%, Test: 81.32%, Best Valid: 81.02%, Best Test: 82.33%
+Epoch: 200, Loss: 0.0272, Train: 79.32%, Valid: 79.82%, Test: 81.21%, Best Valid: 81.02%, Best Test: 82.33%
+Epoch: 300, Loss: 0.0040, Train: 76.32%, Valid: 77.09%, Test: 77.94%, Best Valid: 81.35%, Best Test: 82.77%
+Epoch: 400, Loss: 0.0008, Train: 78.04%, Valid: 78.00%, Test: 79.28%, Best Valid: 81.35%, Best Test: 82.77%
+Epoch: 500, Loss: 0.0005, Train: 78.09%, Valid: 78.22%, Test: 79.24%, Best Valid: 81.35%, Best Test: 82.77%
+Epoch: 600, Loss: 0.0004, Train: 77.34%, Valid: 77.56%, Test: 78.66%, Best Valid: 81.35%, Best Test: 82.77%
+Epoch: 700, Loss: 0.0004, Train: 77.37%, Valid: 77.64%, Test: 78.70%, Best Valid: 81.35%, Best Test: 82.77%
+Epoch: 800, Loss: 0.0003, Train: 77.42%, Valid: 77.67%, Test: 78.70%, Best Valid: 81.35%, Best Test: 82.77%
+Epoch: 900, Loss: 0.0004, Train: 77.83%, Valid: 77.82%, Test: 78.88%, Best Valid: 81.35%, Best Test: 82.77%
+Run 07:
+Highest Train: 82.03
+Highest Valid: 81.35
+Highest Test: 82.92
+Chosen epoch: 243
+Final Train: 82.03
+Final Test: 82.77
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (44 train-train edges).
+Epoch: 00, Loss: 2.5651, Train: 40.00%, Valid: 38.76%, Test: 41.55%, Best Valid: 38.76%, Best Test: 41.55%
+Epoch: 100, Loss: 0.2690, Train: 80.73%, Valid: 79.56%, Test: 81.86%, Best Valid: 83.31%, Best Test: 84.99%
+Epoch: 200, Loss: 0.1829, Train: 78.81%, Valid: 79.78%, Test: 81.61%, Best Valid: 83.67%, Best Test: 86.30%
+Epoch: 300, Loss: 0.0499, Train: 81.86%, Valid: 82.36%, Test: 85.24%, Best Valid: 83.67%, Best Test: 86.30%
+Epoch: 400, Loss: 0.0748, Train: 79.18%, Valid: 80.55%, Test: 82.26%, Best Valid: 83.67%, Best Test: 86.30%
+Epoch: 500, Loss: 0.0634, Train: 81.87%, Valid: 82.65%, Test: 84.73%, Best Valid: 83.67%, Best Test: 86.30%
+Epoch: 600, Loss: 0.0048, Train: 82.00%, Valid: 82.07%, Test: 84.95%, Best Valid: 83.67%, Best Test: 86.30%
+Epoch: 700, Loss: 0.0015, Train: 82.00%, Valid: 82.07%, Test: 84.91%, Best Valid: 83.67%, Best Test: 86.30%
+Epoch: 800, Loss: 0.0006, Train: 82.05%, Valid: 82.18%, Test: 85.28%, Best Valid: 83.67%, Best Test: 86.30%
+Epoch: 900, Loss: 0.0003, Train: 81.91%, Valid: 82.15%, Test: 84.84%, Best Valid: 83.67%, Best Test: 86.30%
+Run 08:
+Highest Train: 83.78
+Highest Valid: 83.67
+Highest Test: 86.51
+Chosen epoch: 156
+Final Train: 83.78
+Final Test: 86.30
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (18 train-train edges).
+Epoch: 00, Loss: 2.6487, Train: 2.40%, Valid: 2.55%, Test: 2.47%, Best Valid: 2.55%, Best Test: 2.47%
+Epoch: 100, Loss: 0.0442, Train: 74.14%, Valid: 74.91%, Test: 73.61%, Best Valid: 76.76%, Best Test: 75.57%
+Epoch: 200, Loss: 0.0100, Train: 73.68%, Valid: 74.84%, Test: 75.25%, Best Valid: 77.24%, Best Test: 77.24%
+Epoch: 300, Loss: 0.0281, Train: 72.91%, Valid: 73.60%, Test: 73.17%, Best Valid: 78.62%, Best Test: 77.68%
+Epoch: 400, Loss: 0.0090, Train: 69.85%, Valid: 70.69%, Test: 71.57%, Best Valid: 78.62%, Best Test: 77.68%
+Epoch: 500, Loss: 0.0006, Train: 74.86%, Valid: 75.60%, Test: 75.57%, Best Valid: 78.62%, Best Test: 77.68%
+Epoch: 600, Loss: 0.0004, Train: 75.82%, Valid: 76.69%, Test: 76.95%, Best Valid: 78.62%, Best Test: 77.68%
+Epoch: 700, Loss: 0.0002, Train: 75.77%, Valid: 76.69%, Test: 77.10%, Best Valid: 78.62%, Best Test: 77.68%
+Epoch: 800, Loss: 0.0002, Train: 75.65%, Valid: 76.55%, Test: 76.66%, Best Valid: 78.62%, Best Test: 77.68%
+Epoch: 900, Loss: 0.0002, Train: 75.65%, Valid: 76.62%, Test: 76.70%, Best Valid: 78.62%, Best Test: 77.68%
+Run 09:
+Highest Train: 77.14
+Highest Valid: 78.62
+Highest Test: 78.04
+Chosen epoch: 256
+Final Train: 77.14
+Final Test: 77.68
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (40 train-train edges).
+Epoch: 00, Loss: 2.6084, Train: 2.17%, Valid: 2.65%, Test: 2.33%, Best Valid: 2.65%, Best Test: 2.33%
+Epoch: 100, Loss: 0.1461, Train: 72.75%, Valid: 73.35%, Test: 73.46%, Best Valid: 75.78%, Best Test: 75.68%
+Epoch: 200, Loss: 0.0448, Train: 73.02%, Valid: 74.15%, Test: 73.94%, Best Valid: 76.36%, Best Test: 76.05%
+Epoch: 300, Loss: 0.0489, Train: 73.46%, Valid: 75.13%, Test: 73.57%, Best Valid: 76.36%, Best Test: 76.05%
+Epoch: 400, Loss: 0.0142, Train: 74.12%, Valid: 75.35%, Test: 74.41%, Best Valid: 77.02%, Best Test: 76.81%
+Epoch: 500, Loss: 0.0109, Train: 75.01%, Valid: 75.85%, Test: 75.65%, Best Valid: 78.04%, Best Test: 77.68%
+Epoch: 600, Loss: 0.0227, Train: 72.06%, Valid: 73.13%, Test: 72.05%, Best Valid: 78.51%, Best Test: 78.81%
+Epoch: 700, Loss: 0.0018, Train: 73.48%, Valid: 74.18%, Test: 73.97%, Best Valid: 78.51%, Best Test: 78.81%
+Epoch: 800, Loss: 0.0005, Train: 74.51%, Valid: 75.78%, Test: 75.50%, Best Valid: 78.51%, Best Test: 78.81%
+Epoch: 900, Loss: 0.0004, Train: 74.61%, Valid: 75.71%, Test: 75.06%, Best Valid: 78.51%, Best Test: 78.81%
+Run 10:
+Highest Train: 77.40
+Highest Valid: 78.51
+Highest Test: 78.81
+Chosen epoch: 533
+Final Train: 77.40
+Final Test: 78.81
+All runs:
+Highest Train: 81.24 ± 2.30
+Highest Test: 82.60 ± 2.64
+Highest Valid: 81.42 ± 1.86
+  Final Train: 81.11 ± 2.30
+   Final Test: 82.26 ± 2.72
+Saving results to results/lowlabel/amazon-computer/MPNN_gcn.csv
+--- count_reg | lambda=0.1 ---
+Namespace(bn=False, budget_tag='10', count_reg=True, count_smoothing=1.0, cpu=False, data_dir='./data/', dataset='amazon-computer', device=0, display_step=100, dropout=0.5, epochs=1000, gnn='gcn', hidden_channels=512, jk=False, label_num_per_class=20, lambda_val=0.1, ln=True, local_layers=3, lr=0.001, metric='acc', mlp_epochs=500, mlp_reg=False, model='MPNN', model_dir='models', num_heads=1, oracle_reg=False, paired_seeds=True, penalty_transform='none', pre_linear=False, pre_ln=False, rand_split=False, rand_split_class=False, reg_start_epoch=10, reg_update_freq=5, res=False, resample_split_per_run=False, result_dir='results/lowlabel', runs=10, save_model=False, seed=42, test_num=1000, train_per_class=10, train_prop=0.5, use_reg=True, valid_num=500, valid_per_class=0, valid_prop=0.25, weight_decay=5e-05)
+amazon-computer
+dataset amazon-computer | num nodes 13752 | num edge 491722 | num node feats 767 | num classes 10
+MODEL: MPNNs(
+  (h_lins): ModuleList()
+  (local_convs): ModuleList(
+    (0): GCNConv(767, 512)
+    (1): GCNConv(512, 512)
+    (2): GCNConv(512, 512)
+  )
+  (lins): ModuleList(
+    (0): Linear(in_features=767, out_features=512, bias=True)
+    (1): Linear(in_features=512, out_features=512, bias=True)
+    (2): Linear(in_features=512, out_features=512, bias=True)
+  )
+  (lns): ModuleList(
+    (0): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+    (1): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+    (2): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+  )
+  (bns): ModuleList(
+    (0): BatchNorm1d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (1): BatchNorm1d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): BatchNorm1d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (lin_in): Linear(in_features=767, out_features=512, bias=True)
+  (pred_local): Linear(in_features=512, out_features=10, bias=True)
+)
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (46 train-train edges).
+Epoch: 00, Loss: 2.7662, Train: 7.31%, Valid: 7.64%, Test: 8.22%, Best Valid: 7.64%, Best Test: 8.22%
+Epoch: 100, Loss: 0.0472, Train: 75.62%, Valid: 77.60%, Test: 76.99%, Best Valid: 82.40%, Best Test: 83.93%
+Epoch: 200, Loss: 0.0657, Train: 78.62%, Valid: 79.27%, Test: 80.92%, Best Valid: 82.40%, Best Test: 83.93%
+Epoch: 300, Loss: 0.0008, Train: 77.72%, Valid: 79.35%, Test: 79.46%, Best Valid: 82.40%, Best Test: 83.93%
+Epoch: 400, Loss: 0.0006, Train: 77.54%, Valid: 79.09%, Test: 79.32%, Best Valid: 82.40%, Best Test: 83.93%
+Epoch: 500, Loss: 0.0004, Train: 76.95%, Valid: 78.80%, Test: 78.74%, Best Valid: 82.40%, Best Test: 83.93%
+Epoch: 600, Loss: 0.0004, Train: 77.05%, Valid: 78.73%, Test: 78.77%, Best Valid: 82.40%, Best Test: 83.93%
+Epoch: 700, Loss: 0.0003, Train: 77.03%, Valid: 78.73%, Test: 78.70%, Best Valid: 82.40%, Best Test: 83.93%
+Epoch: 800, Loss: 0.0006, Train: 76.83%, Valid: 78.62%, Test: 78.55%, Best Valid: 82.40%, Best Test: 83.93%
+Epoch: 900, Loss: 0.0003, Train: 76.90%, Valid: 78.73%, Test: 78.41%, Best Valid: 82.40%, Best Test: 83.93%
+Run 01:
+Highest Train: 82.33
+Highest Valid: 82.40
+Highest Test: 83.93
+Chosen epoch: 40
+Final Train: 82.33
+Final Test: 83.93
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (40 train-train edges).
+Epoch: 00, Loss: 2.5626, Train: 17.44%, Valid: 17.45%, Test: 17.48%, Best Valid: 17.45%, Best Test: 17.48%
+Epoch: 100, Loss: 0.0325, Train: 78.23%, Valid: 77.82%, Test: 78.52%, Best Valid: 80.51%, Best Test: 81.35%
+Epoch: 200, Loss: 0.0575, Train: 74.57%, Valid: 74.98%, Test: 74.63%, Best Valid: 82.58%, Best Test: 82.59%
+Epoch: 300, Loss: 0.0014, Train: 74.79%, Valid: 75.45%, Test: 74.45%, Best Valid: 82.58%, Best Test: 82.59%
+Epoch: 400, Loss: 0.0041, Train: 80.38%, Valid: 80.47%, Test: 80.66%, Best Valid: 82.58%, Best Test: 82.59%
+Epoch: 500, Loss: 0.0007, Train: 75.80%, Valid: 76.51%, Test: 75.35%, Best Valid: 82.58%, Best Test: 82.59%
+Epoch: 600, Loss: 0.0005, Train: 76.54%, Valid: 77.13%, Test: 76.15%, Best Valid: 82.58%, Best Test: 82.59%
+Epoch: 700, Loss: 0.0002, Train: 75.77%, Valid: 76.33%, Test: 75.28%, Best Valid: 82.58%, Best Test: 82.59%
+Epoch: 800, Loss: 0.0004, Train: 75.97%, Valid: 76.47%, Test: 75.46%, Best Valid: 82.58%, Best Test: 82.59%
+Epoch: 900, Loss: 0.0002, Train: 76.71%, Valid: 77.49%, Test: 76.12%, Best Valid: 82.58%, Best Test: 82.59%
+Run 02:
+Highest Train: 82.54
+Highest Valid: 82.58
+Highest Test: 82.59
+Chosen epoch: 192
+Final Train: 82.54
+Final Test: 82.59
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (34 train-train edges).
+Epoch: 00, Loss: 2.6221, Train: 15.74%, Valid: 16.25%, Test: 14.61%, Best Valid: 16.25%, Best Test: 14.61%
+Epoch: 100, Loss: 0.0168, Train: 78.25%, Valid: 78.29%, Test: 79.35%, Best Valid: 82.11%, Best Test: 83.10%
+Epoch: 200, Loss: 0.0013, Train: 80.11%, Valid: 79.60%, Test: 81.03%, Best Valid: 83.20%, Best Test: 84.01%
+Epoch: 300, Loss: 0.0008, Train: 80.56%, Valid: 80.69%, Test: 81.57%, Best Valid: 83.20%, Best Test: 84.01%
+Epoch: 400, Loss: 0.0005, Train: 80.55%, Valid: 80.76%, Test: 81.46%, Best Valid: 83.20%, Best Test: 84.01%
+Epoch: 500, Loss: 0.0004, Train: 80.68%, Valid: 80.84%, Test: 81.64%, Best Valid: 83.20%, Best Test: 84.01%
+Epoch: 600, Loss: 0.0003, Train: 80.95%, Valid: 81.09%, Test: 81.75%, Best Valid: 83.20%, Best Test: 84.01%
+Epoch: 700, Loss: 0.0003, Train: 80.89%, Valid: 80.69%, Test: 81.64%, Best Valid: 83.20%, Best Test: 84.01%
+Epoch: 800, Loss: 0.0003, Train: 80.86%, Valid: 81.02%, Test: 81.57%, Best Valid: 83.20%, Best Test: 84.01%
+Epoch: 900, Loss: 0.0002, Train: 80.73%, Valid: 80.91%, Test: 81.53%, Best Valid: 83.20%, Best Test: 84.01%
+Run 03:
+Highest Train: 82.97
+Highest Valid: 83.20
+Highest Test: 84.26
+Chosen epoch: 117
+Final Train: 82.94
+Final Test: 84.01
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (28 train-train edges).
+Epoch: 00, Loss: 2.7480, Train: 7.47%, Valid: 7.71%, Test: 7.85%, Best Valid: 7.71%, Best Test: 7.85%
+Epoch: 100, Loss: 0.0366, Train: 73.54%, Valid: 73.85%, Test: 74.19%, Best Valid: 81.96%, Best Test: 82.59%
+Epoch: 200, Loss: 0.0017, Train: 78.61%, Valid: 78.80%, Test: 79.61%, Best Valid: 81.96%, Best Test: 82.59%
+Epoch: 300, Loss: 0.0012, Train: 79.01%, Valid: 79.35%, Test: 79.61%, Best Valid: 81.96%, Best Test: 82.59%
+Epoch: 400, Loss: 0.0006, Train: 78.90%, Valid: 79.35%, Test: 79.68%, Best Valid: 81.96%, Best Test: 82.59%
+Epoch: 500, Loss: 0.0006, Train: 79.02%, Valid: 78.84%, Test: 79.35%, Best Valid: 81.96%, Best Test: 82.59%
+Epoch: 600, Loss: 0.0003, Train: 78.79%, Valid: 79.09%, Test: 79.43%, Best Valid: 81.96%, Best Test: 82.59%
+Epoch: 700, Loss: 0.0004, Train: 78.79%, Valid: 79.02%, Test: 79.32%, Best Valid: 81.96%, Best Test: 82.59%
+Epoch: 800, Loss: 0.0003, Train: 79.20%, Valid: 79.64%, Test: 79.90%, Best Valid: 81.96%, Best Test: 82.59%
+Epoch: 900, Loss: 0.0003, Train: 79.17%, Valid: 79.67%, Test: 79.64%, Best Valid: 81.96%, Best Test: 82.59%
+Run 04:
+Highest Train: 82.05
+Highest Valid: 81.96
+Highest Test: 82.62
+Chosen epoch: 93
+Final Train: 81.84
+Final Test: 82.59
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (40 train-train edges).
+Epoch: 00, Loss: 2.7470, Train: 28.25%, Valid: 28.33%, Test: 28.35%, Best Valid: 28.33%, Best Test: 28.35%
+Epoch: 100, Loss: 0.0428, Train: 78.56%, Valid: 79.27%, Test: 79.43%, Best Valid: 79.56%, Best Test: 79.83%
+Epoch: 200, Loss: 0.0375, Train: 78.05%, Valid: 77.02%, Test: 78.70%, Best Valid: 80.15%, Best Test: 80.26%
+Epoch: 300, Loss: 0.7124, Train: 73.45%, Valid: 73.82%, Test: 75.39%, Best Valid: 80.15%, Best Test: 80.26%
+Epoch: 400, Loss: 0.0038, Train: 77.58%, Valid: 78.58%, Test: 80.08%, Best Valid: 80.15%, Best Test: 80.26%
+Epoch: 500, Loss: 0.0006, Train: 77.13%, Valid: 77.71%, Test: 79.28%, Best Valid: 80.15%, Best Test: 80.26%
+Epoch: 600, Loss: 0.0006, Train: 77.55%, Valid: 78.29%, Test: 79.72%, Best Valid: 80.15%, Best Test: 80.26%
+Epoch: 700, Loss: 0.0004, Train: 77.60%, Valid: 78.33%, Test: 79.90%, Best Valid: 80.15%, Best Test: 80.26%
+Epoch: 800, Loss: 0.0004, Train: 77.11%, Valid: 77.75%, Test: 78.81%, Best Valid: 80.15%, Best Test: 80.26%
+Epoch: 900, Loss: 0.0004, Train: 77.51%, Valid: 78.29%, Test: 79.39%, Best Valid: 80.15%, Best Test: 80.26%
+Run 05:
+Highest Train: 79.74
+Highest Valid: 80.15
+Highest Test: 81.21
+Chosen epoch: 153
+Final Train: 78.78
+Final Test: 80.26
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (26 train-train edges).
+Epoch: 00, Loss: 2.7344, Train: 15.51%, Valid: 15.96%, Test: 15.38%, Best Valid: 15.96%, Best Test: 15.38%
+Epoch: 100, Loss: 0.0815, Train: 81.04%, Valid: 81.64%, Test: 83.02%, Best Valid: 83.13%, Best Test: 84.99%
+Epoch: 200, Loss: 0.0016, Train: 80.90%, Valid: 81.64%, Test: 83.35%, Best Valid: 83.13%, Best Test: 84.99%
+Epoch: 300, Loss: 0.0017, Train: 80.00%, Valid: 80.36%, Test: 82.22%, Best Valid: 83.13%, Best Test: 84.99%
+Epoch: 400, Loss: 0.0005, Train: 80.61%, Valid: 81.02%, Test: 83.13%, Best Valid: 83.13%, Best Test: 84.99%
+Epoch: 500, Loss: 0.0006, Train: 80.79%, Valid: 81.38%, Test: 83.13%, Best Valid: 83.13%, Best Test: 84.99%
+Epoch: 600, Loss: 0.0003, Train: 80.66%, Valid: 81.16%, Test: 83.06%, Best Valid: 83.13%, Best Test: 84.99%
+Epoch: 700, Loss: 0.0003, Train: 80.54%, Valid: 81.16%, Test: 82.92%, Best Valid: 83.13%, Best Test: 84.99%
+Epoch: 800, Loss: 0.0002, Train: 80.64%, Valid: 81.20%, Test: 83.06%, Best Valid: 83.13%, Best Test: 84.99%
+Epoch: 900, Loss: 0.0002, Train: 80.81%, Valid: 81.60%, Test: 83.42%, Best Valid: 83.13%, Best Test: 84.99%
+Run 06:
+Highest Train: 83.42
+Highest Valid: 83.13
+Highest Test: 84.99
+Chosen epoch: 93
+Final Train: 83.29
+Final Test: 84.99
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (26 train-train edges).
+Epoch: 00, Loss: 2.6218, Train: 35.92%, Valid: 34.15%, Test: 37.80%, Best Valid: 34.15%, Best Test: 37.80%
+Epoch: 100, Loss: 0.0413, Train: 77.82%, Valid: 78.04%, Test: 79.53%, Best Valid: 81.09%, Best Test: 82.41%
+Epoch: 200, Loss: 0.0678, Train: 78.58%, Valid: 78.29%, Test: 79.46%, Best Valid: 81.42%, Best Test: 83.68%
+Epoch: 300, Loss: 0.1076, Train: 76.18%, Valid: 75.93%, Test: 77.03%, Best Valid: 81.42%, Best Test: 83.68%
+Epoch: 400, Loss: 0.0064, Train: 76.98%, Valid: 77.27%, Test: 78.19%, Best Valid: 81.42%, Best Test: 83.68%
+Epoch: 500, Loss: 0.0023, Train: 79.02%, Valid: 79.53%, Test: 80.52%, Best Valid: 81.42%, Best Test: 83.68%
+Epoch: 600, Loss: 0.0006, Train: 77.37%, Valid: 77.93%, Test: 79.10%, Best Valid: 81.42%, Best Test: 83.68%
+Epoch: 700, Loss: 0.0004, Train: 77.47%, Valid: 78.04%, Test: 79.35%, Best Valid: 81.42%, Best Test: 83.68%
+Epoch: 800, Loss: 0.0003, Train: 77.38%, Valid: 78.00%, Test: 79.10%, Best Valid: 81.42%, Best Test: 83.68%
+Epoch: 900, Loss: 0.0004, Train: 77.43%, Valid: 78.07%, Test: 79.32%, Best Valid: 81.42%, Best Test: 83.68%
+Run 07:
+Highest Train: 81.80
+Highest Valid: 81.42
+Highest Test: 83.68
+Chosen epoch: 116
+Final Train: 81.80
+Final Test: 83.68
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (44 train-train edges).
+Epoch: 00, Loss: 2.6873, Train: 40.18%, Valid: 38.80%, Test: 41.51%, Best Valid: 38.80%, Best Test: 41.51%
+Epoch: 100, Loss: 0.1477, Train: 73.92%, Valid: 74.80%, Test: 77.17%, Best Valid: 83.02%, Best Test: 84.77%
+Epoch: 200, Loss: 0.1074, Train: 80.80%, Valid: 81.60%, Test: 83.68%, Best Valid: 83.89%, Best Test: 86.15%
+Epoch: 300, Loss: 0.0577, Train: 81.14%, Valid: 81.71%, Test: 84.41%, Best Valid: 83.89%, Best Test: 86.15%
+Epoch: 400, Loss: 0.0734, Train: 82.40%, Valid: 82.36%, Test: 85.79%, Best Valid: 83.89%, Best Test: 86.15%
+Epoch: 500, Loss: 0.0310, Train: 81.98%, Valid: 81.93%, Test: 85.24%, Best Valid: 83.89%, Best Test: 86.15%
+Epoch: 600, Loss: 0.0343, Train: 81.40%, Valid: 81.31%, Test: 84.73%, Best Valid: 83.89%, Best Test: 86.15%
+Epoch: 700, Loss: 0.0249, Train: 81.24%, Valid: 81.05%, Test: 83.53%, Best Valid: 83.89%, Best Test: 86.15%
+Epoch: 800, Loss: 0.0034, Train: 81.91%, Valid: 81.67%, Test: 85.13%, Best Valid: 83.89%, Best Test: 86.15%
+Epoch: 900, Loss: 0.0007, Train: 82.07%, Valid: 82.04%, Test: 84.88%, Best Valid: 83.89%, Best Test: 86.15%
+Run 08:
+Highest Train: 83.87
+Highest Valid: 83.89
+Highest Test: 86.15
+Chosen epoch: 113
+Final Train: 83.87
+Final Test: 86.15
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (18 train-train edges).
+Epoch: 00, Loss: 2.7748, Train: 2.39%, Valid: 2.51%, Test: 2.47%, Best Valid: 2.51%, Best Test: 2.47%
+Epoch: 100, Loss: 0.0419, Train: 74.65%, Valid: 75.89%, Test: 74.88%, Best Valid: 76.91%, Best Test: 75.54%
+Epoch: 200, Loss: 0.1211, Train: 70.82%, Valid: 71.82%, Test: 70.77%, Best Valid: 77.71%, Best Test: 76.63%
+Epoch: 300, Loss: 0.0018, Train: 73.46%, Valid: 74.47%, Test: 73.79%, Best Valid: 78.29%, Best Test: 78.01%
+Epoch: 400, Loss: 0.0010, Train: 74.52%, Valid: 75.53%, Test: 75.10%, Best Valid: 78.29%, Best Test: 78.01%
+Epoch: 500, Loss: 0.0003, Train: 74.60%, Valid: 75.71%, Test: 75.39%, Best Valid: 78.29%, Best Test: 78.01%
+Epoch: 600, Loss: 0.0003, Train: 74.62%, Valid: 75.53%, Test: 75.28%, Best Valid: 78.29%, Best Test: 78.01%
+Epoch: 700, Loss: 0.0003, Train: 74.44%, Valid: 75.60%, Test: 75.28%, Best Valid: 78.29%, Best Test: 78.01%
+Epoch: 800, Loss: 0.0003, Train: 74.29%, Valid: 75.05%, Test: 74.70%, Best Valid: 78.29%, Best Test: 78.01%
+Epoch: 900, Loss: 0.0003, Train: 74.21%, Valid: 75.02%, Test: 75.10%, Best Valid: 78.29%, Best Test: 78.01%
+Run 09:
+Highest Train: 76.65
+Highest Valid: 78.29
+Highest Test: 78.01
+Chosen epoch: 206
+Final Train: 76.65
+Final Test: 78.01
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (40 train-train edges).
+Epoch: 00, Loss: 2.7326, Train: 2.23%, Valid: 2.65%, Test: 2.36%, Best Valid: 2.65%, Best Test: 2.36%
+Epoch: 100, Loss: 0.0970, Train: 71.58%, Valid: 72.04%, Test: 72.12%, Best Valid: 76.87%, Best Test: 77.32%
+Epoch: 200, Loss: 0.1016, Train: 71.24%, Valid: 72.25%, Test: 70.74%, Best Valid: 76.87%, Best Test: 77.32%
+Epoch: 300, Loss: 0.0348, Train: 71.75%, Valid: 72.00%, Test: 71.97%, Best Valid: 76.87%, Best Test: 77.32%
+Epoch: 400, Loss: 0.0581, Train: 73.65%, Valid: 74.65%, Test: 73.97%, Best Valid: 76.87%, Best Test: 77.32%
+Epoch: 500, Loss: 0.0034, Train: 73.66%, Valid: 73.53%, Test: 73.65%, Best Valid: 77.05%, Best Test: 76.70%
+Epoch: 600, Loss: 0.0004, Train: 73.55%, Valid: 74.36%, Test: 73.79%, Best Valid: 77.05%, Best Test: 76.70%
+Epoch: 700, Loss: 0.0002, Train: 73.64%, Valid: 74.65%, Test: 74.08%, Best Valid: 77.05%, Best Test: 76.70%
+Epoch: 800, Loss: 0.0003, Train: 73.89%, Valid: 74.76%, Test: 74.23%, Best Valid: 77.05%, Best Test: 76.70%
+Epoch: 900, Loss: 0.0002, Train: 73.95%, Valid: 74.95%, Test: 74.23%, Best Valid: 77.05%, Best Test: 76.70%
+Run 10:
+Highest Train: 76.33
+Highest Valid: 77.05
+Highest Test: 77.32
+Chosen epoch: 401
+Final Train: 75.89
+Final Test: 76.70
+All runs:
+Highest Train: 81.17 ± 2.71
+Highest Test: 82.48 ± 2.88
+Highest Valid: 81.41 ± 2.24
+  Final Train: 80.99 ± 2.84
+   Final Test: 82.29 ± 3.05
+Saving results to results/lowlabel/amazon-computer/MPNN_gcn.csv
+--- count_reg | lambda=0.2 ---
+Namespace(bn=False, budget_tag='10', count_reg=True, count_smoothing=1.0, cpu=False, data_dir='./data/', dataset='amazon-computer', device=0, display_step=100, dropout=0.5, epochs=1000, gnn='gcn', hidden_channels=512, jk=False, label_num_per_class=20, lambda_val=0.2, ln=True, local_layers=3, lr=0.001, metric='acc', mlp_epochs=500, mlp_reg=False, model='MPNN', model_dir='models', num_heads=1, oracle_reg=False, paired_seeds=True, penalty_transform='none', pre_linear=False, pre_ln=False, rand_split=False, rand_split_class=False, reg_start_epoch=10, reg_update_freq=5, res=False, resample_split_per_run=False, result_dir='results/lowlabel', runs=10, save_model=False, seed=42, test_num=1000, train_per_class=10, train_prop=0.5, use_reg=True, valid_num=500, valid_per_class=0, valid_prop=0.25, weight_decay=5e-05)
+amazon-computer
+dataset amazon-computer | num nodes 13752 | num edge 491722 | num node feats 767 | num classes 10
+MODEL: MPNNs(
+  (h_lins): ModuleList()
+  (local_convs): ModuleList(
+    (0): GCNConv(767, 512)
+    (1): GCNConv(512, 512)
+    (2): GCNConv(512, 512)
+  )
+  (lins): ModuleList(
+    (0): Linear(in_features=767, out_features=512, bias=True)
+    (1): Linear(in_features=512, out_features=512, bias=True)
+    (2): Linear(in_features=512, out_features=512, bias=True)
+  )
+  (lns): ModuleList(
+    (0): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+    (1): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+    (2): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+  )
+  (bns): ModuleList(
+    (0): BatchNorm1d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (1): BatchNorm1d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): BatchNorm1d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (lin_in): Linear(in_features=767, out_features=512, bias=True)
+  (pred_local): Linear(in_features=512, out_features=10, bias=True)
+)
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (46 train-train edges).
+Epoch: 00, Loss: 3.0177, Train: 7.55%, Valid: 8.33%, Test: 8.36%, Best Valid: 8.33%, Best Test: 8.36%
+Epoch: 100, Loss: 0.0707, Train: 76.16%, Valid: 77.67%, Test: 77.97%, Best Valid: 82.80%, Best Test: 83.82%
+Epoch: 200, Loss: 0.0204, Train: 76.45%, Valid: 78.15%, Test: 78.26%, Best Valid: 82.80%, Best Test: 83.82%
+Epoch: 300, Loss: 0.0009, Train: 77.25%, Valid: 78.91%, Test: 78.81%, Best Valid: 82.80%, Best Test: 83.82%
+Epoch: 400, Loss: 0.0006, Train: 76.46%, Valid: 78.00%, Test: 77.39%, Best Valid: 82.80%, Best Test: 83.82%
+Epoch: 500, Loss: 0.0005, Train: 76.49%, Valid: 78.15%, Test: 77.43%, Best Valid: 82.80%, Best Test: 83.82%
+Epoch: 600, Loss: 0.0004, Train: 76.33%, Valid: 78.00%, Test: 77.54%, Best Valid: 82.80%, Best Test: 83.82%
+Epoch: 700, Loss: 0.0004, Train: 76.63%, Valid: 78.33%, Test: 78.01%, Best Valid: 82.80%, Best Test: 83.82%
+Epoch: 800, Loss: 0.0006, Train: 75.97%, Valid: 77.64%, Test: 77.06%, Best Valid: 82.80%, Best Test: 83.82%
+Epoch: 900, Loss: 0.0004, Train: 76.58%, Valid: 78.25%, Test: 77.72%, Best Valid: 82.80%, Best Test: 83.82%
+Run 01:
+Highest Train: 82.61
+Highest Valid: 82.80
+Highest Test: 83.82
+Chosen epoch: 57
+Final Train: 82.61
+Final Test: 83.82
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (40 train-train edges).
+Epoch: 00, Loss: 2.7956, Train: 17.23%, Valid: 17.38%, Test: 17.48%, Best Valid: 17.38%, Best Test: 17.48%
+Epoch: 100, Loss: 0.0182, Train: 77.12%, Valid: 77.78%, Test: 76.63%, Best Valid: 81.35%, Best Test: 81.46%
+Epoch: 200, Loss: 0.0097, Train: 79.12%, Valid: 78.62%, Test: 79.64%, Best Valid: 81.35%, Best Test: 81.46%
+Epoch: 300, Loss: 0.0009, Train: 76.98%, Valid: 77.31%, Test: 76.66%, Best Valid: 81.35%, Best Test: 81.46%
+Epoch: 400, Loss: 0.0008, Train: 76.96%, Valid: 77.13%, Test: 76.66%, Best Valid: 81.35%, Best Test: 81.46%
+Epoch: 500, Loss: 0.0004, Train: 76.94%, Valid: 77.13%, Test: 76.99%, Best Valid: 81.35%, Best Test: 81.46%
+Epoch: 600, Loss: 0.0005, Train: 77.24%, Valid: 77.35%, Test: 77.10%, Best Valid: 81.35%, Best Test: 81.46%
+Epoch: 700, Loss: 0.0002, Train: 76.89%, Valid: 77.02%, Test: 76.66%, Best Valid: 81.35%, Best Test: 81.46%
+Epoch: 800, Loss: 0.0004, Train: 76.81%, Valid: 77.05%, Test: 76.81%, Best Valid: 81.35%, Best Test: 81.46%
+Epoch: 900, Loss: 0.0002, Train: 77.24%, Valid: 77.53%, Test: 77.17%, Best Valid: 81.35%, Best Test: 81.46%
+Run 02:
+Highest Train: 81.55
+Highest Valid: 81.35
+Highest Test: 82.66
+Chosen epoch: 55
+Final Train: 81.25
+Final Test: 81.46
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (34 train-train edges).
+Epoch: 00, Loss: 2.8605, Train: 15.73%, Valid: 16.18%, Test: 14.61%, Best Valid: 16.18%, Best Test: 14.61%
+Epoch: 100, Loss: 0.0990, Train: 80.37%, Valid: 80.55%, Test: 81.17%, Best Valid: 82.33%, Best Test: 83.06%
+Epoch: 200, Loss: 0.0024, Train: 79.34%, Valid: 79.31%, Test: 80.08%, Best Valid: 82.33%, Best Test: 83.06%
+Epoch: 300, Loss: 0.0009, Train: 80.26%, Valid: 80.69%, Test: 81.28%, Best Valid: 82.33%, Best Test: 83.06%
+Epoch: 400, Loss: 0.0006, Train: 80.18%, Valid: 80.65%, Test: 81.32%, Best Valid: 82.33%, Best Test: 83.06%
+Epoch: 500, Loss: 0.0005, Train: 80.95%, Valid: 81.56%, Test: 81.79%, Best Valid: 82.33%, Best Test: 83.06%
+Epoch: 600, Loss: 0.0004, Train: 80.96%, Valid: 81.53%, Test: 82.22%, Best Valid: 82.33%, Best Test: 83.06%
+Epoch: 700, Loss: 0.0005, Train: 80.78%, Valid: 81.20%, Test: 81.86%, Best Valid: 82.33%, Best Test: 83.06%
+Epoch: 800, Loss: 0.0004, Train: 80.83%, Valid: 81.09%, Test: 82.01%, Best Valid: 82.33%, Best Test: 83.06%
+Epoch: 900, Loss: 0.0003, Train: 80.97%, Valid: 81.42%, Test: 81.97%, Best Valid: 82.33%, Best Test: 83.06%
+Run 03:
+Highest Train: 81.86
+Highest Valid: 82.33
+Highest Test: 83.13
+Chosen epoch: 81
+Final Train: 81.86
+Final Test: 83.06
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (28 train-train edges).
+Epoch: 00, Loss: 2.9978, Train: 8.23%, Valid: 8.95%, Test: 9.16%, Best Valid: 8.95%, Best Test: 9.16%
+Epoch: 100, Loss: 0.0400, Train: 75.57%, Valid: 75.67%, Test: 76.74%, Best Valid: 81.20%, Best Test: 82.15%
+Epoch: 200, Loss: 0.0019, Train: 78.75%, Valid: 78.76%, Test: 79.64%, Best Valid: 81.45%, Best Test: 81.79%
+Epoch: 300, Loss: 0.0014, Train: 78.86%, Valid: 79.20%, Test: 79.64%, Best Valid: 81.45%, Best Test: 81.79%
+Epoch: 400, Loss: 0.0006, Train: 79.17%, Valid: 79.16%, Test: 79.90%, Best Valid: 81.45%, Best Test: 81.79%
+Epoch: 500, Loss: 0.0006, Train: 79.12%, Valid: 79.16%, Test: 79.90%, Best Valid: 81.45%, Best Test: 81.79%
+Epoch: 600, Loss: 0.0003, Train: 78.96%, Valid: 79.20%, Test: 79.64%, Best Valid: 81.45%, Best Test: 81.79%
+Epoch: 700, Loss: 0.0004, Train: 78.94%, Valid: 78.76%, Test: 79.43%, Best Valid: 81.45%, Best Test: 81.79%
+Epoch: 800, Loss: 0.0004, Train: 79.00%, Valid: 79.13%, Test: 79.83%, Best Valid: 81.45%, Best Test: 81.79%
+Epoch: 900, Loss: 0.0003, Train: 79.38%, Valid: 79.20%, Test: 79.90%, Best Valid: 81.45%, Best Test: 81.79%
+Run 04:
+Highest Train: 81.63
+Highest Valid: 81.45
+Highest Test: 82.15
+Chosen epoch: 115
+Final Train: 81.12
+Final Test: 81.79
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (40 train-train edges).
+Epoch: 00, Loss: 2.9968, Train: 34.60%, Valid: 34.04%, Test: 34.61%, Best Valid: 34.04%, Best Test: 34.61%
+Epoch: 100, Loss: 0.0649, Train: 75.15%, Valid: 75.09%, Test: 75.43%, Best Valid: 79.45%, Best Test: 80.26%
+Epoch: 200, Loss: 0.0023, Train: 77.46%, Valid: 78.58%, Test: 78.70%, Best Valid: 80.18%, Best Test: 80.44%
+Epoch: 300, Loss: 0.0011, Train: 77.78%, Valid: 78.40%, Test: 78.70%, Best Valid: 80.18%, Best Test: 80.44%
+Epoch: 400, Loss: 0.0008, Train: 77.92%, Valid: 78.69%, Test: 79.53%, Best Valid: 80.18%, Best Test: 80.44%
+Epoch: 500, Loss: 0.0005, Train: 77.72%, Valid: 78.51%, Test: 78.84%, Best Valid: 80.18%, Best Test: 80.44%
+Epoch: 600, Loss: 0.0006, Train: 77.95%, Valid: 78.80%, Test: 79.39%, Best Valid: 80.18%, Best Test: 80.44%
+Epoch: 700, Loss: 0.0003, Train: 77.85%, Valid: 78.62%, Test: 78.92%, Best Valid: 80.18%, Best Test: 80.44%
+Epoch: 800, Loss: 0.0004, Train: 77.72%, Valid: 78.58%, Test: 78.95%, Best Valid: 80.18%, Best Test: 80.44%
+Epoch: 900, Loss: 0.0005, Train: 77.86%, Valid: 78.98%, Test: 79.28%, Best Valid: 80.18%, Best Test: 80.44%
+Run 05:
+Highest Train: 79.94
+Highest Valid: 80.18
+Highest Test: 81.32
+Chosen epoch: 132
+Final Train: 78.92
+Final Test: 80.44
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (26 train-train edges).
+Epoch: 00, Loss: 2.9830, Train: 15.51%, Valid: 15.96%, Test: 15.34%, Best Valid: 15.96%, Best Test: 15.34%
+Epoch: 100, Loss: 0.0415, Train: 80.73%, Valid: 80.65%, Test: 82.41%, Best Valid: 83.05%, Best Test: 85.24%
+Epoch: 200, Loss: 0.0033, Train: 80.37%, Valid: 80.80%, Test: 82.52%, Best Valid: 83.16%, Best Test: 84.44%
+Epoch: 300, Loss: 0.0009, Train: 80.67%, Valid: 81.13%, Test: 82.73%, Best Valid: 83.16%, Best Test: 84.44%
+Epoch: 400, Loss: 0.0006, Train: 81.01%, Valid: 81.53%, Test: 83.21%, Best Valid: 83.16%, Best Test: 84.44%
+Epoch: 500, Loss: 0.0008, Train: 80.63%, Valid: 81.27%, Test: 82.66%, Best Valid: 83.16%, Best Test: 84.44%
+Epoch: 600, Loss: 0.0004, Train: 80.77%, Valid: 81.49%, Test: 83.28%, Best Valid: 83.16%, Best Test: 84.44%
+Epoch: 700, Loss: 0.0004, Train: 80.58%, Valid: 80.87%, Test: 82.88%, Best Valid: 83.16%, Best Test: 84.44%
+Epoch: 800, Loss: 0.0003, Train: 80.83%, Valid: 81.56%, Test: 83.32%, Best Valid: 83.16%, Best Test: 84.44%
+Epoch: 900, Loss: 1.9058, Train: 58.74%, Valid: 58.62%, Test: 59.58%, Best Valid: 83.16%, Best Test: 84.44%
+Run 06:
+Highest Train: 83.65
+Highest Valid: 83.16
+Highest Test: 85.24
+Chosen epoch: 112
+Final Train: 82.90
+Final Test: 84.44
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (26 train-train edges).
+Epoch: 00, Loss: 2.8602, Train: 37.04%, Valid: 35.67%, Test: 38.86%, Best Valid: 35.67%, Best Test: 38.86%
+Epoch: 100, Loss: 0.0444, Train: 80.23%, Valid: 80.22%, Test: 82.88%, Best Valid: 81.24%, Best Test: 83.39%
+Epoch: 200, Loss: 0.0303, Train: 76.71%, Valid: 76.98%, Test: 78.08%, Best Valid: 81.38%, Best Test: 83.93%
+Epoch: 300, Loss: 0.0037, Train: 76.79%, Valid: 76.95%, Test: 77.97%, Best Valid: 81.38%, Best Test: 83.93%
+Epoch: 400, Loss: 0.0010, Train: 77.87%, Valid: 78.00%, Test: 79.72%, Best Valid: 81.38%, Best Test: 83.93%
+Epoch: 500, Loss: 0.0187, Train: 78.17%, Valid: 78.36%, Test: 79.61%, Best Valid: 81.45%, Best Test: 83.50%
+Epoch: 600, Loss: 0.0026, Train: 78.11%, Valid: 78.44%, Test: 79.53%, Best Valid: 81.45%, Best Test: 83.50%
+Epoch: 700, Loss: 0.0034, Train: 76.00%, Valid: 76.47%, Test: 77.10%, Best Valid: 81.45%, Best Test: 83.50%
+Epoch: 800, Loss: 0.0056, Train: 77.94%, Valid: 78.33%, Test: 79.43%, Best Valid: 81.45%, Best Test: 83.50%
+Epoch: 900, Loss: 0.0011, Train: 78.04%, Valid: 77.85%, Test: 79.21%, Best Valid: 81.45%, Best Test: 83.50%
+Run 07:
+Highest Train: 82.07
+Highest Valid: 81.45
+Highest Test: 83.97
+Chosen epoch: 453
+Final Train: 82.01
+Final Test: 83.50
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (44 train-train edges).
+Epoch: 00, Loss: 2.9316, Train: 40.14%, Valid: 39.05%, Test: 41.58%, Best Valid: 39.05%, Best Test: 41.58%
+Epoch: 100, Loss: 0.2085, Train: 80.66%, Valid: 80.58%, Test: 82.37%, Best Valid: 83.27%, Best Test: 84.51%
+Epoch: 200, Loss: 0.1124, Train: 82.71%, Valid: 82.51%, Test: 84.77%, Best Valid: 83.67%, Best Test: 85.75%
+Epoch: 300, Loss: 0.0833, Train: 81.80%, Valid: 82.33%, Test: 84.15%, Best Valid: 83.89%, Best Test: 86.04%
+Epoch: 400, Loss: 0.0613, Train: 82.81%, Valid: 82.76%, Test: 85.17%, Best Valid: 83.89%, Best Test: 86.04%
+Epoch: 500, Loss: 0.0652, Train: 82.01%, Valid: 82.25%, Test: 84.95%, Best Valid: 83.89%, Best Test: 86.04%
+Epoch: 600, Loss: 0.0596, Train: 81.58%, Valid: 81.64%, Test: 84.41%, Best Valid: 83.89%, Best Test: 86.04%
+Epoch: 700, Loss: 0.0041, Train: 81.78%, Valid: 81.16%, Test: 84.59%, Best Valid: 83.89%, Best Test: 86.04%
+Epoch: 800, Loss: 0.0023, Train: 81.97%, Valid: 81.78%, Test: 84.84%, Best Valid: 83.89%, Best Test: 86.04%
+Epoch: 900, Loss: 0.0007, Train: 82.07%, Valid: 82.18%, Test: 84.70%, Best Valid: 83.89%, Best Test: 86.04%
+Run 08:
+Highest Train: 83.61
+Highest Valid: 83.89
+Highest Test: 86.15
+Chosen epoch: 220
+Final Train: 83.61
+Final Test: 86.04
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (18 train-train edges).
+Epoch: 00, Loss: 3.0270, Train: 2.30%, Valid: 2.47%, Test: 2.47%, Best Valid: 2.47%, Best Test: 2.47%
+Epoch: 100, Loss: 0.0316, Train: 73.48%, Valid: 73.09%, Test: 72.59%, Best Valid: 76.44%, Best Test: 75.65%
+Epoch: 200, Loss: 0.0246, Train: 72.99%, Valid: 73.89%, Test: 74.30%, Best Valid: 77.13%, Best Test: 76.41%
+Epoch: 300, Loss: 0.0014, Train: 75.11%, Valid: 75.93%, Test: 76.15%, Best Valid: 77.13%, Best Test: 76.41%
+Epoch: 400, Loss: 0.0007, Train: 74.96%, Valid: 75.56%, Test: 75.94%, Best Valid: 77.13%, Best Test: 76.41%
+Epoch: 500, Loss: 0.0004, Train: 75.02%, Valid: 75.78%, Test: 76.05%, Best Valid: 77.13%, Best Test: 76.41%
+Epoch: 600, Loss: 0.0004, Train: 75.08%, Valid: 75.89%, Test: 75.86%, Best Valid: 77.13%, Best Test: 76.41%
+Epoch: 700, Loss: 0.0003, Train: 75.05%, Valid: 75.75%, Test: 76.01%, Best Valid: 77.13%, Best Test: 76.41%
+Epoch: 800, Loss: 0.0003, Train: 75.12%, Valid: 75.64%, Test: 75.94%, Best Valid: 77.13%, Best Test: 76.41%
+Epoch: 900, Loss: 0.0004, Train: 75.20%, Valid: 75.60%, Test: 76.12%, Best Valid: 77.13%, Best Test: 76.41%
+Run 09:
+Highest Train: 76.21
+Highest Valid: 77.13
+Highest Test: 76.59
+Chosen epoch: 170
+Final Train: 76.21
+Final Test: 76.41
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (40 train-train edges).
+Epoch: 00, Loss: 2.9810, Train: 4.61%, Valid: 4.98%, Test: 4.94%, Best Valid: 4.98%, Best Test: 4.94%
+Epoch: 100, Loss: 0.1520, Train: 73.88%, Valid: 74.18%, Test: 74.34%, Best Valid: 75.78%, Best Test: 76.12%
+Epoch: 200, Loss: 0.0750, Train: 69.56%, Valid: 69.82%, Test: 69.39%, Best Valid: 75.78%, Best Test: 76.12%
+Epoch: 300, Loss: 0.0150, Train: 73.83%, Valid: 74.65%, Test: 74.48%, Best Valid: 77.85%, Best Test: 78.48%
+Epoch: 400, Loss: 0.3259, Train: 69.16%, Valid: 69.09%, Test: 69.61%, Best Valid: 77.85%, Best Test: 78.48%
+Epoch: 500, Loss: 0.1124, Train: 72.71%, Valid: 73.05%, Test: 72.59%, Best Valid: 77.85%, Best Test: 78.48%
+Epoch: 600, Loss: 0.1016, Train: 73.39%, Valid: 73.71%, Test: 74.01%, Best Valid: 77.85%, Best Test: 78.48%
+Epoch: 700, Loss: 0.0010, Train: 73.42%, Valid: 74.51%, Test: 73.94%, Best Valid: 77.85%, Best Test: 78.48%
+Epoch: 800, Loss: 0.0003, Train: 73.59%, Valid: 74.51%, Test: 73.97%, Best Valid: 77.85%, Best Test: 78.48%
+Epoch: 900, Loss: 0.0004, Train: 73.54%, Valid: 74.36%, Test: 74.19%, Best Valid: 77.85%, Best Test: 78.48%
+Run 10:
+Highest Train: 76.75
+Highest Valid: 77.85
+Highest Test: 78.48
+Chosen epoch: 216
+Final Train: 76.75
+Final Test: 78.48
+All runs:
+Highest Train: 80.99 ± 2.61
+Highest Test: 82.35 ± 2.94
+Highest Valid: 81.16 ± 2.21
+  Final Train: 80.72 ± 2.57
+   Final Test: 81.94 ± 2.89
+Saving results to results/lowlabel/amazon-computer/MPNN_gcn.csv
+--- count_reg | lambda=0.4 ---
+Namespace(bn=False, budget_tag='10', count_reg=True, count_smoothing=1.0, cpu=False, data_dir='./data/', dataset='amazon-computer', device=0, display_step=100, dropout=0.5, epochs=1000, gnn='gcn', hidden_channels=512, jk=False, label_num_per_class=20, lambda_val=0.4, ln=True, local_layers=3, lr=0.001, metric='acc', mlp_epochs=500, mlp_reg=False, model='MPNN', model_dir='models', num_heads=1, oracle_reg=False, paired_seeds=True, penalty_transform='none', pre_linear=False, pre_ln=False, rand_split=False, rand_split_class=False, reg_start_epoch=10, reg_update_freq=5, res=False, resample_split_per_run=False, result_dir='results/lowlabel', runs=10, save_model=False, seed=42, test_num=1000, train_per_class=10, train_prop=0.5, use_reg=True, valid_num=500, valid_per_class=0, valid_prop=0.25, weight_decay=5e-05)
+amazon-computer
+dataset amazon-computer | num nodes 13752 | num edge 491722 | num node feats 767 | num classes 10
+MODEL: MPNNs(
+  (h_lins): ModuleList()
+  (local_convs): ModuleList(
+    (0): GCNConv(767, 512)
+    (1): GCNConv(512, 512)
+    (2): GCNConv(512, 512)
+  )
+  (lins): ModuleList(
+    (0): Linear(in_features=767, out_features=512, bias=True)
+    (1): Linear(in_features=512, out_features=512, bias=True)
+    (2): Linear(in_features=512, out_features=512, bias=True)
+  )
+  (lns): ModuleList(
+    (0): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+    (1): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+    (2): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+  )
+  (bns): ModuleList(
+    (0): BatchNorm1d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (1): BatchNorm1d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): BatchNorm1d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (lin_in): Linear(in_features=767, out_features=512, bias=True)
+  (pred_local): Linear(in_features=512, out_features=10, bias=True)
+)
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (46 train-train edges).
+Epoch: 00, Loss: 3.5206, Train: 7.53%, Valid: 8.69%, Test: 8.07%, Best Valid: 8.69%, Best Test: 8.07%
+Epoch: 100, Loss: 0.1798, Train: 72.20%, Valid: 73.85%, Test: 73.75%, Best Valid: 81.38%, Best Test: 82.30%
+Epoch: 200, Loss: 0.0890, Train: 77.19%, Valid: 78.73%, Test: 78.08%, Best Valid: 82.73%, Best Test: 84.11%
+Epoch: 300, Loss: 0.0013, Train: 76.89%, Valid: 78.58%, Test: 78.01%, Best Valid: 82.73%, Best Test: 84.11%
+Epoch: 400, Loss: 0.0008, Train: 76.73%, Valid: 78.15%, Test: 77.68%, Best Valid: 82.73%, Best Test: 84.11%
+Epoch: 500, Loss: 0.0006, Train: 76.28%, Valid: 77.96%, Test: 77.17%, Best Valid: 82.73%, Best Test: 84.11%
+Epoch: 600, Loss: 0.0006, Train: 76.45%, Valid: 78.07%, Test: 77.64%, Best Valid: 82.73%, Best Test: 84.11%
+Epoch: 700, Loss: 0.0004, Train: 76.38%, Valid: 78.07%, Test: 77.50%, Best Valid: 82.73%, Best Test: 84.11%
+Epoch: 800, Loss: 0.0006, Train: 76.11%, Valid: 77.89%, Test: 77.17%, Best Valid: 82.73%, Best Test: 84.11%
+Epoch: 900, Loss: 0.0004, Train: 76.06%, Valid: 77.56%, Test: 77.06%, Best Valid: 82.73%, Best Test: 84.11%
+Run 01:
+Highest Train: 81.97
+Highest Valid: 82.73
+Highest Test: 84.11
+Chosen epoch: 176
+Final Train: 81.97
+Final Test: 84.11
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (40 train-train edges).
+Epoch: 00, Loss: 3.2616, Train: 16.54%, Valid: 16.95%, Test: 16.43%, Best Valid: 16.95%, Best Test: 16.43%
+Epoch: 100, Loss: 0.0595, Train: 78.26%, Valid: 78.69%, Test: 77.94%, Best Valid: 80.44%, Best Test: 80.88%
+Epoch: 200, Loss: 0.0049, Train: 77.23%, Valid: 77.16%, Test: 77.24%, Best Valid: 81.89%, Best Test: 83.21%
+Epoch: 300, Loss: 0.0015, Train: 77.20%, Valid: 77.31%, Test: 76.88%, Best Valid: 81.89%, Best Test: 83.21%
+Epoch: 400, Loss: 0.0008, Train: 77.24%, Valid: 77.38%, Test: 76.88%, Best Valid: 81.89%, Best Test: 83.21%
+Epoch: 500, Loss: 0.0005, Train: 76.78%, Valid: 77.09%, Test: 76.92%, Best Valid: 81.89%, Best Test: 83.21%
+Epoch: 600, Loss: 0.0006, Train: 76.71%, Valid: 76.73%, Test: 76.55%, Best Valid: 81.89%, Best Test: 83.21%
+Epoch: 700, Loss: 0.0003, Train: 76.56%, Valid: 76.62%, Test: 76.44%, Best Valid: 81.89%, Best Test: 83.21%
+Epoch: 800, Loss: 0.0005, Train: 77.26%, Valid: 77.38%, Test: 77.24%, Best Valid: 81.89%, Best Test: 83.21%
+Epoch: 900, Loss: 0.0003, Train: 77.15%, Valid: 77.38%, Test: 77.21%, Best Valid: 81.89%, Best Test: 83.21%
+Run 02:
+Highest Train: 83.07
+Highest Valid: 81.89
+Highest Test: 83.35
+Chosen epoch: 147
+Final Train: 83.07
+Final Test: 83.21
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (34 train-train edges).
+Epoch: 00, Loss: 3.3372, Train: 15.49%, Valid: 16.00%, Test: 14.43%, Best Valid: 16.00%, Best Test: 14.43%
+Epoch: 100, Loss: 0.0125, Train: 81.18%, Valid: 81.60%, Test: 82.66%, Best Valid: 82.18%, Best Test: 83.39%
+Epoch: 200, Loss: 0.0018, Train: 79.74%, Valid: 79.67%, Test: 80.66%, Best Valid: 82.18%, Best Test: 83.39%
+Epoch: 300, Loss: 0.0011, Train: 80.48%, Valid: 80.76%, Test: 81.72%, Best Valid: 82.18%, Best Test: 83.39%
+Epoch: 400, Loss: 0.0008, Train: 80.43%, Valid: 80.87%, Test: 81.24%, Best Valid: 82.18%, Best Test: 83.39%
+Epoch: 500, Loss: 0.0006, Train: 80.56%, Valid: 80.65%, Test: 81.50%, Best Valid: 82.18%, Best Test: 83.39%
+Epoch: 600, Loss: 0.0005, Train: 80.58%, Valid: 80.98%, Test: 81.53%, Best Valid: 82.18%, Best Test: 83.39%
+Epoch: 700, Loss: 0.0005, Train: 80.66%, Valid: 80.69%, Test: 81.39%, Best Valid: 82.18%, Best Test: 83.39%
+Epoch: 800, Loss: 0.0005, Train: 80.67%, Valid: 81.09%, Test: 81.53%, Best Valid: 82.18%, Best Test: 83.39%
+Epoch: 900, Loss: 0.0004, Train: 80.69%, Valid: 80.69%, Test: 81.32%, Best Valid: 82.18%, Best Test: 83.39%
+Run 03:
+Highest Train: 81.86
+Highest Valid: 82.18
+Highest Test: 83.39
+Chosen epoch: 51
+Final Train: 81.86
+Final Test: 83.39
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (28 train-train edges).
+Epoch: 00, Loss: 3.4975, Train: 9.19%, Valid: 9.96%, Test: 9.96%, Best Valid: 9.96%, Best Test: 9.96%
+Epoch: 100, Loss: 0.0405, Train: 75.34%, Valid: 75.64%, Test: 75.94%, Best Valid: 81.71%, Best Test: 82.44%
+Epoch: 200, Loss: 0.0024, Train: 78.89%, Valid: 79.09%, Test: 79.53%, Best Valid: 81.71%, Best Test: 82.44%
+Epoch: 300, Loss: 0.0014, Train: 79.60%, Valid: 79.67%, Test: 80.48%, Best Valid: 81.71%, Best Test: 82.44%
+Epoch: 400, Loss: 0.0006, Train: 79.17%, Valid: 79.49%, Test: 80.01%, Best Valid: 81.71%, Best Test: 82.44%
+Epoch: 500, Loss: 0.0007, Train: 79.49%, Valid: 79.53%, Test: 80.04%, Best Valid: 81.71%, Best Test: 82.44%
+Epoch: 600, Loss: 0.0004, Train: 79.46%, Valid: 79.75%, Test: 79.90%, Best Valid: 81.71%, Best Test: 82.44%
+Epoch: 700, Loss: 0.0007, Train: 78.98%, Valid: 79.35%, Test: 79.43%, Best Valid: 81.71%, Best Test: 82.44%
+Epoch: 800, Loss: 0.0005, Train: 79.37%, Valid: 79.75%, Test: 79.79%, Best Valid: 81.71%, Best Test: 82.44%
+Epoch: 900, Loss: 0.0004, Train: 79.32%, Valid: 79.60%, Test: 79.50%, Best Valid: 81.71%, Best Test: 82.44%
+Run 04:
+Highest Train: 82.05
+Highest Valid: 81.71
+Highest Test: 82.44
+Chosen epoch: 44
+Final Train: 82.01
+Final Test: 82.44
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (40 train-train edges).
+Epoch: 00, Loss: 3.4962, Train: 38.83%, Valid: 37.78%, Test: 39.40%, Best Valid: 37.78%, Best Test: 39.40%
+Epoch: 100, Loss: 0.0542, Train: 75.95%, Valid: 76.65%, Test: 77.61%, Best Valid: 79.64%, Best Test: 80.59%
+Epoch: 200, Loss: 0.0510, Train: 75.82%, Valid: 76.36%, Test: 76.84%, Best Valid: 79.89%, Best Test: 80.84%
+Epoch: 300, Loss: 0.0067, Train: 76.11%, Valid: 76.29%, Test: 77.68%, Best Valid: 79.89%, Best Test: 80.84%
+Epoch: 400, Loss: 0.0015, Train: 77.92%, Valid: 78.65%, Test: 79.64%, Best Valid: 79.89%, Best Test: 80.84%
+Epoch: 500, Loss: 0.0007, Train: 77.43%, Valid: 77.64%, Test: 78.70%, Best Valid: 79.89%, Best Test: 80.84%
+Epoch: 600, Loss: 0.0009, Train: 77.74%, Valid: 78.47%, Test: 79.72%, Best Valid: 79.89%, Best Test: 80.84%
+Epoch: 700, Loss: 0.0997, Train: 75.97%, Valid: 76.73%, Test: 77.79%, Best Valid: 79.89%, Best Test: 80.84%
+Epoch: 800, Loss: 0.0030, Train: 76.78%, Valid: 76.73%, Test: 77.94%, Best Valid: 79.89%, Best Test: 80.84%
+Epoch: 900, Loss: 0.0008, Train: 77.45%, Valid: 77.78%, Test: 78.15%, Best Valid: 79.89%, Best Test: 80.84%
+Run 05:
+Highest Train: 79.60
+Highest Valid: 79.89
+Highest Test: 80.84
+Chosen epoch: 165
+Final Train: 78.72
+Final Test: 80.84
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (26 train-train edges).
+Epoch: 00, Loss: 3.4801, Train: 15.50%, Valid: 15.96%, Test: 15.38%, Best Valid: 15.96%, Best Test: 15.38%
+Epoch: 100, Loss: 0.0432, Train: 82.58%, Valid: 82.25%, Test: 83.75%, Best Valid: 82.65%, Best Test: 84.08%
+Epoch: 200, Loss: 0.0062, Train: 82.33%, Valid: 82.40%, Test: 83.50%, Best Valid: 83.05%, Best Test: 84.48%
+Epoch: 300, Loss: 0.0011, Train: 79.95%, Valid: 80.76%, Test: 82.19%, Best Valid: 83.05%, Best Test: 84.48%
+Epoch: 400, Loss: 0.0007, Train: 81.03%, Valid: 81.71%, Test: 83.21%, Best Valid: 83.05%, Best Test: 84.48%
+Epoch: 500, Loss: 0.0008, Train: 80.57%, Valid: 81.31%, Test: 82.73%, Best Valid: 83.05%, Best Test: 84.48%
+Epoch: 600, Loss: 0.0004, Train: 80.96%, Valid: 81.71%, Test: 82.88%, Best Valid: 83.05%, Best Test: 84.48%
+Epoch: 700, Loss: 0.0006, Train: 80.73%, Valid: 81.45%, Test: 82.95%, Best Valid: 83.05%, Best Test: 84.48%
+Epoch: 800, Loss: 0.0003, Train: 80.83%, Valid: 81.49%, Test: 82.99%, Best Valid: 83.05%, Best Test: 84.48%
+Epoch: 900, Loss: 0.0003, Train: 80.71%, Valid: 81.75%, Test: 83.17%, Best Valid: 83.05%, Best Test: 84.48%
+Run 06:
+Highest Train: 83.53
+Highest Valid: 83.05
+Highest Test: 84.48
+Chosen epoch: 157
+Final Train: 83.53
+Final Test: 84.48
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (26 train-train edges).
+Epoch: 00, Loss: 3.3369, Train: 37.44%, Valid: 36.15%, Test: 38.71%, Best Valid: 36.15%, Best Test: 38.71%
+Epoch: 100, Loss: 0.1232, Train: 78.46%, Valid: 78.80%, Test: 80.04%, Best Valid: 81.38%, Best Test: 82.77%
+Epoch: 200, Loss: 0.0203, Train: 79.12%, Valid: 79.42%, Test: 81.10%, Best Valid: 81.38%, Best Test: 82.77%
+Epoch: 300, Loss: 0.0130, Train: 78.35%, Valid: 79.13%, Test: 80.01%, Best Valid: 81.38%, Best Test: 82.77%
+Epoch: 400, Loss: 0.0143, Train: 77.75%, Valid: 78.58%, Test: 79.13%, Best Valid: 81.38%, Best Test: 82.77%
+Epoch: 500, Loss: 0.0102, Train: 79.15%, Valid: 79.64%, Test: 81.10%, Best Valid: 81.38%, Best Test: 82.77%
+Epoch: 600, Loss: 0.0044, Train: 78.83%, Valid: 79.71%, Test: 81.06%, Best Valid: 81.38%, Best Test: 82.77%
+Epoch: 700, Loss: 0.0010, Train: 78.01%, Valid: 78.29%, Test: 79.97%, Best Valid: 81.38%, Best Test: 82.77%
+Epoch: 800, Loss: 0.0004, Train: 77.68%, Valid: 77.89%, Test: 79.39%, Best Valid: 81.38%, Best Test: 82.77%
+Epoch: 900, Loss: 0.0012, Train: 78.20%, Valid: 78.18%, Test: 80.08%, Best Valid: 81.38%, Best Test: 82.77%
+Run 07:
+Highest Train: 82.21
+Highest Valid: 81.38
+Highest Test: 83.24
+Chosen epoch: 71
+Final Train: 81.40
+Final Test: 82.77
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (44 train-train edges).
+Epoch: 00, Loss: 3.4202, Train: 40.14%, Valid: 39.16%, Test: 41.48%, Best Valid: 39.16%, Best Test: 41.48%
+Epoch: 100, Loss: 0.1886, Train: 77.61%, Valid: 78.36%, Test: 79.50%, Best Valid: 83.27%, Best Test: 85.64%
+Epoch: 200, Loss: 0.2445, Train: 80.27%, Valid: 80.07%, Test: 82.48%, Best Valid: 83.53%, Best Test: 86.01%
+Epoch: 300, Loss: 0.1095, Train: 80.62%, Valid: 80.84%, Test: 83.21%, Best Valid: 83.56%, Best Test: 86.08%
+Epoch: 400, Loss: 0.1078, Train: 80.56%, Valid: 81.42%, Test: 84.01%, Best Valid: 83.56%, Best Test: 86.08%
+Epoch: 500, Loss: 0.0395, Train: 82.55%, Valid: 82.58%, Test: 85.64%, Best Valid: 83.56%, Best Test: 86.08%
+Epoch: 600, Loss: 0.0276, Train: 81.78%, Valid: 81.60%, Test: 84.95%, Best Valid: 83.56%, Best Test: 86.08%
+Epoch: 700, Loss: 0.0043, Train: 82.16%, Valid: 81.75%, Test: 84.88%, Best Valid: 83.56%, Best Test: 86.08%
+Epoch: 800, Loss: 0.0009, Train: 81.78%, Valid: 81.82%, Test: 84.84%, Best Valid: 83.56%, Best Test: 86.08%
+Epoch: 900, Loss: 0.0005, Train: 81.97%, Valid: 82.18%, Test: 84.84%, Best Valid: 83.56%, Best Test: 86.08%
+Run 08:
+Highest Train: 83.37
+Highest Valid: 83.56
+Highest Test: 86.22
+Chosen epoch: 245
+Final Train: 83.23
+Final Test: 86.08
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (18 train-train edges).
+Epoch: 00, Loss: 3.5315, Train: 2.34%, Valid: 2.47%, Test: 2.47%, Best Valid: 2.47%, Best Test: 2.47%
+Epoch: 100, Loss: 0.2593, Train: 70.83%, Valid: 71.67%, Test: 72.19%, Best Valid: 77.27%, Best Test: 76.52%
+Epoch: 200, Loss: 0.0167, Train: 74.12%, Valid: 74.25%, Test: 74.63%, Best Valid: 77.27%, Best Test: 76.52%
+Epoch: 300, Loss: 0.0147, Train: 74.33%, Valid: 75.42%, Test: 74.95%, Best Valid: 77.27%, Best Test: 76.52%
+Epoch: 400, Loss: 0.0010, Train: 74.90%, Valid: 75.85%, Test: 76.48%, Best Valid: 77.27%, Best Test: 76.52%
+Epoch: 500, Loss: 0.0005, Train: 75.11%, Valid: 76.11%, Test: 76.41%, Best Valid: 77.27%, Best Test: 76.52%
+Epoch: 600, Loss: 0.0005, Train: 75.18%, Valid: 76.11%, Test: 76.52%, Best Valid: 77.27%, Best Test: 76.52%
+Epoch: 700, Loss: 0.0003, Train: 75.08%, Valid: 76.18%, Test: 76.19%, Best Valid: 77.27%, Best Test: 76.52%
+Epoch: 800, Loss: 0.0005, Train: 75.28%, Valid: 76.40%, Test: 76.44%, Best Valid: 77.27%, Best Test: 76.52%
+Epoch: 900, Loss: 0.0004, Train: 75.23%, Valid: 76.18%, Test: 76.26%, Best Valid: 77.27%, Best Test: 76.52%
+Run 09:
+Highest Train: 76.35
+Highest Valid: 77.27
+Highest Test: 77.43
+Chosen epoch: 67
+Final Train: 76.25
+Final Test: 76.52
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (40 train-train edges).
+Epoch: 00, Loss: 3.4778, Train: 7.01%, Valid: 7.64%, Test: 7.02%, Best Valid: 7.64%, Best Test: 7.02%
+Epoch: 100, Loss: 0.1223, Train: 70.88%, Valid: 71.53%, Test: 70.74%, Best Valid: 75.71%, Best Test: 76.26%
+Epoch: 200, Loss: 0.0599, Train: 70.48%, Valid: 71.20%, Test: 69.57%, Best Valid: 75.71%, Best Test: 76.26%
+Epoch: 300, Loss: 0.0253, Train: 73.22%, Valid: 74.40%, Test: 73.86%, Best Valid: 76.33%, Best Test: 77.39%
+Epoch: 400, Loss: 0.0025, Train: 72.03%, Valid: 73.16%, Test: 72.63%, Best Valid: 76.33%, Best Test: 77.39%
+Epoch: 500, Loss: 0.0008, Train: 72.59%, Valid: 73.38%, Test: 73.14%, Best Valid: 76.33%, Best Test: 77.39%
+Epoch: 600, Loss: 0.0006, Train: 73.03%, Valid: 73.82%, Test: 73.61%, Best Valid: 76.33%, Best Test: 77.39%
+Epoch: 700, Loss: 0.0004, Train: 72.84%, Valid: 73.31%, Test: 73.17%, Best Valid: 76.33%, Best Test: 77.39%
+Epoch: 800, Loss: 0.0004, Train: 73.24%, Valid: 74.04%, Test: 73.54%, Best Valid: 76.33%, Best Test: 77.39%
+Epoch: 900, Loss: 0.0004, Train: 73.31%, Valid: 73.89%, Test: 73.50%, Best Valid: 76.33%, Best Test: 77.39%
+Run 10:
+Highest Train: 76.05
+Highest Valid: 76.33
+Highest Test: 77.39
+Chosen epoch: 278
+Final Train: 76.05
+Final Test: 77.39
+All runs:
+Highest Train: 81.01 ± 2.76
+Highest Test: 82.29 ± 2.92
+Highest Valid: 81.00 ± 2.44
+  Final Train: 80.81 ± 2.80
+   Final Test: 82.12 ± 3.05
+Saving results to results/lowlabel/amazon-computer/MPNN_gcn.csv
+--- count_reg | lambda=0.8 ---
+Namespace(bn=False, budget_tag='10', count_reg=True, count_smoothing=1.0, cpu=False, data_dir='./data/', dataset='amazon-computer', device=0, display_step=100, dropout=0.5, epochs=1000, gnn='gcn', hidden_channels=512, jk=False, label_num_per_class=20, lambda_val=0.8, ln=True, local_layers=3, lr=0.001, metric='acc', mlp_epochs=500, mlp_reg=False, model='MPNN', model_dir='models', num_heads=1, oracle_reg=False, paired_seeds=True, penalty_transform='none', pre_linear=False, pre_ln=False, rand_split=False, rand_split_class=False, reg_start_epoch=10, reg_update_freq=5, res=False, resample_split_per_run=False, result_dir='results/lowlabel', runs=10, save_model=False, seed=42, test_num=1000, train_per_class=10, train_prop=0.5, use_reg=True, valid_num=500, valid_per_class=0, valid_prop=0.25, weight_decay=5e-05)
+amazon-computer
+dataset amazon-computer | num nodes 13752 | num edge 491722 | num node feats 767 | num classes 10
+MODEL: MPNNs(
+  (h_lins): ModuleList()
+  (local_convs): ModuleList(
+    (0): GCNConv(767, 512)
+    (1): GCNConv(512, 512)
+    (2): GCNConv(512, 512)
+  )
+  (lins): ModuleList(
+    (0): Linear(in_features=767, out_features=512, bias=True)
+    (1): Linear(in_features=512, out_features=512, bias=True)
+    (2): Linear(in_features=512, out_features=512, bias=True)
+  )
+  (lns): ModuleList(
+    (0): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+    (1): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+    (2): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+  )
+  (bns): ModuleList(
+    (0): BatchNorm1d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (1): BatchNorm1d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): BatchNorm1d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (lin_in): Linear(in_features=767, out_features=512, bias=True)
+  (pred_local): Linear(in_features=512, out_features=10, bias=True)
+)
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (46 train-train edges).
+Epoch: 00, Loss: 4.5265, Train: 18.12%, Valid: 19.53%, Test: 19.27%, Best Valid: 19.53%, Best Test: 19.27%
+Epoch: 100, Loss: 0.1227, Train: 72.15%, Valid: 74.47%, Test: 73.72%, Best Valid: 82.95%, Best Test: 83.61%
+Epoch: 200, Loss: 0.1253, Train: 78.44%, Valid: 79.78%, Test: 80.48%, Best Valid: 82.95%, Best Test: 83.61%
+Epoch: 300, Loss: 0.0024, Train: 76.17%, Valid: 77.93%, Test: 77.43%, Best Valid: 82.95%, Best Test: 83.61%
+Epoch: 400, Loss: 0.0011, Train: 75.88%, Valid: 77.45%, Test: 76.74%, Best Valid: 82.95%, Best Test: 83.61%
+Epoch: 500, Loss: 0.0008, Train: 75.77%, Valid: 77.35%, Test: 76.74%, Best Valid: 82.95%, Best Test: 83.61%
+Epoch: 600, Loss: 0.0006, Train: 75.76%, Valid: 77.24%, Test: 76.52%, Best Valid: 82.95%, Best Test: 83.61%
+Epoch: 700, Loss: 0.0005, Train: 76.16%, Valid: 77.60%, Test: 77.14%, Best Valid: 82.95%, Best Test: 83.61%
+Epoch: 800, Loss: 0.0008, Train: 75.41%, Valid: 76.62%, Test: 75.86%, Best Valid: 82.95%, Best Test: 83.61%
+Epoch: 900, Loss: 0.0004, Train: 76.29%, Valid: 77.56%, Test: 77.35%, Best Valid: 82.95%, Best Test: 83.61%
+Run 01:
+Highest Train: 82.09
+Highest Valid: 82.95
+Highest Test: 83.61
+Chosen epoch: 57
+Final Train: 82.09
+Final Test: 83.61
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (40 train-train edges).
+Epoch: 00, Loss: 4.1934, Train: 14.33%, Valid: 15.13%, Test: 14.65%, Best Valid: 15.13%, Best Test: 14.65%
+Epoch: 100, Loss: 0.0374, Train: 80.71%, Valid: 80.11%, Test: 80.99%, Best Valid: 80.36%, Best Test: 80.52%
+Epoch: 200, Loss: 0.0922, Train: 74.03%, Valid: 74.40%, Test: 76.01%, Best Valid: 80.98%, Best Test: 80.52%
+Epoch: 300, Loss: 0.0059, Train: 77.21%, Valid: 77.42%, Test: 76.84%, Best Valid: 80.98%, Best Test: 80.52%
+Epoch: 400, Loss: 0.0010, Train: 76.83%, Valid: 77.67%, Test: 76.55%, Best Valid: 80.98%, Best Test: 80.52%
+Epoch: 500, Loss: 0.0005, Train: 76.78%, Valid: 77.49%, Test: 76.81%, Best Valid: 80.98%, Best Test: 80.52%
+Epoch: 600, Loss: 0.0007, Train: 76.66%, Valid: 77.20%, Test: 76.81%, Best Valid: 80.98%, Best Test: 80.52%
+Epoch: 700, Loss: 0.0003, Train: 76.61%, Valid: 77.53%, Test: 76.63%, Best Valid: 80.98%, Best Test: 80.52%
+Epoch: 800, Loss: 0.0005, Train: 76.56%, Valid: 77.38%, Test: 76.70%, Best Valid: 80.98%, Best Test: 80.52%
+Epoch: 900, Loss: 0.0003, Train: 77.02%, Valid: 77.53%, Test: 77.24%, Best Valid: 80.98%, Best Test: 80.52%
+Run 02:
+Highest Train: 81.19
+Highest Valid: 80.98
+Highest Test: 81.64
+Chosen epoch: 148
+Final Train: 80.67
+Final Test: 80.52
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (34 train-train edges).
+Epoch: 00, Loss: 4.2907, Train: 15.85%, Valid: 16.76%, Test: 14.90%, Best Valid: 16.76%, Best Test: 14.90%
+Epoch: 100, Loss: 0.1362, Train: 78.00%, Valid: 77.64%, Test: 77.83%, Best Valid: 81.85%, Best Test: 82.99%
+Epoch: 200, Loss: 0.0028, Train: 78.29%, Valid: 78.58%, Test: 79.06%, Best Valid: 81.85%, Best Test: 82.99%
+Epoch: 300, Loss: 0.0013, Train: 79.55%, Valid: 79.67%, Test: 80.48%, Best Valid: 81.85%, Best Test: 82.99%
+Epoch: 400, Loss: 0.0009, Train: 79.42%, Valid: 79.89%, Test: 80.44%, Best Valid: 81.85%, Best Test: 82.99%
+Epoch: 500, Loss: 0.0008, Train: 79.97%, Valid: 80.44%, Test: 81.10%, Best Valid: 81.85%, Best Test: 82.99%
+Epoch: 600, Loss: 0.0007, Train: 80.51%, Valid: 81.38%, Test: 81.86%, Best Valid: 81.85%, Best Test: 82.99%
+Epoch: 700, Loss: 0.0007, Train: 80.46%, Valid: 80.95%, Test: 81.72%, Best Valid: 81.85%, Best Test: 82.99%
+Epoch: 800, Loss: 0.0007, Train: 80.39%, Valid: 80.80%, Test: 81.42%, Best Valid: 81.85%, Best Test: 82.99%
+Epoch: 900, Loss: 0.0005, Train: 80.78%, Valid: 81.16%, Test: 82.15%, Best Valid: 81.85%, Best Test: 82.99%
+Run 03:
+Highest Train: 81.87
+Highest Valid: 81.85
+Highest Test: 82.99
+Chosen epoch: 61
+Final Train: 81.52
+Final Test: 82.99
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (28 train-train edges).
+Epoch: 00, Loss: 4.4967, Train: 9.55%, Valid: 10.25%, Test: 9.67%, Best Valid: 10.25%, Best Test: 9.67%
+Epoch: 100, Loss: 0.0283, Train: 75.30%, Valid: 75.13%, Test: 76.01%, Best Valid: 82.11%, Best Test: 82.95%
+Epoch: 200, Loss: 0.0023, Train: 78.65%, Valid: 79.16%, Test: 79.17%, Best Valid: 82.11%, Best Test: 82.95%
+Epoch: 300, Loss: 0.0017, Train: 79.13%, Valid: 79.31%, Test: 79.64%, Best Valid: 82.11%, Best Test: 82.95%
+Epoch: 400, Loss: 0.0009, Train: 78.39%, Valid: 78.62%, Test: 79.24%, Best Valid: 82.11%, Best Test: 82.95%
+Epoch: 500, Loss: 0.1323, Train: 77.20%, Valid: 77.93%, Test: 78.19%, Best Valid: 82.11%, Best Test: 82.95%
+Epoch: 600, Loss: 0.0019, Train: 77.76%, Valid: 77.89%, Test: 78.77%, Best Valid: 82.11%, Best Test: 82.95%
+Epoch: 700, Loss: 0.0014, Train: 77.76%, Valid: 77.56%, Test: 78.74%, Best Valid: 82.11%, Best Test: 82.95%
+Epoch: 800, Loss: 0.0026, Train: 78.45%, Valid: 78.15%, Test: 79.06%, Best Valid: 82.11%, Best Test: 82.95%
+Epoch: 900, Loss: 0.0006, Train: 78.15%, Valid: 77.93%, Test: 79.03%, Best Valid: 82.11%, Best Test: 82.95%
+Run 04:
+Highest Train: 82.69
+Highest Valid: 82.11
+Highest Test: 82.95
+Chosen epoch: 78
+Final Train: 82.69
+Final Test: 82.95
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (40 train-train edges).
+Epoch: 00, Loss: 4.4952, Train: 44.71%, Valid: 43.13%, Test: 44.78%, Best Valid: 43.13%, Best Test: 44.78%
+Epoch: 100, Loss: 0.1130, Train: 76.17%, Valid: 76.80%, Test: 76.99%, Best Valid: 79.93%, Best Test: 79.75%
+Epoch: 200, Loss: 0.0662, Train: 76.54%, Valid: 77.45%, Test: 77.72%, Best Valid: 79.93%, Best Test: 79.75%
+Epoch: 300, Loss: 0.0027, Train: 76.56%, Valid: 77.16%, Test: 77.83%, Best Valid: 79.96%, Best Test: 80.77%
+Epoch: 400, Loss: 0.0014, Train: 77.01%, Valid: 77.67%, Test: 78.55%, Best Valid: 79.96%, Best Test: 80.77%
+Epoch: 500, Loss: 0.0008, Train: 76.81%, Valid: 77.78%, Test: 78.55%, Best Valid: 79.96%, Best Test: 80.77%
+Epoch: 600, Loss: 0.0010, Train: 77.09%, Valid: 77.71%, Test: 78.55%, Best Valid: 79.96%, Best Test: 80.77%
+Epoch: 700, Loss: 0.0005, Train: 77.47%, Valid: 78.51%, Test: 79.17%, Best Valid: 79.96%, Best Test: 80.77%
+Epoch: 800, Loss: 0.0005, Train: 76.66%, Valid: 77.20%, Test: 78.01%, Best Valid: 79.96%, Best Test: 80.77%
+Epoch: 900, Loss: 0.0010, Train: 77.51%, Valid: 78.25%, Test: 79.35%, Best Valid: 79.96%, Best Test: 80.77%
+Run 05:
+Highest Train: 79.83
+Highest Valid: 79.96
+Highest Test: 81.46
+Chosen epoch: 228
+Final Train: 78.84
+Final Test: 80.77
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (26 train-train edges).
+Epoch: 00, Loss: 4.4745, Train: 15.54%, Valid: 16.00%, Test: 15.34%, Best Valid: 16.00%, Best Test: 15.34%
+Epoch: 100, Loss: 0.0848, Train: 81.65%, Valid: 81.13%, Test: 82.88%, Best Valid: 82.29%, Best Test: 83.57%
+Epoch: 200, Loss: 0.0174, Train: 74.60%, Valid: 74.11%, Test: 75.46%, Best Valid: 82.29%, Best Test: 83.57%
+Epoch: 300, Loss: 0.0404, Train: 78.81%, Valid: 79.45%, Test: 80.77%, Best Valid: 82.29%, Best Test: 83.57%
+Epoch: 400, Loss: 0.0009, Train: 80.10%, Valid: 80.55%, Test: 82.33%, Best Valid: 82.29%, Best Test: 83.57%
+Epoch: 500, Loss: 0.0009, Train: 79.47%, Valid: 79.75%, Test: 81.50%, Best Valid: 82.29%, Best Test: 83.57%
+Epoch: 600, Loss: 0.0004, Train: 80.04%, Valid: 80.33%, Test: 82.22%, Best Valid: 82.29%, Best Test: 83.57%
+Epoch: 700, Loss: 0.0005, Train: 79.95%, Valid: 80.15%, Test: 82.26%, Best Valid: 82.29%, Best Test: 83.57%
+Epoch: 800, Loss: 0.0004, Train: 80.24%, Valid: 80.58%, Test: 82.62%, Best Valid: 82.29%, Best Test: 83.57%
+Epoch: 900, Loss: 0.0002, Train: 80.17%, Valid: 80.22%, Test: 82.44%, Best Valid: 82.29%, Best Test: 83.57%
+Run 06:
+Highest Train: 82.79
+Highest Valid: 82.29
+Highest Test: 83.72
+Chosen epoch: 56
+Final Train: 82.79
+Final Test: 83.57
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (26 train-train edges).
+Epoch: 00, Loss: 4.2902, Train: 37.49%, Valid: 36.44%, Test: 39.48%, Best Valid: 36.44%, Best Test: 39.48%
+Epoch: 100, Loss: 0.0937, Train: 77.70%, Valid: 77.75%, Test: 78.70%, Best Valid: 80.44%, Best Test: 82.08%
+Epoch: 200, Loss: 0.0367, Train: 78.45%, Valid: 78.36%, Test: 79.79%, Best Valid: 81.38%, Best Test: 83.06%
+Epoch: 300, Loss: 0.0726, Train: 77.09%, Valid: 77.20%, Test: 78.19%, Best Valid: 81.38%, Best Test: 83.06%
+Epoch: 400, Loss: 0.0035, Train: 76.60%, Valid: 77.24%, Test: 77.94%, Best Valid: 81.38%, Best Test: 83.06%
+Epoch: 500, Loss: 0.1001, Train: 79.04%, Valid: 78.18%, Test: 80.04%, Best Valid: 81.38%, Best Test: 83.06%
+Epoch: 600, Loss: 0.0010, Train: 77.66%, Valid: 78.07%, Test: 79.10%, Best Valid: 81.38%, Best Test: 83.06%
+Epoch: 700, Loss: 0.0006, Train: 77.68%, Valid: 78.00%, Test: 79.35%, Best Valid: 81.38%, Best Test: 83.06%
+Epoch: 800, Loss: 0.0006, Train: 77.45%, Valid: 77.64%, Test: 78.92%, Best Valid: 81.38%, Best Test: 83.06%
+Epoch: 900, Loss: 0.0006, Train: 77.46%, Valid: 77.82%, Test: 78.99%, Best Valid: 81.38%, Best Test: 83.06%
+Run 07:
+Highest Train: 81.51
+Highest Valid: 81.38
+Highest Test: 83.06
+Chosen epoch: 103
+Final Train: 81.51
+Final Test: 83.06
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (44 train-train edges).
+Epoch: 00, Loss: 4.3974, Train: 39.05%, Valid: 37.75%, Test: 40.49%, Best Valid: 37.75%, Best Test: 40.49%
+Epoch: 100, Loss: 0.1720, Train: 82.40%, Valid: 82.36%, Test: 84.26%, Best Valid: 83.20%, Best Test: 85.57%
+Epoch: 200, Loss: 0.1735, Train: 79.69%, Valid: 79.96%, Test: 82.37%, Best Valid: 83.20%, Best Test: 85.57%
+Epoch: 300, Loss: 0.1009, Train: 80.69%, Valid: 81.27%, Test: 83.72%, Best Valid: 83.20%, Best Test: 85.57%
+Epoch: 400, Loss: 0.1564, Train: 81.83%, Valid: 82.00%, Test: 83.75%, Best Valid: 83.20%, Best Test: 85.57%
+Epoch: 500, Loss: 0.1109, Train: 82.47%, Valid: 82.51%, Test: 85.31%, Best Valid: 83.35%, Best Test: 85.71%
+Epoch: 600, Loss: 0.0983, Train: 82.29%, Valid: 81.93%, Test: 84.44%, Best Valid: 83.35%, Best Test: 85.71%
+Epoch: 700, Loss: 0.0164, Train: 81.12%, Valid: 81.20%, Test: 84.26%, Best Valid: 83.35%, Best Test: 85.71%
+Epoch: 800, Loss: 0.0070, Train: 81.71%, Valid: 81.35%, Test: 84.51%, Best Valid: 83.35%, Best Test: 85.71%
+Epoch: 900, Loss: 0.0027, Train: 81.87%, Valid: 81.38%, Test: 84.91%, Best Valid: 83.35%, Best Test: 85.71%
+Run 08:
+Highest Train: 83.49
+Highest Valid: 83.35
+Highest Test: 86.33
+Chosen epoch: 434
+Final Train: 82.75
+Final Test: 85.71
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (18 train-train edges).
+Epoch: 00, Loss: 4.5406, Train: 2.31%, Valid: 2.47%, Test: 2.47%, Best Valid: 2.47%, Best Test: 2.47%
+Epoch: 100, Loss: 0.0819, Train: 75.41%, Valid: 76.47%, Test: 76.74%, Best Valid: 79.35%, Best Test: 78.77%
+Epoch: 200, Loss: 0.0352, Train: 76.50%, Valid: 78.07%, Test: 76.99%, Best Valid: 79.35%, Best Test: 78.77%
+Epoch: 300, Loss: 0.0742, Train: 73.92%, Valid: 74.98%, Test: 74.37%, Best Valid: 79.35%, Best Test: 78.77%
+Epoch: 400, Loss: 0.0013, Train: 75.85%, Valid: 76.58%, Test: 77.10%, Best Valid: 79.35%, Best Test: 78.77%
+Epoch: 500, Loss: 0.0005, Train: 75.82%, Valid: 76.58%, Test: 77.03%, Best Valid: 79.35%, Best Test: 78.77%
+Epoch: 600, Loss: 0.0006, Train: 75.66%, Valid: 76.55%, Test: 77.10%, Best Valid: 79.35%, Best Test: 78.77%
+Epoch: 700, Loss: 0.0003, Train: 75.66%, Valid: 76.47%, Test: 77.10%, Best Valid: 79.35%, Best Test: 78.77%
+Epoch: 800, Loss: 0.0004, Train: 75.94%, Valid: 76.55%, Test: 76.95%, Best Valid: 79.35%, Best Test: 78.77%
+Epoch: 900, Loss: 0.0005, Train: 75.86%, Valid: 76.47%, Test: 77.10%, Best Valid: 79.35%, Best Test: 78.77%
+Run 09:
+Highest Train: 78.12
+Highest Valid: 79.35
+Highest Test: 79.21
+Chosen epoch: 99
+Final Train: 77.32
+Final Test: 78.77
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (40 train-train edges).
+Epoch: 00, Loss: 4.4715, Train: 9.48%, Valid: 9.78%, Test: 9.67%, Best Valid: 9.78%, Best Test: 9.67%
+Epoch: 100, Loss: 0.1285, Train: 73.36%, Valid: 73.09%, Test: 73.32%, Best Valid: 75.78%, Best Test: 75.86%
+Epoch: 200, Loss: 0.1049, Train: 72.04%, Valid: 72.55%, Test: 71.94%, Best Valid: 75.78%, Best Test: 75.86%
+Epoch: 300, Loss: 0.1555, Train: 69.68%, Valid: 70.04%, Test: 69.79%, Best Valid: 75.93%, Best Test: 75.97%
+Epoch: 400, Loss: 0.0615, Train: 74.85%, Valid: 75.67%, Test: 76.15%, Best Valid: 76.84%, Best Test: 77.32%
+Epoch: 500, Loss: 0.0023, Train: 73.37%, Valid: 74.07%, Test: 73.36%, Best Valid: 76.84%, Best Test: 77.32%
+Epoch: 600, Loss: 0.0008, Train: 73.62%, Valid: 74.51%, Test: 73.72%, Best Valid: 76.84%, Best Test: 77.32%
+Epoch: 700, Loss: 0.0005, Train: 73.62%, Valid: 74.29%, Test: 73.83%, Best Valid: 76.84%, Best Test: 77.32%
+Epoch: 800, Loss: 0.0004, Train: 73.80%, Valid: 74.91%, Test: 74.23%, Best Valid: 76.84%, Best Test: 77.32%
+Epoch: 900, Loss: 0.0003, Train: 73.64%, Valid: 74.76%, Test: 73.79%, Best Valid: 76.84%, Best Test: 77.32%
+Run 10:
+Highest Train: 76.10
+Highest Valid: 76.84
+Highest Test: 77.39
+Chosen epoch: 392
+Final Train: 76.10
+Final Test: 77.32
+All runs:
+Highest Train: 80.97 ± 2.31
+Highest Test: 82.24 ± 2.50
+Highest Valid: 81.11 ± 1.95
+  Final Train: 80.63 ± 2.40
+   Final Test: 81.93 ± 2.54
+Saving results to results/lowlabel/amazon-computer/MPNN_gcn.csv
+--- count_reg | lambda=1.6 ---
+Namespace(bn=False, budget_tag='10', count_reg=True, count_smoothing=1.0, cpu=False, data_dir='./data/', dataset='amazon-computer', device=0, display_step=100, dropout=0.5, epochs=1000, gnn='gcn', hidden_channels=512, jk=False, label_num_per_class=20, lambda_val=1.6, ln=True, local_layers=3, lr=0.001, metric='acc', mlp_epochs=500, mlp_reg=False, model='MPNN', model_dir='models', num_heads=1, oracle_reg=False, paired_seeds=True, penalty_transform='none', pre_linear=False, pre_ln=False, rand_split=False, rand_split_class=False, reg_start_epoch=10, reg_update_freq=5, res=False, resample_split_per_run=False, result_dir='results/lowlabel', runs=10, save_model=False, seed=42, test_num=1000, train_per_class=10, train_prop=0.5, use_reg=True, valid_num=500, valid_per_class=0, valid_prop=0.25, weight_decay=5e-05)
+amazon-computer
+dataset amazon-computer | num nodes 13752 | num edge 491722 | num node feats 767 | num classes 10
+MODEL: MPNNs(
+  (h_lins): ModuleList()
+  (local_convs): ModuleList(
+    (0): GCNConv(767, 512)
+    (1): GCNConv(512, 512)
+    (2): GCNConv(512, 512)
+  )
+  (lins): ModuleList(
+    (0): Linear(in_features=767, out_features=512, bias=True)
+    (1): Linear(in_features=512, out_features=512, bias=True)
+    (2): Linear(in_features=512, out_features=512, bias=True)
+  )
+  (lns): ModuleList(
+    (0): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+    (1): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+    (2): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+  )
+  (bns): ModuleList(
+    (0): BatchNorm1d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (1): BatchNorm1d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): BatchNorm1d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (lin_in): Linear(in_features=767, out_features=512, bias=True)
+  (pred_local): Linear(in_features=512, out_features=10, bias=True)
+)
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (46 train-train edges).
+Epoch: 00, Loss: 6.5383, Train: 3.15%, Valid: 3.13%, Test: 3.42%, Best Valid: 3.13%, Best Test: 3.42%
+Epoch: 100, Loss: 0.2502, Train: 75.14%, Valid: 76.73%, Test: 77.03%, Best Valid: 79.93%, Best Test: 81.32%
+Epoch: 200, Loss: 0.0348, Train: 75.68%, Valid: 77.16%, Test: 76.88%, Best Valid: 81.75%, Best Test: 81.97%
+Epoch: 300, Loss: 0.0798, Train: 75.53%, Valid: 77.16%, Test: 76.81%, Best Valid: 81.75%, Best Test: 81.97%
+Epoch: 400, Loss: 0.0020, Train: 76.57%, Valid: 77.82%, Test: 77.54%, Best Valid: 81.75%, Best Test: 81.97%
+Epoch: 500, Loss: 0.0014, Train: 76.26%, Valid: 77.56%, Test: 77.06%, Best Valid: 81.75%, Best Test: 81.97%
+Epoch: 600, Loss: 0.0010, Train: 75.75%, Valid: 77.20%, Test: 76.63%, Best Valid: 81.75%, Best Test: 81.97%
+Epoch: 700, Loss: 0.0008, Train: 76.12%, Valid: 77.42%, Test: 76.99%, Best Valid: 81.75%, Best Test: 81.97%
+Epoch: 800, Loss: 0.0013, Train: 75.71%, Valid: 77.16%, Test: 76.44%, Best Valid: 81.75%, Best Test: 81.97%
+Epoch: 900, Loss: 0.0005, Train: 75.81%, Valid: 77.27%, Test: 76.99%, Best Valid: 81.75%, Best Test: 81.97%
+Run 01:
+Highest Train: 80.35
+Highest Valid: 81.75
+Highest Test: 82.12
+Chosen epoch: 170
+Final Train: 80.09
+Final Test: 81.97
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (40 train-train edges).
+Epoch: 00, Loss: 6.0572, Train: 11.14%, Valid: 10.84%, Test: 10.91%, Best Valid: 10.84%, Best Test: 10.91%
+Epoch: 100, Loss: 0.1100, Train: 66.61%, Valid: 67.20%, Test: 66.05%, Best Valid: 77.93%, Best Test: 78.88%
+Epoch: 200, Loss: 0.0054, Train: 75.12%, Valid: 75.27%, Test: 75.54%, Best Valid: 79.53%, Best Test: 80.77%
+Epoch: 300, Loss: 0.0040, Train: 75.51%, Valid: 75.45%, Test: 75.25%, Best Valid: 79.53%, Best Test: 80.77%
+Epoch: 400, Loss: 0.0024, Train: 74.96%, Valid: 74.65%, Test: 75.06%, Best Valid: 79.53%, Best Test: 80.77%
+Epoch: 500, Loss: 0.0011, Train: 74.84%, Valid: 74.55%, Test: 74.99%, Best Valid: 79.53%, Best Test: 80.77%
+Epoch: 600, Loss: 0.0011, Train: 74.20%, Valid: 74.04%, Test: 74.23%, Best Valid: 79.53%, Best Test: 80.77%
+Epoch: 700, Loss: 0.0007, Train: 73.18%, Valid: 73.27%, Test: 73.21%, Best Valid: 79.53%, Best Test: 80.77%
+Epoch: 800, Loss: 0.0009, Train: 74.35%, Valid: 74.25%, Test: 74.34%, Best Valid: 79.53%, Best Test: 80.77%
+Epoch: 900, Loss: 0.0005, Train: 74.56%, Valid: 74.55%, Test: 74.99%, Best Valid: 79.53%, Best Test: 80.77%
+Run 02:
+Highest Train: 79.82
+Highest Valid: 79.53
+Highest Test: 80.77
+Chosen epoch: 111
+Final Train: 79.70
+Final Test: 80.77
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (34 train-train edges).
+Epoch: 00, Loss: 6.1977, Train: 4.85%, Valid: 5.75%, Test: 5.09%, Best Valid: 5.75%, Best Test: 5.09%
+Epoch: 100, Loss: 0.0308, Train: 74.77%, Valid: 75.13%, Test: 76.34%, Best Valid: 78.76%, Best Test: 79.68%
+Epoch: 200, Loss: 0.0032, Train: 74.45%, Valid: 75.49%, Test: 75.57%, Best Valid: 78.76%, Best Test: 79.68%
+Epoch: 300, Loss: 0.0020, Train: 75.28%, Valid: 75.64%, Test: 76.55%, Best Valid: 78.76%, Best Test: 79.68%
+Epoch: 400, Loss: 0.0015, Train: 75.03%, Valid: 75.96%, Test: 75.75%, Best Valid: 78.76%, Best Test: 79.68%
+Epoch: 500, Loss: 0.0010, Train: 74.94%, Valid: 75.96%, Test: 75.61%, Best Valid: 78.76%, Best Test: 79.68%
+Epoch: 600, Loss: 0.0008, Train: 74.85%, Valid: 75.64%, Test: 75.72%, Best Valid: 78.76%, Best Test: 79.68%
+Epoch: 700, Loss: 0.0010, Train: 74.58%, Valid: 75.53%, Test: 75.35%, Best Valid: 78.76%, Best Test: 79.68%
+Epoch: 800, Loss: 0.0009, Train: 74.78%, Valid: 75.31%, Test: 75.54%, Best Valid: 78.76%, Best Test: 79.68%
+Epoch: 900, Loss: 0.0007, Train: 73.46%, Valid: 73.67%, Test: 73.90%, Best Valid: 78.76%, Best Test: 79.68%
+Run 03:
+Highest Train: 78.27
+Highest Valid: 78.76
+Highest Test: 79.68
+Chosen epoch: 33
+Final Train: 77.58
+Final Test: 79.68
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (28 train-train edges).
+Epoch: 00, Loss: 6.4953, Train: 4.99%, Valid: 4.95%, Test: 5.38%, Best Valid: 4.95%, Best Test: 5.38%
+Epoch: 100, Loss: 0.5474, Train: 74.38%, Valid: 75.02%, Test: 75.28%, Best Valid: 81.82%, Best Test: 83.13%
+Epoch: 200, Loss: 0.0058, Train: 78.96%, Valid: 79.20%, Test: 79.35%, Best Valid: 81.85%, Best Test: 82.33%
+Epoch: 300, Loss: 0.0026, Train: 79.58%, Valid: 79.49%, Test: 80.52%, Best Valid: 81.85%, Best Test: 82.33%
+Epoch: 400, Loss: 0.0014, Train: 79.57%, Valid: 79.20%, Test: 80.37%, Best Valid: 81.85%, Best Test: 82.33%
+Epoch: 500, Loss: 0.0011, Train: 79.43%, Valid: 79.13%, Test: 80.15%, Best Valid: 81.85%, Best Test: 82.33%
+Epoch: 600, Loss: 0.0007, Train: 79.77%, Valid: 79.38%, Test: 80.30%, Best Valid: 81.85%, Best Test: 82.33%
+Epoch: 700, Loss: 0.0011, Train: 79.46%, Valid: 79.20%, Test: 80.04%, Best Valid: 81.85%, Best Test: 82.33%
+Epoch: 800, Loss: 0.0008, Train: 79.49%, Valid: 79.42%, Test: 80.04%, Best Valid: 81.85%, Best Test: 82.33%
+Epoch: 900, Loss: 0.0008, Train: 79.93%, Valid: 79.64%, Test: 80.08%, Best Valid: 81.85%, Best Test: 82.33%
+Run 04:
+Highest Train: 82.45
+Highest Valid: 81.85
+Highest Test: 83.13
+Chosen epoch: 138
+Final Train: 82.00
+Final Test: 82.33
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (40 train-train edges).
+Epoch: 00, Loss: 6.4930, Train: 46.25%, Valid: 44.33%, Test: 45.98%, Best Valid: 44.33%, Best Test: 45.98%
+Epoch: 100, Loss: 0.0948, Train: 77.98%, Valid: 76.40%, Test: 77.79%, Best Valid: 78.51%, Best Test: 78.74%
+Epoch: 200, Loss: 0.4973, Train: 73.93%, Valid: 73.71%, Test: 74.63%, Best Valid: 78.51%, Best Test: 78.74%
+Epoch: 300, Loss: 0.0367, Train: 77.46%, Valid: 77.13%, Test: 77.83%, Best Valid: 78.80%, Best Test: 79.50%
+Epoch: 400, Loss: 0.0024, Train: 77.87%, Valid: 78.51%, Test: 79.72%, Best Valid: 79.31%, Best Test: 80.23%
+Epoch: 500, Loss: 0.0013, Train: 77.47%, Valid: 77.89%, Test: 79.21%, Best Valid: 79.31%, Best Test: 80.23%
+Epoch: 600, Loss: 0.0016, Train: 77.51%, Valid: 78.36%, Test: 79.46%, Best Valid: 79.31%, Best Test: 80.23%
+Epoch: 700, Loss: 0.0008, Train: 77.52%, Valid: 78.51%, Test: 79.57%, Best Valid: 79.31%, Best Test: 80.23%
+Epoch: 800, Loss: 0.0006, Train: 77.51%, Valid: 78.25%, Test: 79.28%, Best Valid: 79.31%, Best Test: 80.23%
+Epoch: 900, Loss: 0.0007, Train: 77.54%, Valid: 78.47%, Test: 79.28%, Best Valid: 79.31%, Best Test: 80.23%
+Run 05:
+Highest Train: 78.81
+Highest Valid: 79.31
+Highest Test: 80.23
+Chosen epoch: 313
+Final Train: 78.81
+Final Test: 80.23
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (26 train-train edges).
+Epoch: 00, Loss: 6.4631, Train: 15.59%, Valid: 16.18%, Test: 15.41%, Best Valid: 16.18%, Best Test: 15.41%
+Epoch: 100, Loss: 0.0761, Train: 76.50%, Valid: 76.47%, Test: 78.01%, Best Valid: 81.85%, Best Test: 83.46%
+Epoch: 200, Loss: 0.0530, Train: 79.20%, Valid: 78.87%, Test: 81.06%, Best Valid: 81.85%, Best Test: 83.46%
+Epoch: 300, Loss: 0.0098, Train: 80.10%, Valid: 79.78%, Test: 81.97%, Best Valid: 81.85%, Best Test: 83.46%
+Epoch: 400, Loss: 0.0018, Train: 79.91%, Valid: 79.82%, Test: 81.93%, Best Valid: 81.85%, Best Test: 83.46%
+Epoch: 500, Loss: 0.0013, Train: 79.43%, Valid: 79.45%, Test: 81.64%, Best Valid: 81.85%, Best Test: 83.46%
+Epoch: 600, Loss: 0.0007, Train: 79.58%, Valid: 79.49%, Test: 81.82%, Best Valid: 81.85%, Best Test: 83.46%
+Epoch: 700, Loss: 0.0009, Train: 79.29%, Valid: 79.16%, Test: 81.50%, Best Valid: 81.85%, Best Test: 83.46%
+Epoch: 800, Loss: 0.0006, Train: 79.37%, Valid: 79.38%, Test: 81.50%, Best Valid: 81.85%, Best Test: 83.46%
+Epoch: 900, Loss: 0.0005, Train: 79.31%, Valid: 79.31%, Test: 81.57%, Best Valid: 81.85%, Best Test: 83.46%
+Run 06:
+Highest Train: 82.73
+Highest Valid: 81.85
+Highest Test: 83.75
+Chosen epoch: 72
+Final Train: 82.73
+Final Test: 83.46
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (26 train-train edges).
+Epoch: 00, Loss: 6.1970, Train: 37.45%, Valid: 36.51%, Test: 38.68%, Best Valid: 36.51%, Best Test: 38.68%
+Epoch: 100, Loss: 0.0802, Train: 69.41%, Valid: 69.56%, Test: 70.99%, Best Valid: 75.93%, Best Test: 77.61%
+Epoch: 200, Loss: 0.2143, Train: 74.32%, Valid: 73.56%, Test: 75.94%, Best Valid: 75.93%, Best Test: 77.61%
+Epoch: 300, Loss: 0.0803, Train: 67.86%, Valid: 68.25%, Test: 69.21%, Best Valid: 75.93%, Best Test: 77.61%
+Epoch: 400, Loss: 0.0060, Train: 70.88%, Valid: 70.84%, Test: 72.45%, Best Valid: 75.93%, Best Test: 77.61%
+Epoch: 500, Loss: 0.0017, Train: 70.57%, Valid: 70.76%, Test: 72.30%, Best Valid: 75.93%, Best Test: 77.61%
+Epoch: 600, Loss: 0.0014, Train: 69.74%, Valid: 70.36%, Test: 71.39%, Best Valid: 75.93%, Best Test: 77.61%
+Epoch: 700, Loss: 0.0013, Train: 70.08%, Valid: 70.47%, Test: 71.65%, Best Valid: 75.93%, Best Test: 77.61%
+Epoch: 800, Loss: 0.0009, Train: 69.96%, Valid: 70.22%, Test: 71.17%, Best Valid: 75.93%, Best Test: 77.61%
+Epoch: 900, Loss: 0.0009, Train: 70.31%, Valid: 70.55%, Test: 71.72%, Best Valid: 75.93%, Best Test: 77.61%
+Run 07:
+Highest Train: 76.33
+Highest Valid: 75.93
+Highest Test: 77.86
+Chosen epoch: 71
+Final Train: 76.33
+Final Test: 77.61
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (44 train-train edges).
+Epoch: 00, Loss: 6.3518, Train: 41.76%, Valid: 40.91%, Test: 42.82%, Best Valid: 40.91%, Best Test: 42.82%
+Epoch: 100, Loss: 0.3043, Train: 78.45%, Valid: 78.80%, Test: 80.48%, Best Valid: 81.60%, Best Test: 84.15%
+Epoch: 200, Loss: 0.2165, Train: 65.11%, Valid: 65.67%, Test: 66.56%, Best Valid: 81.60%, Best Test: 84.15%
+Epoch: 300, Loss: 0.1154, Train: 63.00%, Valid: 64.00%, Test: 64.92%, Best Valid: 82.76%, Best Test: 84.62%
+Epoch: 400, Loss: 0.2115, Train: 79.58%, Valid: 79.96%, Test: 81.93%, Best Valid: 82.76%, Best Test: 84.62%
+Epoch: 500, Loss: 0.2536, Train: 75.97%, Valid: 75.67%, Test: 78.04%, Best Valid: 82.76%, Best Test: 84.62%
+Epoch: 600, Loss: 0.1317, Train: 78.03%, Valid: 78.65%, Test: 81.03%, Best Valid: 82.76%, Best Test: 84.62%
+Epoch: 700, Loss: 0.1156, Train: 80.57%, Valid: 79.96%, Test: 81.46%, Best Valid: 82.76%, Best Test: 84.62%
+Epoch: 800, Loss: 0.0282, Train: 69.28%, Valid: 70.04%, Test: 71.94%, Best Valid: 82.76%, Best Test: 84.62%
+Epoch: 900, Loss: 0.0151, Train: 71.35%, Valid: 71.13%, Test: 73.39%, Best Valid: 82.76%, Best Test: 84.62%
+Run 08:
+Highest Train: 82.97
+Highest Valid: 82.76
+Highest Test: 85.64
+Chosen epoch: 212
+Final Train: 82.33
+Final Test: 84.62
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (18 train-train edges).
+Epoch: 00, Loss: 6.5586, Train: 2.42%, Valid: 2.51%, Test: 2.54%, Best Valid: 2.51%, Best Test: 2.54%
+Epoch: 100, Loss: 0.1865, Train: 71.49%, Valid: 73.16%, Test: 72.92%, Best Valid: 78.95%, Best Test: 78.23%
+Epoch: 200, Loss: 0.0871, Train: 77.57%, Valid: 78.80%, Test: 78.41%, Best Valid: 79.49%, Best Test: 79.64%
+Epoch: 300, Loss: 0.0090, Train: 76.61%, Valid: 77.53%, Test: 78.37%, Best Valid: 80.91%, Best Test: 80.95%
+Epoch: 400, Loss: 0.0226, Train: 75.29%, Valid: 77.09%, Test: 76.55%, Best Valid: 80.91%, Best Test: 80.95%
+Epoch: 500, Loss: 0.0010, Train: 76.95%, Valid: 77.96%, Test: 78.15%, Best Valid: 80.91%, Best Test: 80.95%
+Epoch: 600, Loss: 0.0009, Train: 77.02%, Valid: 78.00%, Test: 78.08%, Best Valid: 80.91%, Best Test: 80.95%
+Epoch: 700, Loss: 0.0004, Train: 76.92%, Valid: 77.96%, Test: 78.19%, Best Valid: 80.91%, Best Test: 80.95%
+Epoch: 800, Loss: 0.0007, Train: 76.95%, Valid: 78.07%, Test: 78.15%, Best Valid: 80.91%, Best Test: 80.95%
+Epoch: 900, Loss: 0.0005, Train: 76.88%, Valid: 78.04%, Test: 78.30%, Best Valid: 80.91%, Best Test: 80.95%
+Run 09:
+Highest Train: 79.48
+Highest Valid: 80.91
+Highest Test: 80.95
+Chosen epoch: 257
+Final Train: 79.48
+Final Test: 80.95
+Label budget: 10/class -> 100 train nodes
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (40 train-train edges).
+Epoch: 00, Loss: 6.4588, Train: 4.39%, Valid: 4.18%, Test: 4.76%, Best Valid: 4.18%, Best Test: 4.76%
+Epoch: 100, Loss: 0.3053, Train: 71.52%, Valid: 71.85%, Test: 72.08%, Best Valid: 74.15%, Best Test: 74.45%
+Epoch: 200, Loss: 0.2609, Train: 66.04%, Valid: 66.65%, Test: 66.85%, Best Valid: 75.53%, Best Test: 75.32%
+Epoch: 300, Loss: 0.1655, Train: 69.30%, Valid: 69.71%, Test: 69.65%, Best Valid: 75.89%, Best Test: 75.90%
+Epoch: 400, Loss: 0.0056, Train: 72.55%, Valid: 73.60%, Test: 72.81%, Best Valid: 75.89%, Best Test: 75.90%
+Epoch: 500, Loss: 0.0016, Train: 72.42%, Valid: 72.84%, Test: 72.59%, Best Valid: 75.89%, Best Test: 75.90%
+Epoch: 600, Loss: 0.1548, Train: 67.93%, Valid: 68.29%, Test: 68.67%, Best Valid: 75.93%, Best Test: 76.74%
+Epoch: 700, Loss: 0.0106, Train: 72.26%, Valid: 73.67%, Test: 72.88%, Best Valid: 78.65%, Best Test: 79.32%
+Epoch: 800, Loss: 0.0019, Train: 74.20%, Valid: 75.05%, Test: 74.45%, Best Valid: 78.65%, Best Test: 79.32%
+Epoch: 900, Loss: 0.0008, Train: 73.93%, Valid: 75.09%, Test: 73.90%, Best Valid: 78.65%, Best Test: 79.32%
+Run 10:
+Highest Train: 78.03
+Highest Valid: 79.09
+Highest Test: 79.68
+Chosen epoch: 992
+Final Train: 78.03
+Final Test: 79.68
+All runs:
+Highest Train: 79.92 ± 2.22
+Highest Test: 81.38 ± 2.30
+Highest Valid: 80.17 ± 2.05
+  Final Train: 79.71 ± 2.14
+   Final Test: 81.13 ± 2.04
+Saving results to results/lowlabel/amazon-computer/MPNN_gcn.csv
+Low-label sweep completed.
+Task 161 done.

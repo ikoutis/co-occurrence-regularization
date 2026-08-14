@@ -1,0 +1,221 @@
+Wed Aug  5 15:34:19 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.159.04             Driver Version: 580.159.04     CUDA Version: 13.0     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA A100-SXM4-80GB          On  |   00000000:01:00.0 Off |                   On |
+| N/A   45C    P0            202W /  500W |   21464MiB /  81920MiB |     N/A      Default |
+|                                         |                        |              Enabled |
++-----------------------------------------+------------------------+----------------------+
+|   1  NVIDIA A100-SXM4-80GB          On  |   00000000:41:00.0 Off |                   On |
+| N/A   41C    P0            152W /  500W |   21464MiB /  81920MiB |     N/A      Default |
+|                                         |                        |              Enabled |
++-----------------------------------------+------------------------+----------------------+
+|   2  NVIDIA A100-SXM4-80GB          On  |   00000000:81:00.0 Off |                   On |
+| N/A   50C    P0            203W /  500W |   21464MiB /  81920MiB |     N/A      Default |
+|                                         |                        |              Enabled |
++-----------------------------------------+------------------------+----------------------+
+|   3  NVIDIA A100-SXM4-80GB          On  |   00000000:C1:00.0 Off |                   On |
+| N/A   35C    P0            143W /  500W |    5354MiB /  81920MiB |     N/A      Default |
+|                                         |                        |              Enabled |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| MIG devices:                                                                            |
++------------------+----------------------------------+-----------+-----------------------+
+| GPU  GI  CI  MIG |              Shared Memory-Usage |        Vol|        Shared         |
+|      ID  ID  Dev |                Shared BAR1-Usage | SM     Unc| CE ENC  DEC  OFA  JPG |
+|                  |                                  |        ECC|                       |
+|==================+==================================+===========+=======================|
+|  3    5   0   0  |              71MiB / 19968MiB    | 28      0 |  2   0    1    0    0 |
+|                  |               0MiB / 12271MiB    |           |                       |
++------------------+----------------------------------+-----------+-----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0    2    0            31584      C   python                                21206MiB |
+|    1    2    0            31582      C   python                                21206MiB |
+|    2    2    0            31583      C   python                                21206MiB |
++-----------------------------------------------------------------------------------------+
+Cell: cora / gcn / budget 5 per class / group 0
+python main.py --gnn gcn --dataset cora --lr 0.001 --local_layers 3  --hidden_channels 512 --weight_decay 5e-4 --dropout 0.7 --rand_split_class --valid_num 500 --test_num 1000 --seed 123 --device 0 --runs 5 --runs 10 --label_num_per_class 5 --resample_split_per_run --budget_tag 5
+==========================================================
+Low-label sweep: python main.py --gnn gcn --dataset cora --lr 0.001 --local_layers 3  --hidden_channels 512 --weight_decay 5e-4 --dropout 0.7 --rand_split_class --valid_num 500 --test_num 1000 --seed 123 --device 0 --runs 5 --runs 10 --label_num_per_class 5 --resample_split_per_run --budget_tag 5
+result_dir=results/lowlabel conditions=[baseline]
+==========================================================
+--- baseline ---
+Namespace(bn=False, budget_tag='5', count_reg=False, count_smoothing=1.0, cpu=False, data_dir='./data/', dataset='cora', device=0, display_step=100, dropout=0.7, epochs=500, gnn='gcn', hidden_channels=512, jk=False, label_num_per_class=5, lambda_val=0.5, ln=False, local_layers=3, lr=0.001, metric='acc', mlp_epochs=500, mlp_reg=False, model='MPNN', model_dir='models', num_heads=1, oracle_reg=False, paired_seeds=True, penalty_transform='none', pre_linear=False, pre_ln=False, rand_split=False, rand_split_class=True, reg_start_epoch=10, reg_update_freq=5, res=False, resample_split_per_run=True, result_dir='results/lowlabel', runs=10, save_model=False, seed=123, test_num=1000, train_per_class=0, train_prop=0.5, use_reg=False, valid_num=500, valid_per_class=0, valid_prop=0.25, weight_decay=0.0005)
+cora
+Num nodes: 2708
+train:torch.Size([35]), valid:torch.Size([500]), test:torch.Size([1000])
+dataset cora | num nodes 2708 | num edge 10556 | num node feats 1433 | num classes 7
+MODEL: MPNNs(
+  (h_lins): ModuleList()
+  (local_convs): ModuleList(
+    (0): GCNConv(1433, 512)
+    (1): GCNConv(512, 512)
+    (2): GCNConv(512, 512)
+  )
+  (lins): ModuleList(
+    (0): Linear(in_features=1433, out_features=512, bias=True)
+    (1): Linear(in_features=512, out_features=512, bias=True)
+    (2): Linear(in_features=512, out_features=512, bias=True)
+  )
+  (lns): ModuleList(
+    (0): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+    (1): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+    (2): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+  )
+  (bns): ModuleList(
+    (0): BatchNorm1d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (1): BatchNorm1d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): BatchNorm1d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (lin_in): Linear(in_features=1433, out_features=512, bias=True)
+  (pred_local): Linear(in_features=512, out_features=7, bias=True)
+)
+train:torch.Size([35]), valid:torch.Size([500]), test:torch.Size([1000])
+Epoch: 00, Loss: 1.9360, Train: 20.00%, Valid: 13.20%, Test: 11.90%, Best Valid: 13.20%, Best Test: 11.90%
+Epoch: 100, Loss: 0.0033, Train: 100.00%, Valid: 76.20%, Test: 77.10%, Best Valid: 77.20%, Best Test: 77.00%
+Epoch: 200, Loss: 0.0024, Train: 100.00%, Valid: 75.00%, Test: 75.70%, Best Valid: 77.20%, Best Test: 77.00%
+Epoch: 300, Loss: 0.0049, Train: 100.00%, Valid: 75.20%, Test: 76.50%, Best Valid: 77.20%, Best Test: 77.00%
+Epoch: 400, Loss: 0.0046, Train: 100.00%, Valid: 73.00%, Test: 75.40%, Best Valid: 77.40%, Best Test: 77.50%
+Run 01:
+Highest Train: 100.00
+Highest Valid: 77.40
+Highest Test: 77.60
+Chosen epoch: 360
+Final Train: 100.00
+Final Test: 77.50
+train:torch.Size([35]), valid:torch.Size([500]), test:torch.Size([1000])
+Epoch: 00, Loss: 1.9429, Train: 17.14%, Valid: 18.00%, Test: 17.20%, Best Valid: 18.00%, Best Test: 17.20%
+Epoch: 100, Loss: 0.0065, Train: 100.00%, Valid: 62.00%, Test: 62.20%, Best Valid: 69.20%, Best Test: 69.10%
+Epoch: 200, Loss: 0.0019, Train: 100.00%, Valid: 61.80%, Test: 61.50%, Best Valid: 69.20%, Best Test: 69.10%
+Epoch: 300, Loss: 0.0058, Train: 100.00%, Valid: 63.60%, Test: 62.60%, Best Valid: 69.20%, Best Test: 69.10%
+Epoch: 400, Loss: 0.0016, Train: 100.00%, Valid: 62.80%, Test: 63.00%, Best Valid: 69.20%, Best Test: 69.10%
+Run 02:
+Highest Train: 100.00
+Highest Valid: 69.20
+Highest Test: 69.60
+Chosen epoch: 79
+Final Train: 100.00
+Final Test: 69.10
+train:torch.Size([35]), valid:torch.Size([500]), test:torch.Size([1000])
+Epoch: 00, Loss: 1.9382, Train: 20.00%, Valid: 9.60%, Test: 15.40%, Best Valid: 9.60%, Best Test: 15.40%
+Epoch: 100, Loss: 0.0017, Train: 100.00%, Valid: 67.40%, Test: 70.40%, Best Valid: 68.40%, Best Test: 72.20%
+Epoch: 200, Loss: 0.0048, Train: 100.00%, Valid: 68.40%, Test: 72.30%, Best Valid: 69.80%, Best Test: 73.00%
+Epoch: 300, Loss: 0.0031, Train: 100.00%, Valid: 66.80%, Test: 72.70%, Best Valid: 70.00%, Best Test: 75.20%
+Epoch: 400, Loss: 0.0056, Train: 100.00%, Valid: 67.00%, Test: 72.40%, Best Valid: 70.00%, Best Test: 75.20%
+Run 03:
+Highest Train: 100.00
+Highest Valid: 70.00
+Highest Test: 75.20
+Chosen epoch: 251
+Final Train: 100.00
+Final Test: 75.20
+train:torch.Size([35]), valid:torch.Size([500]), test:torch.Size([1000])
+Epoch: 00, Loss: 1.9509, Train: 20.00%, Valid: 13.00%, Test: 14.70%, Best Valid: 13.00%, Best Test: 14.70%
+Epoch: 100, Loss: 0.0021, Train: 100.00%, Valid: 68.40%, Test: 69.50%, Best Valid: 75.00%, Best Test: 74.60%
+Epoch: 200, Loss: 0.0059, Train: 100.00%, Valid: 71.40%, Test: 72.10%, Best Valid: 75.80%, Best Test: 75.30%
+Epoch: 300, Loss: 0.0030, Train: 100.00%, Valid: 72.80%, Test: 73.40%, Best Valid: 75.80%, Best Test: 75.30%
+Epoch: 400, Loss: 0.0042, Train: 100.00%, Valid: 73.80%, Test: 73.80%, Best Valid: 75.80%, Best Test: 75.30%
+Run 04:
+Highest Train: 100.00
+Highest Valid: 76.80
+Highest Test: 75.30
+Chosen epoch: 499
+Final Train: 100.00
+Final Test: 74.20
+train:torch.Size([35]), valid:torch.Size([500]), test:torch.Size([1000])
+Epoch: 00, Loss: 1.9430, Train: 40.00%, Valid: 21.40%, Test: 24.00%, Best Valid: 21.40%, Best Test: 24.00%
+Epoch: 100, Loss: 0.0015, Train: 100.00%, Valid: 75.20%, Test: 76.10%, Best Valid: 76.40%, Best Test: 76.70%
+Epoch: 200, Loss: 0.0029, Train: 100.00%, Valid: 74.80%, Test: 76.80%, Best Valid: 78.00%, Best Test: 77.00%
+Epoch: 300, Loss: 0.0019, Train: 100.00%, Valid: 75.20%, Test: 77.00%, Best Valid: 78.00%, Best Test: 77.00%
+Epoch: 400, Loss: 0.0024, Train: 100.00%, Valid: 73.60%, Test: 75.50%, Best Valid: 78.00%, Best Test: 77.00%
+Run 05:
+Highest Train: 100.00
+Highest Valid: 78.00
+Highest Test: 78.40
+Chosen epoch: 175
+Final Train: 100.00
+Final Test: 77.00
+train:torch.Size([35]), valid:torch.Size([500]), test:torch.Size([1000])
+Epoch: 00, Loss: 1.9564, Train: 20.00%, Valid: 13.20%, Test: 13.00%, Best Valid: 13.20%, Best Test: 13.00%
+Epoch: 100, Loss: 0.0010, Train: 100.00%, Valid: 69.40%, Test: 73.40%, Best Valid: 73.20%, Best Test: 73.40%
+Epoch: 200, Loss: 0.0056, Train: 100.00%, Valid: 69.40%, Test: 73.80%, Best Valid: 73.20%, Best Test: 73.40%
+Epoch: 300, Loss: 0.0023, Train: 100.00%, Valid: 69.40%, Test: 74.60%, Best Valid: 73.20%, Best Test: 73.40%
+Epoch: 400, Loss: 0.0034, Train: 100.00%, Valid: 71.60%, Test: 74.50%, Best Valid: 73.20%, Best Test: 73.40%
+Run 06:
+Highest Train: 100.00
+Highest Valid: 73.20
+Highest Test: 75.60
+Chosen epoch: 65
+Final Train: 100.00
+Final Test: 73.40
+train:torch.Size([35]), valid:torch.Size([500]), test:torch.Size([1000])
+Epoch: 00, Loss: 1.9460, Train: 22.86%, Valid: 11.00%, Test: 11.90%, Best Valid: 11.00%, Best Test: 11.90%
+Epoch: 100, Loss: 0.0004, Train: 100.00%, Valid: 72.00%, Test: 73.00%, Best Valid: 74.60%, Best Test: 75.20%
+Epoch: 200, Loss: 0.0034, Train: 100.00%, Valid: 67.80%, Test: 71.10%, Best Valid: 74.60%, Best Test: 75.20%
+Epoch: 300, Loss: 0.0022, Train: 100.00%, Valid: 68.80%, Test: 72.10%, Best Valid: 74.60%, Best Test: 75.20%
+Epoch: 400, Loss: 0.0066, Train: 100.00%, Valid: 69.00%, Test: 72.00%, Best Valid: 74.60%, Best Test: 75.20%
+Run 07:
+Highest Train: 100.00
+Highest Valid: 74.60
+Highest Test: 76.10
+Chosen epoch: 25
+Final Train: 100.00
+Final Test: 75.20
+train:torch.Size([35]), valid:torch.Size([500]), test:torch.Size([1000])
+Epoch: 00, Loss: 1.9518, Train: 17.14%, Valid: 9.40%, Test: 8.10%, Best Valid: 9.40%, Best Test: 8.10%
+Epoch: 100, Loss: 0.0012, Train: 100.00%, Valid: 70.80%, Test: 76.70%, Best Valid: 75.20%, Best Test: 80.20%
+Epoch: 200, Loss: 0.0066, Train: 100.00%, Valid: 70.20%, Test: 77.30%, Best Valid: 75.20%, Best Test: 80.20%
+Epoch: 300, Loss: 0.0026, Train: 100.00%, Valid: 70.40%, Test: 74.60%, Best Valid: 75.20%, Best Test: 80.20%
+Epoch: 400, Loss: 0.0021, Train: 100.00%, Valid: 71.40%, Test: 76.50%, Best Valid: 75.20%, Best Test: 80.20%
+Run 08:
+Highest Train: 100.00
+Highest Valid: 75.20
+Highest Test: 80.20
+Chosen epoch: 26
+Final Train: 100.00
+Final Test: 80.20
+train:torch.Size([35]), valid:torch.Size([500]), test:torch.Size([1000])
+Epoch: 00, Loss: 1.9502, Train: 22.86%, Valid: 22.00%, Test: 24.00%, Best Valid: 22.00%, Best Test: 24.00%
+Epoch: 100, Loss: 0.0038, Train: 100.00%, Valid: 67.80%, Test: 69.90%, Best Valid: 72.20%, Best Test: 72.00%
+Epoch: 200, Loss: 0.0028, Train: 100.00%, Valid: 64.40%, Test: 66.20%, Best Valid: 72.20%, Best Test: 72.00%
+Epoch: 300, Loss: 0.0026, Train: 100.00%, Valid: 68.00%, Test: 68.50%, Best Valid: 72.20%, Best Test: 72.00%
+Epoch: 400, Loss: 0.0024, Train: 100.00%, Valid: 68.80%, Test: 69.80%, Best Valid: 72.20%, Best Test: 72.00%
+Run 09:
+Highest Train: 100.00
+Highest Valid: 72.20
+Highest Test: 72.00
+Chosen epoch: 38
+Final Train: 100.00
+Final Test: 72.00
+train:torch.Size([35]), valid:torch.Size([500]), test:torch.Size([1000])
+Epoch: 00, Loss: 1.9445, Train: 34.29%, Valid: 11.20%, Test: 13.20%, Best Valid: 11.20%, Best Test: 13.20%
+Epoch: 100, Loss: 0.0012, Train: 100.00%, Valid: 73.00%, Test: 75.30%, Best Valid: 74.00%, Best Test: 74.80%
+Epoch: 200, Loss: 0.0042, Train: 100.00%, Valid: 73.80%, Test: 75.50%, Best Valid: 75.00%, Best Test: 76.20%
+Epoch: 300, Loss: 0.0070, Train: 100.00%, Valid: 74.00%, Test: 74.90%, Best Valid: 75.00%, Best Test: 76.20%
+Epoch: 400, Loss: 0.0053, Train: 100.00%, Valid: 73.60%, Test: 75.00%, Best Valid: 75.00%, Best Test: 76.20%
+Run 10:
+Highest Train: 100.00
+Highest Valid: 75.40
+Highest Test: 76.70
+Chosen epoch: 414
+Final Train: 100.00
+Final Test: 75.30
+All runs:
+Highest Train: 100.00 ± 0.00
+Highest Test: 75.67 ± 3.05
+Highest Valid: 74.20 ± 3.01
+  Final Train: 100.00 ± 0.00
+   Final Test: 74.91 ± 3.06
+Saving results to results/lowlabel/cora/MPNN_gcn.csv
+Low-label sweep completed.
+Task 5 done.

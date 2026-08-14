@@ -1,0 +1,268 @@
+Thu Aug  6 03:28:11 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.159.04             Driver Version: 580.159.04     CUDA Version: 13.0     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA A100-SXM4-80GB          On  |   00000000:01:00.0 Off |                   On |
+| N/A   42C    P0            176W /  500W |   39530MiB /  81920MiB |     N/A      Default |
+|                                         |                        |              Enabled |
++-----------------------------------------+------------------------+----------------------+
+|   1  NVIDIA A100-SXM4-80GB          On  |   00000000:41:00.0 Off |                   On |
+| N/A   28C    P0             50W /  500W |     252MiB /  81920MiB |     N/A      Default |
+|                                         |                        |              Enabled |
++-----------------------------------------+------------------------+----------------------+
+|   2  NVIDIA A100-SXM4-80GB          On  |   00000000:81:00.0 Off |                   On |
+| N/A   36C    P0            133W /  500W |    4257MiB /  81920MiB |     N/A      Default |
+|                                         |                        |              Enabled |
++-----------------------------------------+------------------------+----------------------+
+|   3  NVIDIA A100-SXM4-80GB          On  |   00000000:C1:00.0 Off |                   On |
+| N/A   28C    P0             70W /  500W |     249MiB /  81920MiB |     N/A      Default |
+|                                         |                        |              Enabled |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| MIG devices:                                                                            |
++------------------+----------------------------------+-----------+-----------------------+
+| GPU  GI  CI  MIG |              Shared Memory-Usage |        Vol|        Shared         |
+|      ID  ID  Dev |                Shared BAR1-Usage | SM     Unc| CE ENC  DEC  OFA  JPG |
+|                  |                                  |        ECC|                       |
+|==================+==================================+===========+=======================|
+|  3    5   0   0  |              71MiB / 19968MiB    | 28      0 |  2   0    1    0    0 |
+|                  |               0MiB / 12271MiB    |           |                       |
++------------------+----------------------------------+-----------+-----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0    1    0           165376      C   python                                39270MiB |
+|    2    3    0           567775      C   python                                 4000MiB |
++-----------------------------------------------------------------------------------------+
+Cell: amazon-computer / gcn / budget 50 per class / group 0
+python main.py --gnn gcn --dataset amazon-computer --hidden_channels 512 --epochs 1000 --lr 0.001 --runs 3 --local_layers 3 --weight_decay 5e-5 --dropout 0.5 --device 0 --ln --runs 10 --train_per_class 50 --budget_tag 50
+==========================================================
+Low-label sweep: python main.py --gnn gcn --dataset amazon-computer --hidden_channels 512 --epochs 1000 --lr 0.001 --runs 3 --local_layers 3 --weight_decay 5e-5 --dropout 0.5 --device 0 --ln --runs 10 --train_per_class 50 --budget_tag 50
+result_dir=results/lowlabel conditions=[baseline]
+==========================================================
+--- baseline ---
+Namespace(bn=False, budget_tag='50', count_reg=False, count_smoothing=1.0, cpu=False, data_dir='./data/', dataset='amazon-computer', device=0, display_step=100, dropout=0.5, epochs=1000, gnn='gcn', hidden_channels=512, jk=False, label_num_per_class=20, lambda_val=0.5, ln=True, local_layers=3, lr=0.001, metric='acc', mlp_epochs=500, mlp_reg=False, model='MPNN', model_dir='models', num_heads=1, oracle_reg=False, paired_seeds=True, penalty_transform='none', pre_linear=False, pre_ln=False, rand_split=False, rand_split_class=False, reg_start_epoch=10, reg_update_freq=5, res=False, resample_split_per_run=False, result_dir='results/lowlabel', runs=10, save_model=False, seed=42, test_num=1000, train_per_class=50, train_prop=0.5, use_reg=False, valid_num=500, valid_per_class=0, valid_prop=0.25, weight_decay=5e-05)
+amazon-computer
+dataset amazon-computer | num nodes 13752 | num edge 491722 | num node feats 767 | num classes 10
+MODEL: MPNNs(
+  (h_lins): ModuleList()
+  (local_convs): ModuleList(
+    (0): GCNConv(767, 512)
+    (1): GCNConv(512, 512)
+    (2): GCNConv(512, 512)
+  )
+  (lins): ModuleList(
+    (0): Linear(in_features=767, out_features=512, bias=True)
+    (1): Linear(in_features=512, out_features=512, bias=True)
+    (2): Linear(in_features=512, out_features=512, bias=True)
+  )
+  (lns): ModuleList(
+    (0): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+    (1): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+    (2): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+  )
+  (bns): ModuleList(
+    (0): BatchNorm1d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (1): BatchNorm1d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): BatchNorm1d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (lin_in): Linear(in_features=767, out_features=512, bias=True)
+  (pred_local): Linear(in_features=512, out_features=10, bias=True)
+)
+Label budget: 50/class -> 500 train nodes
+Epoch: 00, Loss: 2.4443, Train: 10.75%, Valid: 11.56%, Test: 11.70%, Best Valid: 11.56%, Best Test: 11.70%
+Epoch: 100, Loss: 0.2102, Train: 83.20%, Valid: 83.35%, Test: 84.22%, Best Valid: 87.20%, Best Test: 89.13%
+Epoch: 200, Loss: 0.0851, Train: 84.85%, Valid: 85.16%, Test: 86.30%, Best Valid: 87.60%, Best Test: 88.33%
+Epoch: 300, Loss: 0.0566, Train: 83.69%, Valid: 83.93%, Test: 84.44%, Best Valid: 88.58%, Best Test: 90.26%
+Epoch: 400, Loss: 0.0377, Train: 86.32%, Valid: 86.25%, Test: 87.79%, Best Valid: 88.58%, Best Test: 90.26%
+Epoch: 500, Loss: 0.0117, Train: 86.46%, Valid: 86.15%, Test: 87.71%, Best Valid: 88.58%, Best Test: 90.26%
+Epoch: 600, Loss: 0.2719, Train: 83.57%, Valid: 83.49%, Test: 84.66%, Best Valid: 88.58%, Best Test: 90.26%
+Epoch: 700, Loss: 0.1223, Train: 84.17%, Valid: 84.15%, Test: 84.81%, Best Valid: 88.58%, Best Test: 90.26%
+Epoch: 800, Loss: 0.0485, Train: 85.75%, Valid: 85.75%, Test: 87.28%, Best Valid: 88.58%, Best Test: 90.26%
+Epoch: 900, Loss: 0.0287, Train: 86.66%, Valid: 86.69%, Test: 88.30%, Best Valid: 88.58%, Best Test: 90.26%
+Run 01:
+Highest Train: 88.60
+Highest Valid: 88.58
+Highest Test: 90.59
+Chosen epoch: 231
+Final Train: 88.28
+Final Test: 90.26
+Label budget: 50/class -> 500 train nodes
+Epoch: 00, Loss: 2.3846, Train: 10.07%, Valid: 10.15%, Test: 10.32%, Best Valid: 10.15%, Best Test: 10.32%
+Epoch: 100, Loss: 0.1770, Train: 85.52%, Valid: 85.31%, Test: 86.88%, Best Valid: 86.98%, Best Test: 88.62%
+Epoch: 200, Loss: 0.0646, Train: 86.12%, Valid: 85.71%, Test: 87.10%, Best Valid: 88.04%, Best Test: 89.09%
+Epoch: 300, Loss: 0.0506, Train: 84.45%, Valid: 84.29%, Test: 85.86%, Best Valid: 88.15%, Best Test: 88.95%
+Epoch: 400, Loss: 0.0265, Train: 85.76%, Valid: 84.98%, Test: 87.02%, Best Valid: 88.15%, Best Test: 88.95%
+Epoch: 500, Loss: 0.0910, Train: 84.49%, Valid: 85.38%, Test: 85.86%, Best Valid: 88.15%, Best Test: 88.95%
+Epoch: 600, Loss: 0.0279, Train: 84.73%, Valid: 84.76%, Test: 86.22%, Best Valid: 88.15%, Best Test: 88.95%
+Epoch: 700, Loss: 0.0254, Train: 83.98%, Valid: 83.82%, Test: 85.68%, Best Valid: 88.15%, Best Test: 88.95%
+Epoch: 800, Loss: 0.0177, Train: 85.78%, Valid: 85.49%, Test: 87.28%, Best Valid: 88.15%, Best Test: 88.95%
+Epoch: 900, Loss: 0.0111, Train: 84.16%, Valid: 84.47%, Test: 86.30%, Best Valid: 88.15%, Best Test: 88.95%
+Run 02:
+Highest Train: 88.39
+Highest Valid: 88.15
+Highest Test: 89.09
+Chosen epoch: 211
+Final Train: 88.00
+Final Test: 88.95
+Label budget: 50/class -> 500 train nodes
+Epoch: 00, Loss: 2.4042, Train: 15.82%, Valid: 16.36%, Test: 14.69%, Best Valid: 16.36%, Best Test: 14.69%
+Epoch: 100, Loss: 0.1503, Train: 86.72%, Valid: 85.93%, Test: 87.71%, Best Valid: 86.33%, Best Test: 88.22%
+Epoch: 200, Loss: 0.1409, Train: 85.30%, Valid: 84.55%, Test: 85.28%, Best Valid: 87.24%, Best Test: 89.42%
+Epoch: 300, Loss: 0.0624, Train: 84.62%, Valid: 84.07%, Test: 85.61%, Best Valid: 87.24%, Best Test: 89.42%
+Epoch: 400, Loss: 0.0470, Train: 84.24%, Valid: 83.42%, Test: 84.81%, Best Valid: 87.24%, Best Test: 89.42%
+Epoch: 500, Loss: 0.1259, Train: 83.34%, Valid: 82.91%, Test: 85.02%, Best Valid: 87.24%, Best Test: 89.42%
+Epoch: 600, Loss: 0.1791, Train: 84.16%, Valid: 84.36%, Test: 84.66%, Best Valid: 87.24%, Best Test: 89.42%
+Epoch: 700, Loss: 0.0535, Train: 84.20%, Valid: 84.47%, Test: 84.30%, Best Valid: 87.24%, Best Test: 89.42%
+Epoch: 800, Loss: 0.0332, Train: 84.79%, Valid: 84.07%, Test: 85.57%, Best Valid: 87.24%, Best Test: 89.42%
+Epoch: 900, Loss: 0.0315, Train: 85.78%, Valid: 84.69%, Test: 86.33%, Best Valid: 87.24%, Best Test: 89.42%
+Run 03:
+Highest Train: 88.35
+Highest Valid: 87.24
+Highest Test: 89.42
+Chosen epoch: 181
+Final Train: 88.35
+Final Test: 89.42
+Label budget: 50/class -> 500 train nodes
+Epoch: 00, Loss: 2.4895, Train: 7.87%, Valid: 7.82%, Test: 8.25%, Best Valid: 7.82%, Best Test: 8.25%
+Epoch: 100, Loss: 0.0916, Train: 85.97%, Valid: 85.71%, Test: 86.77%, Best Valid: 86.33%, Best Test: 87.13%
+Epoch: 200, Loss: 0.0548, Train: 86.78%, Valid: 86.95%, Test: 86.55%, Best Valid: 87.64%, Best Test: 86.77%
+Epoch: 300, Loss: 0.0517, Train: 87.37%, Valid: 87.45%, Test: 87.20%, Best Valid: 87.93%, Best Test: 87.53%
+Epoch: 400, Loss: 0.0511, Train: 87.46%, Valid: 86.87%, Test: 87.53%, Best Valid: 87.93%, Best Test: 87.53%
+Epoch: 500, Loss: 0.0477, Train: 86.43%, Valid: 86.29%, Test: 85.97%, Best Valid: 87.93%, Best Test: 87.53%
+Epoch: 600, Loss: 0.0078, Train: 86.92%, Valid: 86.44%, Test: 86.73%, Best Valid: 87.93%, Best Test: 87.53%
+Epoch: 700, Loss: 0.0610, Train: 84.61%, Valid: 84.98%, Test: 84.15%, Best Valid: 87.93%, Best Test: 87.53%
+Epoch: 800, Loss: 0.0500, Train: 85.87%, Valid: 85.78%, Test: 86.01%, Best Valid: 87.93%, Best Test: 87.53%
+Epoch: 900, Loss: 0.0493, Train: 85.08%, Valid: 85.09%, Test: 85.21%, Best Valid: 87.93%, Best Test: 87.53%
+Run 04:
+Highest Train: 87.82
+Highest Valid: 87.93
+Highest Test: 88.33
+Chosen epoch: 282
+Final Train: 87.32
+Final Test: 87.53
+Label budget: 50/class -> 500 train nodes
+Epoch: 00, Loss: 2.4853, Train: 18.94%, Valid: 18.58%, Test: 18.83%, Best Valid: 18.58%, Best Test: 18.83%
+Epoch: 100, Loss: 0.0970, Train: 83.00%, Valid: 82.76%, Test: 84.51%, Best Valid: 86.91%, Best Test: 88.11%
+Epoch: 200, Loss: 0.1051, Train: 81.38%, Valid: 81.64%, Test: 82.66%, Best Valid: 87.13%, Best Test: 88.19%
+Epoch: 300, Loss: 0.0811, Train: 84.12%, Valid: 84.07%, Test: 85.53%, Best Valid: 87.71%, Best Test: 88.48%
+Epoch: 400, Loss: 0.0292, Train: 86.11%, Valid: 85.89%, Test: 87.20%, Best Valid: 87.71%, Best Test: 88.48%
+Epoch: 500, Loss: 0.1505, Train: 81.11%, Valid: 80.98%, Test: 82.55%, Best Valid: 87.71%, Best Test: 88.48%
+Epoch: 600, Loss: 0.0305, Train: 86.38%, Valid: 86.44%, Test: 87.75%, Best Valid: 87.71%, Best Test: 88.48%
+Epoch: 700, Loss: 0.0229, Train: 85.76%, Valid: 86.22%, Test: 87.17%, Best Valid: 87.71%, Best Test: 88.48%
+Epoch: 800, Loss: 0.0184, Train: 85.34%, Valid: 85.60%, Test: 86.37%, Best Valid: 87.71%, Best Test: 88.48%
+Epoch: 900, Loss: 0.0721, Train: 85.66%, Valid: 85.27%, Test: 87.24%, Best Valid: 87.71%, Best Test: 88.48%
+Run 05:
+Highest Train: 87.97
+Highest Valid: 87.71
+Highest Test: 88.66
+Chosen epoch: 268
+Final Train: 87.55
+Final Test: 88.48
+Label budget: 50/class -> 500 train nodes
+Epoch: 00, Loss: 2.4669, Train: 15.46%, Valid: 16.00%, Test: 15.38%, Best Valid: 16.00%, Best Test: 15.38%
+Epoch: 100, Loss: 0.1706, Train: 85.09%, Valid: 85.13%, Test: 87.24%, Best Valid: 85.60%, Best Test: 86.80%
+Epoch: 200, Loss: 0.0745, Train: 82.87%, Valid: 83.38%, Test: 84.33%, Best Valid: 86.51%, Best Test: 87.50%
+Epoch: 300, Loss: 0.0580, Train: 84.84%, Valid: 85.24%, Test: 85.79%, Best Valid: 86.80%, Best Test: 87.64%
+Epoch: 400, Loss: 0.0603, Train: 85.83%, Valid: 85.60%, Test: 87.17%, Best Valid: 87.13%, Best Test: 88.66%
+Epoch: 500, Loss: 0.0366, Train: 83.86%, Valid: 83.71%, Test: 84.95%, Best Valid: 87.13%, Best Test: 88.66%
+Epoch: 600, Loss: 0.0174, Train: 84.43%, Valid: 84.84%, Test: 85.17%, Best Valid: 87.13%, Best Test: 88.66%
+Epoch: 700, Loss: 0.0236, Train: 85.03%, Valid: 85.49%, Test: 86.15%, Best Valid: 87.13%, Best Test: 88.66%
+Epoch: 800, Loss: 0.0481, Train: 85.19%, Valid: 85.71%, Test: 86.15%, Best Valid: 87.13%, Best Test: 88.66%
+Epoch: 900, Loss: 0.0109, Train: 84.98%, Valid: 85.09%, Test: 85.79%, Best Valid: 87.13%, Best Test: 88.66%
+Run 06:
+Highest Train: 87.08
+Highest Valid: 87.13
+Highest Test: 88.66
+Chosen epoch: 368
+Final Train: 87.08
+Final Test: 88.66
+Label budget: 50/class -> 500 train nodes
+Epoch: 00, Loss: 2.4435, Train: 17.90%, Valid: 18.40%, Test: 18.07%, Best Valid: 18.40%, Best Test: 18.07%
+Epoch: 100, Loss: 0.1304, Train: 84.52%, Valid: 85.05%, Test: 86.66%, Best Valid: 87.49%, Best Test: 88.66%
+Epoch: 200, Loss: 0.0949, Train: 85.76%, Valid: 86.29%, Test: 87.50%, Best Valid: 88.11%, Best Test: 88.91%
+Epoch: 300, Loss: 0.0580, Train: 86.75%, Valid: 87.13%, Test: 88.11%, Best Valid: 88.11%, Best Test: 88.91%
+Epoch: 400, Loss: 0.1643, Train: 84.04%, Valid: 85.27%, Test: 85.68%, Best Valid: 88.11%, Best Test: 88.91%
+Epoch: 500, Loss: 0.0519, Train: 87.58%, Valid: 87.67%, Test: 87.35%, Best Valid: 88.15%, Best Test: 88.04%
+Epoch: 600, Loss: 0.0503, Train: 87.31%, Valid: 87.27%, Test: 87.10%, Best Valid: 88.15%, Best Test: 88.04%
+Epoch: 700, Loss: 0.1915, Train: 86.10%, Valid: 85.75%, Test: 86.48%, Best Valid: 88.15%, Best Test: 88.04%
+Epoch: 800, Loss: 0.0191, Train: 87.38%, Valid: 86.80%, Test: 87.90%, Best Valid: 88.15%, Best Test: 88.04%
+Epoch: 900, Loss: 0.0479, Train: 86.01%, Valid: 86.33%, Test: 86.11%, Best Valid: 88.15%, Best Test: 88.04%
+Run 07:
+Highest Train: 88.32
+Highest Valid: 88.15
+Highest Test: 89.49
+Chosen epoch: 478
+Final Train: 87.73
+Final Test: 88.04
+Label budget: 50/class -> 500 train nodes
+Epoch: 00, Loss: 2.4598, Train: 42.90%, Valid: 42.29%, Test: 45.04%, Best Valid: 42.29%, Best Test: 45.04%
+Epoch: 100, Loss: 0.1538, Train: 83.95%, Valid: 82.58%, Test: 84.91%, Best Valid: 85.56%, Best Test: 86.91%
+Epoch: 200, Loss: 0.1158, Train: 83.25%, Valid: 82.51%, Test: 84.95%, Best Valid: 85.71%, Best Test: 87.31%
+Epoch: 300, Loss: 0.0780, Train: 84.91%, Valid: 84.29%, Test: 85.97%, Best Valid: 85.96%, Best Test: 86.77%
+Epoch: 400, Loss: 0.0653, Train: 82.24%, Valid: 82.44%, Test: 83.28%, Best Valid: 86.18%, Best Test: 87.71%
+Epoch: 500, Loss: 0.0969, Train: 85.76%, Valid: 85.24%, Test: 86.70%, Best Valid: 86.18%, Best Test: 87.71%
+Epoch: 600, Loss: 0.0449, Train: 86.63%, Valid: 85.60%, Test: 87.68%, Best Valid: 86.36%, Best Test: 87.46%
+Epoch: 700, Loss: 0.0290, Train: 86.23%, Valid: 86.04%, Test: 86.91%, Best Valid: 86.36%, Best Test: 87.46%
+Epoch: 800, Loss: 0.0459, Train: 86.10%, Valid: 85.45%, Test: 87.06%, Best Valid: 86.36%, Best Test: 87.46%
+Epoch: 900, Loss: 0.0405, Train: 84.14%, Valid: 84.04%, Test: 85.39%, Best Valid: 86.36%, Best Test: 87.46%
+Run 08:
+Highest Train: 87.29
+Highest Valid: 86.36
+Highest Test: 88.15
+Chosen epoch: 532
+Final Train: 86.70
+Final Test: 87.46
+Label budget: 50/class -> 500 train nodes
+Epoch: 00, Loss: 2.4810, Train: 32.70%, Valid: 32.40%, Test: 33.88%, Best Valid: 32.40%, Best Test: 33.88%
+Epoch: 100, Loss: 0.1302, Train: 84.52%, Valid: 85.35%, Test: 85.53%, Best Valid: 87.27%, Best Test: 87.06%
+Epoch: 200, Loss: 0.1077, Train: 85.72%, Valid: 86.36%, Test: 86.84%, Best Valid: 87.27%, Best Test: 87.06%
+Epoch: 300, Loss: 0.0668, Train: 83.31%, Valid: 83.20%, Test: 84.01%, Best Valid: 87.27%, Best Test: 87.06%
+Epoch: 400, Loss: 0.0504, Train: 85.97%, Valid: 86.47%, Test: 87.10%, Best Valid: 87.27%, Best Test: 87.06%
+Epoch: 500, Loss: 0.0484, Train: 85.70%, Valid: 85.56%, Test: 86.73%, Best Valid: 87.27%, Best Test: 87.06%
+Epoch: 600, Loss: 0.0555, Train: 85.47%, Valid: 85.67%, Test: 87.06%, Best Valid: 87.27%, Best Test: 87.06%
+Epoch: 700, Loss: 0.0688, Train: 84.84%, Valid: 85.27%, Test: 86.44%, Best Valid: 87.27%, Best Test: 87.06%
+Epoch: 800, Loss: 0.0361, Train: 84.45%, Valid: 85.56%, Test: 86.01%, Best Valid: 87.27%, Best Test: 87.06%
+Epoch: 900, Loss: 0.5963, Train: 77.13%, Valid: 77.49%, Test: 79.72%, Best Valid: 87.27%, Best Test: 87.06%
+Run 09:
+Highest Train: 86.91
+Highest Valid: 87.27
+Highest Test: 88.40
+Chosen epoch: 80
+Final Train: 86.33
+Final Test: 87.06
+Label budget: 50/class -> 500 train nodes
+Epoch: 00, Loss: 2.4569, Train: 11.26%, Valid: 11.09%, Test: 10.61%, Best Valid: 11.09%, Best Test: 10.61%
+Epoch: 100, Loss: 0.1760, Train: 84.40%, Valid: 84.25%, Test: 85.90%, Best Valid: 86.07%, Best Test: 87.46%
+Epoch: 200, Loss: 0.0703, Train: 80.41%, Valid: 80.44%, Test: 81.10%, Best Valid: 86.29%, Best Test: 87.60%
+Epoch: 300, Loss: 0.0557, Train: 83.78%, Valid: 83.24%, Test: 85.02%, Best Valid: 86.33%, Best Test: 87.75%
+Epoch: 400, Loss: 0.1368, Train: 77.42%, Valid: 77.05%, Test: 77.43%, Best Valid: 86.33%, Best Test: 87.75%
+Epoch: 500, Loss: 0.0586, Train: 83.21%, Valid: 83.02%, Test: 83.68%, Best Valid: 86.33%, Best Test: 87.75%
+Epoch: 600, Loss: 0.0182, Train: 84.47%, Valid: 84.15%, Test: 85.24%, Best Valid: 86.33%, Best Test: 87.75%
+Epoch: 700, Loss: 0.0228, Train: 85.97%, Valid: 85.27%, Test: 86.62%, Best Valid: 86.33%, Best Test: 87.75%
+Epoch: 800, Loss: 0.0636, Train: 83.01%, Valid: 82.69%, Test: 83.50%, Best Valid: 86.33%, Best Test: 87.75%
+Epoch: 900, Loss: 0.0084, Train: 85.65%, Valid: 85.09%, Test: 86.33%, Best Valid: 86.33%, Best Test: 87.75%
+Run 10:
+Highest Train: 87.06
+Highest Valid: 86.33
+Highest Test: 87.75
+Chosen epoch: 228
+Final Train: 87.06
+Final Test: 87.75
+All runs:
+Highest Train: 87.78 ± 0.64
+Highest Test: 88.85 ± 0.82
+Highest Valid: 87.48 ± 0.76
+  Final Train: 87.44 ± 0.67
+   Final Test: 88.36 ± 0.99
+Saving results to results/lowlabel/amazon-computer/MPNN_gcn.csv
+Low-label sweep completed.
+Task 170 done.

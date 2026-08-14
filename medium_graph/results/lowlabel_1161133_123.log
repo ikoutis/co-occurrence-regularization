@@ -1,0 +1,1341 @@
+Wed Aug  5 20:48:33 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.159.04             Driver Version: 580.159.04     CUDA Version: 13.0     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA A100-SXM4-80GB          On  |   00000000:01:00.0 Off |                   On |
+| N/A   39C    P0            136W /  500W |    1547MiB /  81920MiB |     N/A      Default |
+|                                         |                        |              Enabled |
++-----------------------------------------+------------------------+----------------------+
+|   1  NVIDIA A100-SXM4-80GB          On  |   00000000:41:00.0 Off |                   On |
+| N/A   26C    P0             50W /  500W |     249MiB /  81920MiB |     N/A      Default |
+|                                         |                        |              Enabled |
++-----------------------------------------+------------------------+----------------------+
+|   2  NVIDIA A100-SXM4-80GB          On  |   00000000:81:00.0 Off |                   On |
+| N/A   36C    P0            128W /  500W |    1513MiB /  81920MiB |     N/A      Default |
+|                                         |                        |              Enabled |
++-----------------------------------------+------------------------+----------------------+
+|   3  NVIDIA A100-SXM4-80GB          On  |   00000000:C1:00.0 Off |                   On |
+| N/A   35C    P0            137W /  500W |    2203MiB /  81920MiB |     N/A      Default |
+|                                         |                        |              Enabled |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| MIG devices:                                                                            |
++------------------+----------------------------------+-----------+-----------------------+
+| GPU  GI  CI  MIG |              Shared Memory-Usage |        Vol|        Shared         |
+|      ID  ID  Dev |                Shared BAR1-Usage | SM     Unc| CE ENC  DEC  OFA  JPG |
+|                  |                                  |        ECC|                       |
+|==================+==================================+===========+=======================|
+|  1    5   0   0  |              71MiB / 19968MiB    | 28      0 |  2   0    1    0    0 |
+|                  |               0MiB / 12271MiB    |           |                       |
++------------------+----------------------------------+-----------+-----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0    5    0           145290      C   python                                 1290MiB |
+|    2    3    0           143585      C   python                                 1256MiB |
+|    3    5    0           135504      C   python                                 1946MiB |
++-----------------------------------------------------------------------------------------+
+Cell: pubmed / gcn / budget 50 per class / group 3
+python main.py --gnn gcn --dataset pubmed --lr 0.005 --local_layers 2 --hidden_channels 256 --weight_decay 5e-4 --dropout 0.7 --rand_split_class --valid_num 500 --test_num 1000 --seed 123 --device 0 --runs 5 --runs 10 --label_num_per_class 50 --resample_split_per_run --budget_tag 50
+==========================================================
+Low-label sweep: python main.py --gnn gcn --dataset pubmed --lr 0.005 --local_layers 2 --hidden_channels 256 --weight_decay 5e-4 --dropout 0.7 --rand_split_class --valid_num 500 --test_num 1000 --seed 123 --device 0 --runs 5 --runs 10 --label_num_per_class 50 --resample_split_per_run --budget_tag 50
+result_dir=results/lowlabel conditions=[oracle]
+==========================================================
+--- oracle_reg | lambda=0.01 ---
+Namespace(bn=False, budget_tag='50', count_reg=False, count_smoothing=1.0, cpu=False, data_dir='./data/', dataset='pubmed', device=0, display_step=100, dropout=0.7, epochs=500, gnn='gcn', hidden_channels=256, jk=False, label_num_per_class=50, lambda_val=0.01, ln=False, local_layers=2, lr=0.005, metric='acc', mlp_epochs=500, mlp_reg=False, model='MPNN', model_dir='models', num_heads=1, oracle_reg=True, paired_seeds=True, penalty_transform='none', pre_linear=False, pre_ln=False, rand_split=False, rand_split_class=True, reg_start_epoch=10, reg_update_freq=5, res=False, resample_split_per_run=True, result_dir='results/lowlabel', runs=10, save_model=False, seed=123, test_num=1000, train_per_class=0, train_prop=0.5, use_reg=True, valid_num=500, valid_per_class=0, valid_prop=0.25, weight_decay=0.0005)
+pubmed
+Num nodes: 19717
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+dataset pubmed | num nodes 19717 | num edge 88648 | num node feats 500 | num classes 3
+MODEL: MPNNs(
+  (h_lins): ModuleList()
+  (local_convs): ModuleList(
+    (0): GCNConv(500, 256)
+    (1): GCNConv(256, 256)
+  )
+  (lins): ModuleList(
+    (0): Linear(in_features=500, out_features=256, bias=True)
+    (1): Linear(in_features=256, out_features=256, bias=True)
+  )
+  (lns): ModuleList(
+    (0): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+    (1): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+  )
+  (bns): ModuleList(
+    (0): BatchNorm1d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (1): BatchNorm1d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (lin_in): Linear(in_features=500, out_features=256, bias=True)
+  (pred_local): Linear(in_features=256, out_features=3, bias=True)
+)
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.1100, Train: 33.33%, Valid: 42.00%, Test: 36.30%, Best Valid: 42.00%, Best Test: 36.30%
+Epoch: 100, Loss: 0.0154, Train: 100.00%, Valid: 76.00%, Test: 79.90%, Best Valid: 77.60%, Best Test: 80.10%
+Epoch: 200, Loss: 0.0123, Train: 100.00%, Valid: 75.00%, Test: 79.90%, Best Valid: 77.60%, Best Test: 80.10%
+Epoch: 300, Loss: 0.0141, Train: 100.00%, Valid: 76.60%, Test: 79.60%, Best Valid: 77.60%, Best Test: 80.10%
+Epoch: 400, Loss: 0.0131, Train: 100.00%, Valid: 76.00%, Test: 80.90%, Best Valid: 77.60%, Best Test: 80.10%
+Run 01:
+Highest Train: 100.00
+Highest Valid: 77.60
+Highest Test: 82.00
+Chosen epoch: 40
+Final Train: 100.00
+Final Test: 80.10
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.1108, Train: 48.00%, Valid: 32.40%, Test: 35.50%, Best Valid: 32.40%, Best Test: 35.50%
+Epoch: 100, Loss: 0.0195, Train: 100.00%, Valid: 81.60%, Test: 80.80%, Best Valid: 83.80%, Best Test: 81.70%
+Epoch: 200, Loss: 0.0224, Train: 100.00%, Valid: 81.20%, Test: 81.00%, Best Valid: 83.80%, Best Test: 81.70%
+Epoch: 300, Loss: 0.0110, Train: 100.00%, Valid: 81.20%, Test: 81.10%, Best Valid: 83.80%, Best Test: 81.70%
+Epoch: 400, Loss: 0.0078, Train: 100.00%, Valid: 80.60%, Test: 80.50%, Best Valid: 83.80%, Best Test: 81.70%
+Run 02:
+Highest Train: 100.00
+Highest Valid: 83.80
+Highest Test: 83.30
+Chosen epoch: 65
+Final Train: 100.00
+Final Test: 81.70
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.1103, Train: 54.67%, Valid: 59.40%, Test: 57.10%, Best Valid: 59.40%, Best Test: 57.10%
+Epoch: 100, Loss: 0.0366, Train: 100.00%, Valid: 77.20%, Test: 78.00%, Best Valid: 79.80%, Best Test: 80.90%
+Epoch: 200, Loss: 0.0225, Train: 100.00%, Valid: 76.80%, Test: 77.50%, Best Valid: 79.80%, Best Test: 80.90%
+Epoch: 300, Loss: 0.0319, Train: 100.00%, Valid: 74.40%, Test: 74.80%, Best Valid: 79.80%, Best Test: 80.90%
+Epoch: 400, Loss: 0.0470, Train: 100.00%, Valid: 76.00%, Test: 77.20%, Best Valid: 79.80%, Best Test: 80.90%
+Run 03:
+Highest Train: 100.00
+Highest Valid: 79.80
+Highest Test: 82.20
+Chosen epoch: 30
+Final Train: 97.33
+Final Test: 80.90
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.1091, Train: 34.00%, Valid: 22.40%, Test: 22.60%, Best Valid: 22.40%, Best Test: 22.60%
+Epoch: 100, Loss: 0.0281, Train: 100.00%, Valid: 75.60%, Test: 79.30%, Best Valid: 78.00%, Best Test: 81.00%
+Epoch: 200, Loss: 0.0135, Train: 100.00%, Valid: 76.40%, Test: 79.20%, Best Valid: 78.00%, Best Test: 81.00%
+Epoch: 300, Loss: 0.0107, Train: 100.00%, Valid: 74.80%, Test: 79.20%, Best Valid: 79.20%, Best Test: 80.20%
+Epoch: 400, Loss: 0.0120, Train: 100.00%, Valid: 74.60%, Test: 77.40%, Best Valid: 79.20%, Best Test: 80.20%
+Run 04:
+Highest Train: 100.00
+Highest Valid: 79.20
+Highest Test: 81.90
+Chosen epoch: 284
+Final Train: 100.00
+Final Test: 80.20
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.1103, Train: 40.00%, Valid: 44.00%, Test: 47.40%, Best Valid: 44.00%, Best Test: 47.40%
+Epoch: 100, Loss: 0.0303, Train: 100.00%, Valid: 80.00%, Test: 80.10%, Best Valid: 81.00%, Best Test: 82.30%
+Epoch: 200, Loss: 0.0179, Train: 100.00%, Valid: 78.40%, Test: 79.70%, Best Valid: 81.00%, Best Test: 82.30%
+Epoch: 300, Loss: 0.0106, Train: 100.00%, Valid: 78.00%, Test: 79.60%, Best Valid: 81.00%, Best Test: 82.30%
+Epoch: 400, Loss: 0.0084, Train: 100.00%, Valid: 78.20%, Test: 80.80%, Best Valid: 81.00%, Best Test: 82.30%
+Run 05:
+Highest Train: 100.00
+Highest Valid: 81.00
+Highest Test: 82.70
+Chosen epoch: 24
+Final Train: 96.00
+Final Test: 82.30
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.1097, Train: 33.33%, Valid: 24.60%, Test: 20.60%, Best Valid: 24.60%, Best Test: 20.60%
+Epoch: 100, Loss: 0.0286, Train: 100.00%, Valid: 77.60%, Test: 78.60%, Best Valid: 81.40%, Best Test: 80.10%
+Epoch: 200, Loss: 0.0127, Train: 100.00%, Valid: 76.80%, Test: 75.90%, Best Valid: 81.40%, Best Test: 80.10%
+Epoch: 300, Loss: 0.0169, Train: 100.00%, Valid: 78.40%, Test: 78.00%, Best Valid: 81.40%, Best Test: 80.10%
+Epoch: 400, Loss: 0.0175, Train: 100.00%, Valid: 76.40%, Test: 76.10%, Best Valid: 81.40%, Best Test: 80.10%
+Run 06:
+Highest Train: 100.00
+Highest Valid: 81.40
+Highest Test: 81.20
+Chosen epoch: 20
+Final Train: 88.67
+Final Test: 80.10
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.1115, Train: 40.00%, Valid: 23.80%, Test: 25.90%, Best Valid: 23.80%, Best Test: 25.90%
+Epoch: 100, Loss: 0.0225, Train: 100.00%, Valid: 82.80%, Test: 80.10%, Best Valid: 84.20%, Best Test: 81.80%
+Epoch: 200, Loss: 0.0204, Train: 100.00%, Valid: 81.80%, Test: 80.10%, Best Valid: 84.20%, Best Test: 81.80%
+Epoch: 300, Loss: 0.0336, Train: 100.00%, Valid: 80.40%, Test: 80.20%, Best Valid: 84.20%, Best Test: 81.80%
+Epoch: 400, Loss: 0.0260, Train: 100.00%, Valid: 80.60%, Test: 79.30%, Best Valid: 84.20%, Best Test: 81.80%
+Run 07:
+Highest Train: 100.00
+Highest Valid: 84.20
+Highest Test: 82.60
+Chosen epoch: 28
+Final Train: 97.33
+Final Test: 81.80
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.1114, Train: 33.33%, Valid: 38.40%, Test: 39.30%, Best Valid: 38.40%, Best Test: 39.30%
+Epoch: 100, Loss: 0.0319, Train: 100.00%, Valid: 77.40%, Test: 75.70%, Best Valid: 80.20%, Best Test: 78.70%
+Epoch: 200, Loss: 0.0360, Train: 100.00%, Valid: 78.20%, Test: 77.00%, Best Valid: 80.20%, Best Test: 78.70%
+Epoch: 300, Loss: 0.0156, Train: 100.00%, Valid: 76.80%, Test: 74.70%, Best Valid: 80.20%, Best Test: 78.70%
+Epoch: 400, Loss: 0.0192, Train: 100.00%, Valid: 77.60%, Test: 76.10%, Best Valid: 80.20%, Best Test: 78.70%
+Run 08:
+Highest Train: 100.00
+Highest Valid: 80.20
+Highest Test: 81.00
+Chosen epoch: 90
+Final Train: 100.00
+Final Test: 78.70
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.1092, Train: 36.00%, Valid: 40.20%, Test: 39.80%, Best Valid: 40.20%, Best Test: 39.80%
+Epoch: 100, Loss: 0.0276, Train: 100.00%, Valid: 79.40%, Test: 81.40%, Best Valid: 81.00%, Best Test: 81.90%
+Epoch: 200, Loss: 0.0213, Train: 100.00%, Valid: 78.80%, Test: 80.60%, Best Valid: 81.00%, Best Test: 81.90%
+Epoch: 300, Loss: 0.0105, Train: 100.00%, Valid: 78.60%, Test: 80.40%, Best Valid: 81.00%, Best Test: 81.90%
+Epoch: 400, Loss: 0.0154, Train: 100.00%, Valid: 78.00%, Test: 80.20%, Best Valid: 81.00%, Best Test: 81.90%
+Run 09:
+Highest Train: 100.00
+Highest Valid: 81.00
+Highest Test: 83.10
+Chosen epoch: 73
+Final Train: 100.00
+Final Test: 81.90
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.1104, Train: 33.33%, Valid: 38.60%, Test: 40.80%, Best Valid: 38.60%, Best Test: 40.80%
+Epoch: 100, Loss: 0.0168, Train: 100.00%, Valid: 81.20%, Test: 81.00%, Best Valid: 85.00%, Best Test: 82.80%
+Epoch: 200, Loss: 0.0367, Train: 100.00%, Valid: 81.40%, Test: 80.50%, Best Valid: 85.20%, Best Test: 82.60%
+Epoch: 300, Loss: 0.0131, Train: 100.00%, Valid: 82.80%, Test: 81.70%, Best Valid: 85.40%, Best Test: 82.40%
+Epoch: 400, Loss: 0.0152, Train: 100.00%, Valid: 81.40%, Test: 79.90%, Best Valid: 85.40%, Best Test: 82.40%
+Run 10:
+Highest Train: 100.00
+Highest Valid: 85.40
+Highest Test: 83.30
+Chosen epoch: 276
+Final Train: 100.00
+Final Test: 82.40
+All runs:
+Highest Train: 100.00 ± 0.00
+Highest Test: 82.33 ± 0.82
+Highest Valid: 81.36 ± 2.43
+  Final Train: 97.93 ± 3.59
+   Final Test: 81.01 ± 1.21
+Saving results to results/lowlabel/pubmed/MPNN_gcn.csv
+--- oracle_reg | lambda=0.05 ---
+Namespace(bn=False, budget_tag='50', count_reg=False, count_smoothing=1.0, cpu=False, data_dir='./data/', dataset='pubmed', device=0, display_step=100, dropout=0.7, epochs=500, gnn='gcn', hidden_channels=256, jk=False, label_num_per_class=50, lambda_val=0.05, ln=False, local_layers=2, lr=0.005, metric='acc', mlp_epochs=500, mlp_reg=False, model='MPNN', model_dir='models', num_heads=1, oracle_reg=True, paired_seeds=True, penalty_transform='none', pre_linear=False, pre_ln=False, rand_split=False, rand_split_class=True, reg_start_epoch=10, reg_update_freq=5, res=False, resample_split_per_run=True, result_dir='results/lowlabel', runs=10, save_model=False, seed=123, test_num=1000, train_per_class=0, train_prop=0.5, use_reg=True, valid_num=500, valid_per_class=0, valid_prop=0.25, weight_decay=0.0005)
+pubmed
+Num nodes: 19717
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+dataset pubmed | num nodes 19717 | num edge 88648 | num node feats 500 | num classes 3
+MODEL: MPNNs(
+  (h_lins): ModuleList()
+  (local_convs): ModuleList(
+    (0): GCNConv(500, 256)
+    (1): GCNConv(256, 256)
+  )
+  (lins): ModuleList(
+    (0): Linear(in_features=500, out_features=256, bias=True)
+    (1): Linear(in_features=256, out_features=256, bias=True)
+  )
+  (lns): ModuleList(
+    (0): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+    (1): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+  )
+  (bns): ModuleList(
+    (0): BatchNorm1d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (1): BatchNorm1d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (lin_in): Linear(in_features=500, out_features=256, bias=True)
+  (pred_local): Linear(in_features=256, out_features=3, bias=True)
+)
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.1540, Train: 33.33%, Valid: 42.00%, Test: 36.30%, Best Valid: 42.00%, Best Test: 36.30%
+Epoch: 100, Loss: 0.0152, Train: 100.00%, Valid: 76.20%, Test: 79.70%, Best Valid: 77.80%, Best Test: 80.00%
+Epoch: 200, Loss: 0.0128, Train: 100.00%, Valid: 75.60%, Test: 80.10%, Best Valid: 77.80%, Best Test: 80.00%
+Epoch: 300, Loss: 0.0162, Train: 100.00%, Valid: 75.00%, Test: 80.70%, Best Valid: 77.80%, Best Test: 80.00%
+Epoch: 400, Loss: 0.0173, Train: 100.00%, Valid: 75.60%, Test: 79.90%, Best Valid: 77.80%, Best Test: 80.00%
+Run 01:
+Highest Train: 100.00
+Highest Valid: 77.80
+Highest Test: 81.90
+Chosen epoch: 40
+Final Train: 100.00
+Final Test: 80.00
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.1548, Train: 50.67%, Valid: 50.00%, Test: 49.00%, Best Valid: 50.00%, Best Test: 49.00%
+Epoch: 100, Loss: 0.0191, Train: 100.00%, Valid: 82.20%, Test: 81.00%, Best Valid: 83.80%, Best Test: 82.80%
+Epoch: 200, Loss: 0.0204, Train: 100.00%, Valid: 81.00%, Test: 81.30%, Best Valid: 84.00%, Best Test: 82.70%
+Epoch: 300, Loss: 0.0141, Train: 100.00%, Valid: 82.00%, Test: 81.50%, Best Valid: 84.00%, Best Test: 82.70%
+Epoch: 400, Loss: 0.0087, Train: 100.00%, Valid: 81.00%, Test: 81.30%, Best Valid: 84.00%, Best Test: 82.70%
+Run 02:
+Highest Train: 100.00
+Highest Valid: 84.00
+Highest Test: 83.10
+Chosen epoch: 107
+Final Train: 100.00
+Final Test: 82.70
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.1543, Train: 54.67%, Valid: 58.40%, Test: 56.90%, Best Valid: 58.40%, Best Test: 56.90%
+Epoch: 100, Loss: 0.0388, Train: 100.00%, Valid: 77.00%, Test: 78.30%, Best Valid: 80.00%, Best Test: 81.00%
+Epoch: 200, Loss: 0.0224, Train: 100.00%, Valid: 76.80%, Test: 77.40%, Best Valid: 80.00%, Best Test: 81.00%
+Epoch: 300, Loss: 0.0327, Train: 100.00%, Valid: 74.60%, Test: 75.70%, Best Valid: 80.00%, Best Test: 81.00%
+Epoch: 400, Loss: 0.0490, Train: 100.00%, Valid: 74.80%, Test: 77.10%, Best Valid: 80.00%, Best Test: 81.00%
+Run 03:
+Highest Train: 100.00
+Highest Valid: 80.00
+Highest Test: 82.20
+Chosen epoch: 30
+Final Train: 97.33
+Final Test: 81.00
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.1530, Train: 34.00%, Valid: 22.40%, Test: 22.80%, Best Valid: 22.40%, Best Test: 22.80%
+Epoch: 100, Loss: 0.0288, Train: 100.00%, Valid: 75.60%, Test: 79.30%, Best Valid: 78.00%, Best Test: 79.30%
+Epoch: 200, Loss: 0.0150, Train: 100.00%, Valid: 76.40%, Test: 79.20%, Best Valid: 78.00%, Best Test: 79.30%
+Epoch: 300, Loss: 0.0117, Train: 100.00%, Valid: 75.60%, Test: 79.10%, Best Valid: 78.00%, Best Test: 79.30%
+Epoch: 400, Loss: 0.0092, Train: 100.00%, Valid: 74.20%, Test: 77.40%, Best Valid: 78.00%, Best Test: 79.30%
+Run 04:
+Highest Train: 100.00
+Highest Valid: 78.00
+Highest Test: 81.90
+Chosen epoch: 14
+Final Train: 90.00
+Final Test: 79.30
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.1542, Train: 42.00%, Valid: 45.20%, Test: 48.10%, Best Valid: 45.20%, Best Test: 48.10%
+Epoch: 100, Loss: 0.0303, Train: 100.00%, Valid: 80.00%, Test: 80.10%, Best Valid: 81.00%, Best Test: 82.40%
+Epoch: 200, Loss: 0.0192, Train: 100.00%, Valid: 79.00%, Test: 80.10%, Best Valid: 81.00%, Best Test: 82.40%
+Epoch: 300, Loss: 0.0132, Train: 100.00%, Valid: 77.20%, Test: 80.20%, Best Valid: 81.00%, Best Test: 82.40%
+Epoch: 400, Loss: 0.0100, Train: 100.00%, Valid: 79.20%, Test: 80.80%, Best Valid: 81.00%, Best Test: 82.40%
+Run 05:
+Highest Train: 100.00
+Highest Valid: 81.00
+Highest Test: 82.90
+Chosen epoch: 30
+Final Train: 98.67
+Final Test: 82.40
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.1536, Train: 33.33%, Valid: 24.60%, Test: 20.60%, Best Valid: 24.60%, Best Test: 20.60%
+Epoch: 100, Loss: 0.0291, Train: 100.00%, Valid: 77.80%, Test: 78.80%, Best Valid: 81.00%, Best Test: 80.00%
+Epoch: 200, Loss: 0.0137, Train: 100.00%, Valid: 77.80%, Test: 76.40%, Best Valid: 81.00%, Best Test: 80.00%
+Epoch: 300, Loss: 0.0171, Train: 100.00%, Valid: 79.00%, Test: 78.20%, Best Valid: 81.00%, Best Test: 80.00%
+Epoch: 400, Loss: 0.0194, Train: 100.00%, Valid: 76.60%, Test: 76.20%, Best Valid: 81.00%, Best Test: 80.00%
+Run 06:
+Highest Train: 100.00
+Highest Valid: 81.00
+Highest Test: 81.10
+Chosen epoch: 20
+Final Train: 88.67
+Final Test: 80.00
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.1556, Train: 57.33%, Valid: 50.20%, Test: 54.70%, Best Valid: 50.20%, Best Test: 54.70%
+Epoch: 100, Loss: 0.0236, Train: 100.00%, Valid: 82.80%, Test: 80.10%, Best Valid: 84.40%, Best Test: 82.50%
+Epoch: 200, Loss: 0.0217, Train: 100.00%, Valid: 81.40%, Test: 80.20%, Best Valid: 84.40%, Best Test: 82.50%
+Epoch: 300, Loss: 0.0303, Train: 100.00%, Valid: 81.00%, Test: 80.20%, Best Valid: 84.40%, Best Test: 82.50%
+Epoch: 400, Loss: 0.0279, Train: 100.00%, Valid: 81.20%, Test: 79.10%, Best Valid: 84.40%, Best Test: 82.50%
+Run 07:
+Highest Train: 100.00
+Highest Valid: 84.40
+Highest Test: 82.50
+Chosen epoch: 25
+Final Train: 96.00
+Final Test: 82.50
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.1554, Train: 33.33%, Valid: 38.40%, Test: 39.30%, Best Valid: 38.40%, Best Test: 39.30%
+Epoch: 100, Loss: 0.0352, Train: 100.00%, Valid: 77.60%, Test: 76.40%, Best Valid: 80.00%, Best Test: 79.40%
+Epoch: 200, Loss: 0.0371, Train: 100.00%, Valid: 78.40%, Test: 76.90%, Best Valid: 80.00%, Best Test: 79.40%
+Epoch: 300, Loss: 0.0148, Train: 100.00%, Valid: 76.20%, Test: 75.30%, Best Valid: 80.00%, Best Test: 79.40%
+Epoch: 400, Loss: 0.0248, Train: 100.00%, Valid: 78.40%, Test: 75.60%, Best Valid: 80.00%, Best Test: 79.40%
+Run 08:
+Highest Train: 100.00
+Highest Valid: 80.00
+Highest Test: 81.30
+Chosen epoch: 52
+Final Train: 99.33
+Final Test: 79.40
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.1531, Train: 38.00%, Valid: 41.00%, Test: 41.50%, Best Valid: 41.00%, Best Test: 41.50%
+Epoch: 100, Loss: 0.0297, Train: 100.00%, Valid: 79.20%, Test: 81.50%, Best Valid: 81.20%, Best Test: 81.70%
+Epoch: 200, Loss: 0.0211, Train: 100.00%, Valid: 78.60%, Test: 81.10%, Best Valid: 81.20%, Best Test: 81.70%
+Epoch: 300, Loss: 0.0098, Train: 100.00%, Valid: 78.60%, Test: 80.60%, Best Valid: 81.20%, Best Test: 81.70%
+Epoch: 400, Loss: 0.0172, Train: 100.00%, Valid: 77.80%, Test: 80.10%, Best Valid: 81.20%, Best Test: 81.70%
+Run 09:
+Highest Train: 100.00
+Highest Valid: 81.20
+Highest Test: 83.20
+Chosen epoch: 73
+Final Train: 100.00
+Final Test: 81.70
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.1544, Train: 33.33%, Valid: 38.60%, Test: 40.80%, Best Valid: 38.60%, Best Test: 40.80%
+Epoch: 100, Loss: 0.0183, Train: 100.00%, Valid: 83.20%, Test: 81.70%, Best Valid: 85.20%, Best Test: 83.00%
+Epoch: 200, Loss: 0.0258, Train: 100.00%, Valid: 82.00%, Test: 80.90%, Best Valid: 85.20%, Best Test: 83.00%
+Epoch: 300, Loss: 0.0127, Train: 100.00%, Valid: 82.40%, Test: 81.70%, Best Valid: 85.20%, Best Test: 83.00%
+Epoch: 400, Loss: 0.0241, Train: 100.00%, Valid: 82.60%, Test: 80.70%, Best Valid: 85.20%, Best Test: 83.00%
+Run 10:
+Highest Train: 100.00
+Highest Valid: 85.20
+Highest Test: 83.20
+Chosen epoch: 79
+Final Train: 100.00
+Final Test: 83.00
+All runs:
+Highest Train: 100.00 ± 0.00
+Highest Test: 82.33 ± 0.78
+Highest Valid: 81.26 ± 2.56
+  Final Train: 97.00 ± 4.27
+   Final Test: 81.20 ± 1.44
+Saving results to results/lowlabel/pubmed/MPNN_gcn.csv
+--- oracle_reg | lambda=0.1 ---
+Namespace(bn=False, budget_tag='50', count_reg=False, count_smoothing=1.0, cpu=False, data_dir='./data/', dataset='pubmed', device=0, display_step=100, dropout=0.7, epochs=500, gnn='gcn', hidden_channels=256, jk=False, label_num_per_class=50, lambda_val=0.1, ln=False, local_layers=2, lr=0.005, metric='acc', mlp_epochs=500, mlp_reg=False, model='MPNN', model_dir='models', num_heads=1, oracle_reg=True, paired_seeds=True, penalty_transform='none', pre_linear=False, pre_ln=False, rand_split=False, rand_split_class=True, reg_start_epoch=10, reg_update_freq=5, res=False, resample_split_per_run=True, result_dir='results/lowlabel', runs=10, save_model=False, seed=123, test_num=1000, train_per_class=0, train_prop=0.5, use_reg=True, valid_num=500, valid_per_class=0, valid_prop=0.25, weight_decay=0.0005)
+pubmed
+Num nodes: 19717
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+dataset pubmed | num nodes 19717 | num edge 88648 | num node feats 500 | num classes 3
+MODEL: MPNNs(
+  (h_lins): ModuleList()
+  (local_convs): ModuleList(
+    (0): GCNConv(500, 256)
+    (1): GCNConv(256, 256)
+  )
+  (lins): ModuleList(
+    (0): Linear(in_features=500, out_features=256, bias=True)
+    (1): Linear(in_features=256, out_features=256, bias=True)
+  )
+  (lns): ModuleList(
+    (0): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+    (1): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+  )
+  (bns): ModuleList(
+    (0): BatchNorm1d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (1): BatchNorm1d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (lin_in): Linear(in_features=500, out_features=256, bias=True)
+  (pred_local): Linear(in_features=256, out_features=3, bias=True)
+)
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.2089, Train: 33.33%, Valid: 42.00%, Test: 36.30%, Best Valid: 42.00%, Best Test: 36.30%
+Epoch: 100, Loss: 0.0165, Train: 100.00%, Valid: 76.40%, Test: 79.90%, Best Valid: 77.60%, Best Test: 80.30%
+Epoch: 200, Loss: 0.0149, Train: 100.00%, Valid: 75.00%, Test: 80.10%, Best Valid: 77.60%, Best Test: 80.30%
+Epoch: 300, Loss: 0.0131, Train: 100.00%, Valid: 75.80%, Test: 80.20%, Best Valid: 77.80%, Best Test: 80.50%
+Epoch: 400, Loss: 0.0168, Train: 100.00%, Valid: 76.20%, Test: 80.50%, Best Valid: 77.80%, Best Test: 80.50%
+Run 01:
+Highest Train: 100.00
+Highest Valid: 77.80
+Highest Test: 81.90
+Chosen epoch: 202
+Final Train: 100.00
+Final Test: 80.50
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.2097, Train: 46.67%, Valid: 48.00%, Test: 47.50%, Best Valid: 48.00%, Best Test: 47.50%
+Epoch: 100, Loss: 0.0213, Train: 100.00%, Valid: 82.20%, Test: 81.20%, Best Valid: 83.60%, Best Test: 82.10%
+Epoch: 200, Loss: 0.0173, Train: 100.00%, Valid: 81.20%, Test: 81.50%, Best Valid: 83.80%, Best Test: 82.50%
+Epoch: 300, Loss: 0.0145, Train: 100.00%, Valid: 80.80%, Test: 81.50%, Best Valid: 83.80%, Best Test: 82.50%
+Epoch: 400, Loss: 0.0091, Train: 100.00%, Valid: 81.20%, Test: 80.80%, Best Valid: 83.80%, Best Test: 82.50%
+Run 02:
+Highest Train: 100.00
+Highest Valid: 83.80
+Highest Test: 83.10
+Chosen epoch: 106
+Final Train: 100.00
+Final Test: 82.50
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.2093, Train: 55.33%, Valid: 59.40%, Test: 57.80%, Best Valid: 59.40%, Best Test: 57.80%
+Epoch: 100, Loss: 0.0387, Train: 100.00%, Valid: 77.60%, Test: 78.80%, Best Valid: 80.00%, Best Test: 81.20%
+Epoch: 200, Loss: 0.0234, Train: 100.00%, Valid: 77.20%, Test: 77.70%, Best Valid: 80.00%, Best Test: 81.20%
+Epoch: 300, Loss: 0.0287, Train: 100.00%, Valid: 75.00%, Test: 74.70%, Best Valid: 80.00%, Best Test: 81.20%
+Epoch: 400, Loss: 0.0423, Train: 100.00%, Valid: 75.60%, Test: 76.30%, Best Valid: 80.00%, Best Test: 81.20%
+Run 03:
+Highest Train: 100.00
+Highest Valid: 80.00
+Highest Test: 82.10
+Chosen epoch: 30
+Final Train: 97.33
+Final Test: 81.20
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.2079, Train: 35.33%, Valid: 22.80%, Test: 23.60%, Best Valid: 22.80%, Best Test: 23.60%
+Epoch: 100, Loss: 0.0319, Train: 100.00%, Valid: 75.40%, Test: 79.40%, Best Valid: 77.80%, Best Test: 77.30%
+Epoch: 200, Loss: 0.0149, Train: 100.00%, Valid: 75.40%, Test: 79.20%, Best Valid: 77.80%, Best Test: 77.30%
+Epoch: 300, Loss: 0.0108, Train: 100.00%, Valid: 74.20%, Test: 78.70%, Best Valid: 78.40%, Best Test: 79.70%
+Epoch: 400, Loss: 0.0104, Train: 100.00%, Valid: 75.00%, Test: 77.60%, Best Valid: 78.40%, Best Test: 79.70%
+Run 04:
+Highest Train: 100.00
+Highest Valid: 78.80
+Highest Test: 81.80
+Chosen epoch: 405
+Final Train: 100.00
+Final Test: 80.10
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.2092, Train: 43.33%, Valid: 46.00%, Test: 48.40%, Best Valid: 46.00%, Best Test: 48.40%
+Epoch: 100, Loss: 0.0340, Train: 100.00%, Valid: 79.60%, Test: 80.50%, Best Valid: 81.80%, Best Test: 82.60%
+Epoch: 200, Loss: 0.0191, Train: 100.00%, Valid: 78.60%, Test: 80.40%, Best Valid: 81.80%, Best Test: 82.60%
+Epoch: 300, Loss: 0.0117, Train: 100.00%, Valid: 79.00%, Test: 80.00%, Best Valid: 81.80%, Best Test: 82.60%
+Epoch: 400, Loss: 0.0148, Train: 100.00%, Valid: 80.00%, Test: 80.10%, Best Valid: 81.80%, Best Test: 82.60%
+Run 05:
+Highest Train: 100.00
+Highest Valid: 81.80
+Highest Test: 82.80
+Chosen epoch: 26
+Final Train: 98.00
+Final Test: 82.60
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.2085, Train: 33.33%, Valid: 24.60%, Test: 20.60%, Best Valid: 24.60%, Best Test: 20.60%
+Epoch: 100, Loss: 0.0278, Train: 100.00%, Valid: 78.20%, Test: 78.90%, Best Valid: 80.60%, Best Test: 80.40%
+Epoch: 200, Loss: 0.0161, Train: 100.00%, Valid: 78.80%, Test: 77.20%, Best Valid: 80.60%, Best Test: 80.40%
+Epoch: 300, Loss: 0.0168, Train: 100.00%, Valid: 79.00%, Test: 78.30%, Best Valid: 80.60%, Best Test: 80.40%
+Epoch: 400, Loss: 0.0202, Train: 100.00%, Valid: 76.60%, Test: 76.20%, Best Valid: 80.60%, Best Test: 80.40%
+Run 06:
+Highest Train: 100.00
+Highest Valid: 81.20
+Highest Test: 81.10
+Chosen epoch: 425
+Final Train: 100.00
+Final Test: 77.00
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.2106, Train: 58.00%, Valid: 49.60%, Test: 54.50%, Best Valid: 49.60%, Best Test: 54.50%
+Epoch: 100, Loss: 0.0267, Train: 100.00%, Valid: 82.60%, Test: 80.00%, Best Valid: 84.40%, Best Test: 81.80%
+Epoch: 200, Loss: 0.0236, Train: 100.00%, Valid: 82.00%, Test: 80.70%, Best Valid: 84.40%, Best Test: 81.80%
+Epoch: 300, Loss: 0.0364, Train: 100.00%, Valid: 82.40%, Test: 80.20%, Best Valid: 84.40%, Best Test: 81.80%
+Epoch: 400, Loss: 0.0351, Train: 100.00%, Valid: 81.20%, Test: 79.20%, Best Valid: 84.40%, Best Test: 81.80%
+Run 07:
+Highest Train: 100.00
+Highest Valid: 84.40
+Highest Test: 82.50
+Chosen epoch: 28
+Final Train: 97.33
+Final Test: 81.80
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.2104, Train: 33.33%, Valid: 38.40%, Test: 39.30%, Best Valid: 38.40%, Best Test: 39.30%
+Epoch: 100, Loss: 0.0366, Train: 100.00%, Valid: 77.60%, Test: 76.60%, Best Valid: 80.00%, Best Test: 80.10%
+Epoch: 200, Loss: 0.0373, Train: 100.00%, Valid: 78.80%, Test: 77.40%, Best Valid: 80.00%, Best Test: 80.10%
+Epoch: 300, Loss: 0.0150, Train: 100.00%, Valid: 76.20%, Test: 75.30%, Best Valid: 80.00%, Best Test: 80.10%
+Epoch: 400, Loss: 0.0217, Train: 100.00%, Valid: 77.40%, Test: 74.60%, Best Valid: 80.00%, Best Test: 80.10%
+Run 08:
+Highest Train: 100.00
+Highest Valid: 80.20
+Highest Test: 81.40
+Chosen epoch: 499
+Final Train: 100.00
+Final Test: 78.00
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.2080, Train: 38.00%, Valid: 40.80%, Test: 41.50%, Best Valid: 40.80%, Best Test: 41.50%
+Epoch: 100, Loss: 0.0323, Train: 100.00%, Valid: 79.40%, Test: 81.90%, Best Valid: 81.00%, Best Test: 82.50%
+Epoch: 200, Loss: 0.0225, Train: 100.00%, Valid: 79.60%, Test: 81.30%, Best Valid: 81.00%, Best Test: 82.50%
+Epoch: 300, Loss: 0.0104, Train: 100.00%, Valid: 79.60%, Test: 80.50%, Best Valid: 81.00%, Best Test: 82.50%
+Epoch: 400, Loss: 0.0185, Train: 100.00%, Valid: 78.00%, Test: 80.60%, Best Valid: 81.00%, Best Test: 82.50%
+Run 09:
+Highest Train: 100.00
+Highest Valid: 81.00
+Highest Test: 83.10
+Chosen epoch: 72
+Final Train: 100.00
+Final Test: 82.50
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.2094, Train: 33.33%, Valid: 38.60%, Test: 40.80%, Best Valid: 38.60%, Best Test: 40.80%
+Epoch: 100, Loss: 0.0184, Train: 100.00%, Valid: 82.00%, Test: 81.20%, Best Valid: 85.60%, Best Test: 83.10%
+Epoch: 200, Loss: 0.0300, Train: 100.00%, Valid: 82.60%, Test: 80.90%, Best Valid: 85.60%, Best Test: 83.10%
+Epoch: 300, Loss: 0.0129, Train: 100.00%, Valid: 84.80%, Test: 82.10%, Best Valid: 85.60%, Best Test: 83.10%
+Epoch: 400, Loss: 0.0159, Train: 100.00%, Valid: 83.00%, Test: 81.40%, Best Valid: 85.60%, Best Test: 83.10%
+Run 10:
+Highest Train: 100.00
+Highest Valid: 85.60
+Highest Test: 83.20
+Chosen epoch: 80
+Final Train: 100.00
+Final Test: 83.10
+All runs:
+Highest Train: 100.00 ± 0.00
+Highest Test: 82.30 ± 0.75
+Highest Valid: 81.46 ± 2.49
+  Final Train: 99.27 ± 1.19
+   Final Test: 80.93 ± 2.06
+Saving results to results/lowlabel/pubmed/MPNN_gcn.csv
+--- oracle_reg | lambda=0.2 ---
+Namespace(bn=False, budget_tag='50', count_reg=False, count_smoothing=1.0, cpu=False, data_dir='./data/', dataset='pubmed', device=0, display_step=100, dropout=0.7, epochs=500, gnn='gcn', hidden_channels=256, jk=False, label_num_per_class=50, lambda_val=0.2, ln=False, local_layers=2, lr=0.005, metric='acc', mlp_epochs=500, mlp_reg=False, model='MPNN', model_dir='models', num_heads=1, oracle_reg=True, paired_seeds=True, penalty_transform='none', pre_linear=False, pre_ln=False, rand_split=False, rand_split_class=True, reg_start_epoch=10, reg_update_freq=5, res=False, resample_split_per_run=True, result_dir='results/lowlabel', runs=10, save_model=False, seed=123, test_num=1000, train_per_class=0, train_prop=0.5, use_reg=True, valid_num=500, valid_per_class=0, valid_prop=0.25, weight_decay=0.0005)
+pubmed
+Num nodes: 19717
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+dataset pubmed | num nodes 19717 | num edge 88648 | num node feats 500 | num classes 3
+MODEL: MPNNs(
+  (h_lins): ModuleList()
+  (local_convs): ModuleList(
+    (0): GCNConv(500, 256)
+    (1): GCNConv(256, 256)
+  )
+  (lins): ModuleList(
+    (0): Linear(in_features=500, out_features=256, bias=True)
+    (1): Linear(in_features=256, out_features=256, bias=True)
+  )
+  (lns): ModuleList(
+    (0): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+    (1): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+  )
+  (bns): ModuleList(
+    (0): BatchNorm1d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (1): BatchNorm1d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (lin_in): Linear(in_features=500, out_features=256, bias=True)
+  (pred_local): Linear(in_features=256, out_features=3, bias=True)
+)
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.3188, Train: 33.33%, Valid: 42.00%, Test: 36.30%, Best Valid: 42.00%, Best Test: 36.30%
+Epoch: 100, Loss: 0.0177, Train: 100.00%, Valid: 76.00%, Test: 80.30%, Best Valid: 77.60%, Best Test: 80.30%
+Epoch: 200, Loss: 0.0176, Train: 100.00%, Valid: 76.40%, Test: 80.40%, Best Valid: 77.60%, Best Test: 80.30%
+Epoch: 300, Loss: 0.0224, Train: 100.00%, Valid: 75.60%, Test: 79.40%, Best Valid: 77.60%, Best Test: 80.30%
+Epoch: 400, Loss: 0.0161, Train: 100.00%, Valid: 75.40%, Test: 80.40%, Best Valid: 77.60%, Best Test: 80.30%
+Run 01:
+Highest Train: 100.00
+Highest Valid: 77.60
+Highest Test: 81.80
+Chosen epoch: 41
+Final Train: 100.00
+Final Test: 80.30
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.3197, Train: 44.00%, Valid: 45.00%, Test: 45.50%, Best Valid: 45.00%, Best Test: 45.50%
+Epoch: 100, Loss: 0.0247, Train: 100.00%, Valid: 82.60%, Test: 81.60%, Best Valid: 83.80%, Best Test: 82.90%
+Epoch: 200, Loss: 0.0256, Train: 100.00%, Valid: 82.20%, Test: 81.40%, Best Valid: 84.00%, Best Test: 82.60%
+Epoch: 300, Loss: 0.0143, Train: 100.00%, Valid: 81.40%, Test: 81.70%, Best Valid: 84.00%, Best Test: 82.60%
+Epoch: 400, Loss: 0.0109, Train: 100.00%, Valid: 81.40%, Test: 80.70%, Best Valid: 84.00%, Best Test: 82.60%
+Run 02:
+Highest Train: 100.00
+Highest Valid: 84.00
+Highest Test: 83.30
+Chosen epoch: 107
+Final Train: 100.00
+Final Test: 82.60
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.3192, Train: 36.00%, Valid: 41.00%, Test: 42.70%, Best Valid: 41.00%, Best Test: 42.70%
+Epoch: 100, Loss: 0.0440, Train: 100.00%, Valid: 77.80%, Test: 79.00%, Best Valid: 79.80%, Best Test: 81.20%
+Epoch: 200, Loss: 0.0251, Train: 100.00%, Valid: 78.00%, Test: 77.50%, Best Valid: 79.80%, Best Test: 81.20%
+Epoch: 300, Loss: 0.0312, Train: 100.00%, Valid: 75.00%, Test: 75.20%, Best Valid: 79.80%, Best Test: 81.20%
+Epoch: 400, Loss: 0.0293, Train: 100.00%, Valid: 76.00%, Test: 76.60%, Best Valid: 79.80%, Best Test: 81.20%
+Run 03:
+Highest Train: 100.00
+Highest Valid: 79.80
+Highest Test: 81.90
+Chosen epoch: 30
+Final Train: 97.33
+Final Test: 81.20
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.3177, Train: 38.67%, Valid: 25.20%, Test: 25.80%, Best Valid: 25.20%, Best Test: 25.80%
+Epoch: 100, Loss: 0.0301, Train: 100.00%, Valid: 75.60%, Test: 79.50%, Best Valid: 78.00%, Best Test: 81.90%
+Epoch: 200, Loss: 0.0153, Train: 100.00%, Valid: 76.60%, Test: 79.20%, Best Valid: 78.00%, Best Test: 81.90%
+Epoch: 300, Loss: 0.0152, Train: 100.00%, Valid: 75.40%, Test: 78.10%, Best Valid: 78.00%, Best Test: 81.90%
+Epoch: 400, Loss: 0.0179, Train: 100.00%, Valid: 74.20%, Test: 76.90%, Best Valid: 79.80%, Best Test: 80.10%
+Run 04:
+Highest Train: 100.00
+Highest Valid: 79.80
+Highest Test: 81.90
+Chosen epoch: 311
+Final Train: 100.00
+Final Test: 80.10
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.3191, Train: 53.33%, Valid: 56.20%, Test: 56.60%, Best Valid: 56.20%, Best Test: 56.60%
+Epoch: 100, Loss: 0.0374, Train: 100.00%, Valid: 80.40%, Test: 80.90%, Best Valid: 81.40%, Best Test: 82.90%
+Epoch: 200, Loss: 0.0193, Train: 100.00%, Valid: 79.00%, Test: 80.30%, Best Valid: 81.40%, Best Test: 82.90%
+Epoch: 300, Loss: 0.0150, Train: 100.00%, Valid: 79.00%, Test: 80.30%, Best Valid: 81.40%, Best Test: 82.90%
+Epoch: 400, Loss: 0.0110, Train: 100.00%, Valid: 79.00%, Test: 79.50%, Best Valid: 81.40%, Best Test: 82.90%
+Run 05:
+Highest Train: 100.00
+Highest Valid: 81.40
+Highest Test: 83.00
+Chosen epoch: 26
+Final Train: 97.33
+Final Test: 82.90
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.3184, Train: 33.33%, Valid: 24.60%, Test: 20.60%, Best Valid: 24.60%, Best Test: 20.60%
+Epoch: 100, Loss: 0.0320, Train: 100.00%, Valid: 79.00%, Test: 79.10%, Best Valid: 80.40%, Best Test: 80.20%
+Epoch: 200, Loss: 0.0168, Train: 100.00%, Valid: 78.60%, Test: 77.80%, Best Valid: 81.00%, Best Test: 76.80%
+Epoch: 300, Loss: 0.0186, Train: 100.00%, Valid: 79.20%, Test: 77.50%, Best Valid: 81.00%, Best Test: 76.80%
+Epoch: 400, Loss: 0.0183, Train: 100.00%, Valid: 77.40%, Test: 77.80%, Best Valid: 81.00%, Best Test: 76.80%
+Run 06:
+Highest Train: 100.00
+Highest Valid: 81.00
+Highest Test: 81.20
+Chosen epoch: 172
+Final Train: 100.00
+Final Test: 76.80
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.3206, Train: 58.67%, Valid: 49.60%, Test: 55.40%, Best Valid: 49.60%, Best Test: 55.40%
+Epoch: 100, Loss: 0.0304, Train: 100.00%, Valid: 82.60%, Test: 80.40%, Best Valid: 84.40%, Best Test: 82.50%
+Epoch: 200, Loss: 0.0236, Train: 100.00%, Valid: 81.40%, Test: 80.30%, Best Valid: 84.40%, Best Test: 82.50%
+Epoch: 300, Loss: 0.0358, Train: 100.00%, Valid: 80.80%, Test: 79.80%, Best Valid: 84.40%, Best Test: 82.50%
+Epoch: 400, Loss: 0.0258, Train: 100.00%, Valid: 82.60%, Test: 79.30%, Best Valid: 84.40%, Best Test: 82.50%
+Run 07:
+Highest Train: 100.00
+Highest Valid: 84.40
+Highest Test: 82.50
+Chosen epoch: 26
+Final Train: 96.67
+Final Test: 82.50
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.3205, Train: 33.33%, Valid: 38.40%, Test: 39.30%, Best Valid: 38.40%, Best Test: 39.30%
+Epoch: 100, Loss: 0.0417, Train: 100.00%, Valid: 78.40%, Test: 78.10%, Best Valid: 80.40%, Best Test: 80.10%
+Epoch: 200, Loss: 0.0530, Train: 100.00%, Valid: 78.40%, Test: 77.20%, Best Valid: 80.40%, Best Test: 80.10%
+Epoch: 300, Loss: 0.0153, Train: 100.00%, Valid: 77.00%, Test: 75.70%, Best Valid: 80.40%, Best Test: 80.10%
+Epoch: 400, Loss: 0.0194, Train: 100.00%, Valid: 78.00%, Test: 75.70%, Best Valid: 80.40%, Best Test: 80.10%
+Run 08:
+Highest Train: 100.00
+Highest Valid: 80.40
+Highest Test: 81.70
+Chosen epoch: 40
+Final Train: 99.33
+Final Test: 80.10
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.3179, Train: 38.67%, Valid: 41.60%, Test: 43.60%, Best Valid: 41.60%, Best Test: 43.60%
+Epoch: 100, Loss: 0.0356, Train: 100.00%, Valid: 79.20%, Test: 81.70%, Best Valid: 81.00%, Best Test: 82.40%
+Epoch: 200, Loss: 0.0228, Train: 100.00%, Valid: 77.80%, Test: 80.90%, Best Valid: 81.20%, Best Test: 82.30%
+Epoch: 300, Loss: 0.0126, Train: 100.00%, Valid: 78.40%, Test: 80.20%, Best Valid: 81.20%, Best Test: 82.30%
+Epoch: 400, Loss: 0.0221, Train: 100.00%, Valid: 78.20%, Test: 80.10%, Best Valid: 81.20%, Best Test: 82.30%
+Run 09:
+Highest Train: 100.00
+Highest Valid: 81.20
+Highest Test: 83.00
+Chosen epoch: 134
+Final Train: 100.00
+Final Test: 82.30
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.3193, Train: 33.33%, Valid: 38.60%, Test: 40.80%, Best Valid: 38.60%, Best Test: 40.80%
+Epoch: 100, Loss: 0.0206, Train: 100.00%, Valid: 82.80%, Test: 81.90%, Best Valid: 85.40%, Best Test: 83.00%
+Epoch: 200, Loss: 0.0444, Train: 100.00%, Valid: 81.60%, Test: 80.30%, Best Valid: 85.80%, Best Test: 82.40%
+Epoch: 300, Loss: 0.0150, Train: 100.00%, Valid: 82.60%, Test: 82.00%, Best Valid: 85.80%, Best Test: 82.40%
+Epoch: 400, Loss: 0.0153, Train: 100.00%, Valid: 83.60%, Test: 81.30%, Best Valid: 85.80%, Best Test: 82.40%
+Run 10:
+Highest Train: 100.00
+Highest Valid: 85.80
+Highest Test: 83.60
+Chosen epoch: 133
+Final Train: 100.00
+Final Test: 82.40
+All runs:
+Highest Train: 100.00 ± 0.00
+Highest Test: 82.39 ± 0.80
+Highest Valid: 81.54 ± 2.49
+  Final Train: 99.07 ± 1.38
+   Final Test: 81.12 ± 1.88
+Saving results to results/lowlabel/pubmed/MPNN_gcn.csv
+--- oracle_reg | lambda=0.4 ---
+Namespace(bn=False, budget_tag='50', count_reg=False, count_smoothing=1.0, cpu=False, data_dir='./data/', dataset='pubmed', device=0, display_step=100, dropout=0.7, epochs=500, gnn='gcn', hidden_channels=256, jk=False, label_num_per_class=50, lambda_val=0.4, ln=False, local_layers=2, lr=0.005, metric='acc', mlp_epochs=500, mlp_reg=False, model='MPNN', model_dir='models', num_heads=1, oracle_reg=True, paired_seeds=True, penalty_transform='none', pre_linear=False, pre_ln=False, rand_split=False, rand_split_class=True, reg_start_epoch=10, reg_update_freq=5, res=False, resample_split_per_run=True, result_dir='results/lowlabel', runs=10, save_model=False, seed=123, test_num=1000, train_per_class=0, train_prop=0.5, use_reg=True, valid_num=500, valid_per_class=0, valid_prop=0.25, weight_decay=0.0005)
+pubmed
+Num nodes: 19717
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+dataset pubmed | num nodes 19717 | num edge 88648 | num node feats 500 | num classes 3
+MODEL: MPNNs(
+  (h_lins): ModuleList()
+  (local_convs): ModuleList(
+    (0): GCNConv(500, 256)
+    (1): GCNConv(256, 256)
+  )
+  (lins): ModuleList(
+    (0): Linear(in_features=500, out_features=256, bias=True)
+    (1): Linear(in_features=256, out_features=256, bias=True)
+  )
+  (lns): ModuleList(
+    (0): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+    (1): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+  )
+  (bns): ModuleList(
+    (0): BatchNorm1d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (1): BatchNorm1d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (lin_in): Linear(in_features=500, out_features=256, bias=True)
+  (pred_local): Linear(in_features=256, out_features=3, bias=True)
+)
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.5386, Train: 33.33%, Valid: 42.00%, Test: 36.30%, Best Valid: 42.00%, Best Test: 36.30%
+Epoch: 100, Loss: 0.0201, Train: 100.00%, Valid: 75.40%, Test: 80.30%, Best Valid: 77.40%, Best Test: 80.40%
+Epoch: 200, Loss: 0.0199, Train: 100.00%, Valid: 76.60%, Test: 80.50%, Best Valid: 77.40%, Best Test: 80.40%
+Epoch: 300, Loss: 0.0157, Train: 100.00%, Valid: 76.40%, Test: 80.20%, Best Valid: 77.40%, Best Test: 80.40%
+Epoch: 400, Loss: 0.0186, Train: 100.00%, Valid: 76.00%, Test: 80.90%, Best Valid: 77.40%, Best Test: 80.40%
+Run 01:
+Highest Train: 100.00
+Highest Valid: 77.40
+Highest Test: 81.70
+Chosen epoch: 51
+Final Train: 100.00
+Final Test: 80.40
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.5397, Train: 40.67%, Valid: 42.60%, Test: 43.00%, Best Valid: 42.60%, Best Test: 43.00%
+Epoch: 100, Loss: 0.0270, Train: 100.00%, Valid: 82.40%, Test: 81.60%, Best Valid: 84.20%, Best Test: 82.50%
+Epoch: 200, Loss: 0.0250, Train: 100.00%, Valid: 81.80%, Test: 81.40%, Best Valid: 84.20%, Best Test: 82.50%
+Epoch: 300, Loss: 0.0207, Train: 100.00%, Valid: 82.00%, Test: 81.70%, Best Valid: 84.20%, Best Test: 82.50%
+Epoch: 400, Loss: 0.0119, Train: 100.00%, Valid: 81.60%, Test: 81.50%, Best Valid: 84.20%, Best Test: 82.50%
+Run 02:
+Highest Train: 100.00
+Highest Valid: 84.20
+Highest Test: 83.50
+Chosen epoch: 64
+Final Train: 100.00
+Final Test: 82.50
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.5391, Train: 34.67%, Valid: 40.80%, Test: 41.70%, Best Valid: 40.80%, Best Test: 41.70%
+Epoch: 100, Loss: 0.0500, Train: 100.00%, Valid: 78.60%, Test: 79.30%, Best Valid: 80.40%, Best Test: 80.80%
+Epoch: 200, Loss: 0.0240, Train: 100.00%, Valid: 78.20%, Test: 78.20%, Best Valid: 80.40%, Best Test: 80.80%
+Epoch: 300, Loss: 0.0294, Train: 100.00%, Valid: 75.20%, Test: 76.90%, Best Valid: 80.40%, Best Test: 80.80%
+Epoch: 400, Loss: 0.0254, Train: 100.00%, Valid: 78.20%, Test: 78.00%, Best Valid: 80.40%, Best Test: 80.80%
+Run 03:
+Highest Train: 100.00
+Highest Valid: 80.40
+Highest Test: 82.70
+Chosen epoch: 37
+Final Train: 99.33
+Final Test: 80.80
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.5373, Train: 44.00%, Valid: 31.40%, Test: 31.10%, Best Valid: 31.40%, Best Test: 31.10%
+Epoch: 100, Loss: 0.0376, Train: 100.00%, Valid: 75.40%, Test: 79.30%, Best Valid: 79.20%, Best Test: 81.90%
+Epoch: 200, Loss: 0.0195, Train: 100.00%, Valid: 76.40%, Test: 79.60%, Best Valid: 79.20%, Best Test: 81.90%
+Epoch: 300, Loss: 0.0191, Train: 100.00%, Valid: 75.60%, Test: 77.90%, Best Valid: 79.20%, Best Test: 81.90%
+Epoch: 400, Loss: 0.0204, Train: 100.00%, Valid: 73.80%, Test: 76.70%, Best Valid: 79.20%, Best Test: 81.90%
+Run 04:
+Highest Train: 100.00
+Highest Valid: 79.20
+Highest Test: 82.30
+Chosen epoch: 21
+Final Train: 94.00
+Final Test: 81.90
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.5390, Train: 53.33%, Valid: 51.20%, Test: 54.20%, Best Valid: 51.20%, Best Test: 54.20%
+Epoch: 100, Loss: 0.0418, Train: 100.00%, Valid: 80.20%, Test: 81.00%, Best Valid: 81.00%, Best Test: 82.70%
+Epoch: 200, Loss: 0.0232, Train: 100.00%, Valid: 79.00%, Test: 80.00%, Best Valid: 81.00%, Best Test: 82.70%
+Epoch: 300, Loss: 0.0163, Train: 100.00%, Valid: 79.40%, Test: 80.40%, Best Valid: 81.00%, Best Test: 82.70%
+Epoch: 400, Loss: 0.0159, Train: 100.00%, Valid: 79.80%, Test: 80.50%, Best Valid: 81.00%, Best Test: 82.70%
+Run 05:
+Highest Train: 100.00
+Highest Valid: 81.00
+Highest Test: 83.90
+Chosen epoch: 37
+Final Train: 99.33
+Final Test: 82.70
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.5381, Train: 33.33%, Valid: 24.60%, Test: 20.60%, Best Valid: 24.60%, Best Test: 20.60%
+Epoch: 100, Loss: 0.0370, Train: 100.00%, Valid: 79.80%, Test: 79.80%, Best Valid: 80.80%, Best Test: 80.30%
+Epoch: 200, Loss: 0.0183, Train: 100.00%, Valid: 79.00%, Test: 78.10%, Best Valid: 81.40%, Best Test: 78.90%
+Epoch: 300, Loss: 0.0254, Train: 100.00%, Valid: 80.00%, Test: 78.80%, Best Valid: 81.40%, Best Test: 78.90%
+Epoch: 400, Loss: 0.0238, Train: 100.00%, Valid: 78.60%, Test: 77.20%, Best Valid: 81.40%, Best Test: 78.90%
+Run 06:
+Highest Train: 100.00
+Highest Valid: 81.40
+Highest Test: 81.60
+Chosen epoch: 173
+Final Train: 100.00
+Final Test: 78.90
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.5408, Train: 47.33%, Valid: 47.40%, Test: 52.10%, Best Valid: 47.40%, Best Test: 52.10%
+Epoch: 100, Loss: 0.0411, Train: 100.00%, Valid: 83.00%, Test: 79.80%, Best Valid: 84.20%, Best Test: 81.50%
+Epoch: 200, Loss: 0.0276, Train: 100.00%, Valid: 82.20%, Test: 80.70%, Best Valid: 84.60%, Best Test: 79.90%
+Epoch: 300, Loss: 0.0376, Train: 100.00%, Valid: 83.20%, Test: 79.90%, Best Valid: 84.60%, Best Test: 79.90%
+Epoch: 400, Loss: 0.0257, Train: 100.00%, Valid: 82.40%, Test: 79.20%, Best Valid: 84.60%, Best Test: 79.90%
+Run 07:
+Highest Train: 100.00
+Highest Valid: 84.60
+Highest Test: 82.40
+Chosen epoch: 138
+Final Train: 100.00
+Final Test: 79.90
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.5405, Train: 33.33%, Valid: 38.40%, Test: 39.30%, Best Valid: 38.40%, Best Test: 39.30%
+Epoch: 100, Loss: 0.0373, Train: 100.00%, Valid: 78.60%, Test: 78.60%, Best Valid: 80.80%, Best Test: 79.00%
+Epoch: 200, Loss: 0.0368, Train: 100.00%, Valid: 79.60%, Test: 78.10%, Best Valid: 80.80%, Best Test: 79.00%
+Epoch: 300, Loss: 0.0225, Train: 99.33%, Valid: 76.60%, Test: 76.30%, Best Valid: 80.80%, Best Test: 79.00%
+Epoch: 400, Loss: 0.0260, Train: 100.00%, Valid: 78.40%, Test: 77.70%, Best Valid: 80.80%, Best Test: 79.00%
+Run 08:
+Highest Train: 100.00
+Highest Valid: 80.80
+Highest Test: 82.50
+Chosen epoch: 59
+Final Train: 99.33
+Final Test: 79.00
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.5375, Train: 42.00%, Valid: 44.80%, Test: 45.80%, Best Valid: 44.80%, Best Test: 45.80%
+Epoch: 100, Loss: 0.0427, Train: 100.00%, Valid: 79.20%, Test: 82.10%, Best Valid: 81.20%, Best Test: 83.20%
+Epoch: 200, Loss: 0.0324, Train: 100.00%, Valid: 78.60%, Test: 81.10%, Best Valid: 81.20%, Best Test: 83.20%
+Epoch: 300, Loss: 0.0153, Train: 100.00%, Valid: 78.20%, Test: 80.60%, Best Valid: 81.20%, Best Test: 83.20%
+Epoch: 400, Loss: 0.0229, Train: 100.00%, Valid: 79.20%, Test: 81.20%, Best Valid: 81.20%, Best Test: 83.20%
+Run 09:
+Highest Train: 100.00
+Highest Valid: 81.20
+Highest Test: 83.60
+Chosen epoch: 31
+Final Train: 99.33
+Final Test: 83.20
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.5392, Train: 33.33%, Valid: 38.60%, Test: 40.80%, Best Valid: 38.60%, Best Test: 40.80%
+Epoch: 100, Loss: 0.0228, Train: 100.00%, Valid: 83.80%, Test: 82.60%, Best Valid: 85.20%, Best Test: 83.10%
+Epoch: 200, Loss: 0.0303, Train: 100.00%, Valid: 81.40%, Test: 80.90%, Best Valid: 85.40%, Best Test: 82.80%
+Epoch: 300, Loss: 0.0131, Train: 100.00%, Valid: 84.00%, Test: 82.20%, Best Valid: 85.40%, Best Test: 82.80%
+Epoch: 400, Loss: 0.0264, Train: 100.00%, Valid: 83.40%, Test: 81.30%, Best Valid: 85.40%, Best Test: 82.80%
+Run 10:
+Highest Train: 100.00
+Highest Valid: 85.40
+Highest Test: 83.80
+Chosen epoch: 133
+Final Train: 100.00
+Final Test: 82.80
+All runs:
+Highest Train: 100.00 ± 0.00
+Highest Test: 82.80 ± 0.85
+Highest Valid: 81.56 ± 2.50
+  Final Train: 99.13 ± 1.83
+   Final Test: 81.21 ± 1.62
+Saving results to results/lowlabel/pubmed/MPNN_gcn.csv
+--- oracle_reg | lambda=0.8 ---
+Namespace(bn=False, budget_tag='50', count_reg=False, count_smoothing=1.0, cpu=False, data_dir='./data/', dataset='pubmed', device=0, display_step=100, dropout=0.7, epochs=500, gnn='gcn', hidden_channels=256, jk=False, label_num_per_class=50, lambda_val=0.8, ln=False, local_layers=2, lr=0.005, metric='acc', mlp_epochs=500, mlp_reg=False, model='MPNN', model_dir='models', num_heads=1, oracle_reg=True, paired_seeds=True, penalty_transform='none', pre_linear=False, pre_ln=False, rand_split=False, rand_split_class=True, reg_start_epoch=10, reg_update_freq=5, res=False, resample_split_per_run=True, result_dir='results/lowlabel', runs=10, save_model=False, seed=123, test_num=1000, train_per_class=0, train_prop=0.5, use_reg=True, valid_num=500, valid_per_class=0, valid_prop=0.25, weight_decay=0.0005)
+pubmed
+Num nodes: 19717
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+dataset pubmed | num nodes 19717 | num edge 88648 | num node feats 500 | num classes 3
+MODEL: MPNNs(
+  (h_lins): ModuleList()
+  (local_convs): ModuleList(
+    (0): GCNConv(500, 256)
+    (1): GCNConv(256, 256)
+  )
+  (lins): ModuleList(
+    (0): Linear(in_features=500, out_features=256, bias=True)
+    (1): Linear(in_features=256, out_features=256, bias=True)
+  )
+  (lns): ModuleList(
+    (0): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+    (1): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+  )
+  (bns): ModuleList(
+    (0): BatchNorm1d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (1): BatchNorm1d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (lin_in): Linear(in_features=500, out_features=256, bias=True)
+  (pred_local): Linear(in_features=256, out_features=3, bias=True)
+)
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.9782, Train: 33.33%, Valid: 42.00%, Test: 36.30%, Best Valid: 42.00%, Best Test: 36.30%
+Epoch: 100, Loss: 0.0382, Train: 100.00%, Valid: 76.40%, Test: 81.10%, Best Valid: 77.40%, Best Test: 80.40%
+Epoch: 200, Loss: 0.0265, Train: 100.00%, Valid: 76.80%, Test: 81.40%, Best Valid: 77.40%, Best Test: 80.40%
+Epoch: 300, Loss: 0.0173, Train: 100.00%, Valid: 75.80%, Test: 81.90%, Best Valid: 77.40%, Best Test: 80.40%
+Epoch: 400, Loss: 0.0223, Train: 100.00%, Valid: 75.80%, Test: 80.70%, Best Valid: 77.60%, Best Test: 81.00%
+Run 01:
+Highest Train: 100.00
+Highest Valid: 77.60
+Highest Test: 82.10
+Chosen epoch: 398
+Final Train: 100.00
+Final Test: 81.00
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.9796, Train: 34.00%, Valid: 40.40%, Test: 40.10%, Best Valid: 40.40%, Best Test: 40.10%
+Epoch: 100, Loss: 0.0362, Train: 100.00%, Valid: 83.20%, Test: 82.70%, Best Valid: 83.80%, Best Test: 82.20%
+Epoch: 200, Loss: 0.0487, Train: 100.00%, Valid: 81.40%, Test: 80.40%, Best Valid: 84.00%, Best Test: 83.20%
+Epoch: 300, Loss: 0.0327, Train: 100.00%, Valid: 81.60%, Test: 81.60%, Best Valid: 84.00%, Best Test: 83.20%
+Epoch: 400, Loss: 0.0200, Train: 100.00%, Valid: 80.80%, Test: 80.90%, Best Valid: 84.00%, Best Test: 83.20%
+Run 02:
+Highest Train: 100.00
+Highest Valid: 84.00
+Highest Test: 83.20
+Chosen epoch: 109
+Final Train: 100.00
+Final Test: 83.20
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.9788, Train: 33.33%, Valid: 40.60%, Test: 41.50%, Best Valid: 40.60%, Best Test: 41.50%
+Epoch: 100, Loss: 0.0630, Train: 100.00%, Valid: 78.80%, Test: 79.20%, Best Valid: 80.00%, Best Test: 81.50%
+Epoch: 200, Loss: 0.0522, Train: 100.00%, Valid: 79.20%, Test: 79.90%, Best Valid: 80.60%, Best Test: 78.90%
+Epoch: 300, Loss: 0.0483, Train: 100.00%, Valid: 77.60%, Test: 77.90%, Best Valid: 80.60%, Best Test: 78.90%
+Epoch: 400, Loss: 0.0451, Train: 100.00%, Valid: 77.60%, Test: 78.30%, Best Valid: 81.20%, Best Test: 79.10%
+Run 03:
+Highest Train: 100.00
+Highest Valid: 81.20
+Highest Test: 81.90
+Chosen epoch: 341
+Final Train: 100.00
+Final Test: 79.10
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.9766, Train: 61.33%, Valid: 47.80%, Test: 45.90%, Best Valid: 47.80%, Best Test: 45.90%
+Epoch: 100, Loss: 0.0466, Train: 100.00%, Valid: 79.20%, Test: 81.20%, Best Valid: 81.20%, Best Test: 80.70%
+Epoch: 200, Loss: 0.0273, Train: 100.00%, Valid: 78.00%, Test: 79.00%, Best Valid: 81.20%, Best Test: 80.70%
+Epoch: 300, Loss: 0.0234, Train: 100.00%, Valid: 75.40%, Test: 78.90%, Best Valid: 81.20%, Best Test: 80.70%
+Epoch: 400, Loss: 0.0301, Train: 100.00%, Valid: 75.00%, Test: 78.40%, Best Valid: 81.20%, Best Test: 80.70%
+Run 04:
+Highest Train: 100.00
+Highest Valid: 81.20
+Highest Test: 81.50
+Chosen epoch: 73
+Final Train: 100.00
+Final Test: 80.70
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.9787, Train: 33.33%, Valid: 39.00%, Test: 38.00%, Best Valid: 39.00%, Best Test: 38.00%
+Epoch: 100, Loss: 0.0572, Train: 100.00%, Valid: 81.80%, Test: 82.60%, Best Valid: 82.40%, Best Test: 83.10%
+Epoch: 200, Loss: 0.0283, Train: 100.00%, Valid: 80.40%, Test: 80.90%, Best Valid: 82.40%, Best Test: 83.10%
+Epoch: 300, Loss: 0.0279, Train: 100.00%, Valid: 79.40%, Test: 81.20%, Best Valid: 82.40%, Best Test: 83.10%
+Epoch: 400, Loss: 0.0239, Train: 100.00%, Valid: 80.40%, Test: 80.90%, Best Valid: 82.40%, Best Test: 83.10%
+Run 05:
+Highest Train: 100.00
+Highest Valid: 82.40
+Highest Test: 83.50
+Chosen epoch: 99
+Final Train: 100.00
+Final Test: 83.10
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.9776, Train: 34.00%, Valid: 24.80%, Test: 20.90%, Best Valid: 24.80%, Best Test: 20.90%
+Epoch: 100, Loss: 0.0456, Train: 100.00%, Valid: 81.20%, Test: 79.70%, Best Valid: 82.80%, Best Test: 82.10%
+Epoch: 200, Loss: 0.0475, Train: 100.00%, Valid: 79.00%, Test: 79.00%, Best Valid: 82.80%, Best Test: 82.10%
+Epoch: 300, Loss: 0.0397, Train: 100.00%, Valid: 81.40%, Test: 79.00%, Best Valid: 82.80%, Best Test: 82.10%
+Epoch: 400, Loss: 0.0686, Train: 100.00%, Valid: 81.00%, Test: 78.80%, Best Valid: 82.80%, Best Test: 82.10%
+Run 06:
+Highest Train: 100.00
+Highest Valid: 82.80
+Highest Test: 82.70
+Chosen epoch: 31
+Final Train: 88.67
+Final Test: 82.10
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.9810, Train: 35.33%, Valid: 40.40%, Test: 43.70%, Best Valid: 40.40%, Best Test: 43.70%
+Epoch: 100, Loss: 0.0552, Train: 100.00%, Valid: 82.00%, Test: 80.40%, Best Valid: 83.20%, Best Test: 81.10%
+Epoch: 200, Loss: 0.0448, Train: 100.00%, Valid: 81.60%, Test: 80.60%, Best Valid: 84.00%, Best Test: 79.30%
+Epoch: 300, Loss: 0.0263, Train: 100.00%, Valid: 83.20%, Test: 79.60%, Best Valid: 84.20%, Best Test: 79.90%
+Epoch: 400, Loss: 0.0449, Train: 100.00%, Valid: 82.60%, Test: 78.90%, Best Valid: 84.20%, Best Test: 79.90%
+Run 07:
+Highest Train: 100.00
+Highest Valid: 84.40
+Highest Test: 82.80
+Chosen epoch: 483
+Final Train: 100.00
+Final Test: 79.00
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.9807, Train: 33.33%, Valid: 38.40%, Test: 39.30%, Best Valid: 38.40%, Best Test: 39.30%
+Epoch: 100, Loss: 0.0693, Train: 100.00%, Valid: 77.20%, Test: 78.10%, Best Valid: 78.60%, Best Test: 77.70%
+Epoch: 200, Loss: 0.0566, Train: 100.00%, Valid: 80.20%, Test: 78.90%, Best Valid: 81.00%, Best Test: 80.10%
+Epoch: 300, Loss: 0.0202, Train: 100.00%, Valid: 79.20%, Test: 78.90%, Best Valid: 81.00%, Best Test: 80.10%
+Epoch: 400, Loss: 0.0256, Train: 100.00%, Valid: 79.20%, Test: 79.10%, Best Valid: 81.00%, Best Test: 80.10%
+Run 08:
+Highest Train: 100.00
+Highest Valid: 81.00
+Highest Test: 81.20
+Chosen epoch: 153
+Final Train: 100.00
+Final Test: 80.10
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.9768, Train: 49.33%, Valid: 49.80%, Test: 51.10%, Best Valid: 49.80%, Best Test: 51.10%
+Epoch: 100, Loss: 0.0510, Train: 100.00%, Valid: 80.60%, Test: 82.30%, Best Valid: 81.80%, Best Test: 82.90%
+Epoch: 200, Loss: 0.0324, Train: 100.00%, Valid: 78.20%, Test: 80.80%, Best Valid: 81.80%, Best Test: 82.90%
+Epoch: 300, Loss: 0.0191, Train: 100.00%, Valid: 77.80%, Test: 80.40%, Best Valid: 81.80%, Best Test: 82.90%
+Epoch: 400, Loss: 0.0286, Train: 100.00%, Valid: 78.60%, Test: 81.00%, Best Valid: 81.80%, Best Test: 82.90%
+Run 09:
+Highest Train: 100.00
+Highest Valid: 81.80
+Highest Test: 83.50
+Chosen epoch: 46
+Final Train: 99.33
+Final Test: 82.90
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 1.9790, Train: 34.00%, Valid: 39.00%, Test: 41.20%, Best Valid: 39.00%, Best Test: 41.20%
+Epoch: 100, Loss: 0.0346, Train: 100.00%, Valid: 84.00%, Test: 83.70%, Best Valid: 85.00%, Best Test: 83.80%
+Epoch: 200, Loss: 0.0512, Train: 100.00%, Valid: 83.40%, Test: 82.50%, Best Valid: 85.20%, Best Test: 83.70%
+Epoch: 300, Loss: 0.0292, Train: 100.00%, Valid: 85.40%, Test: 83.10%, Best Valid: 85.40%, Best Test: 83.50%
+Epoch: 400, Loss: 0.0275, Train: 100.00%, Valid: 85.00%, Test: 82.80%, Best Valid: 85.40%, Best Test: 83.50%
+Run 10:
+Highest Train: 100.00
+Highest Valid: 85.60
+Highest Test: 84.00
+Chosen epoch: 442
+Final Train: 100.00
+Final Test: 83.80
+All runs:
+Highest Train: 100.00 ± 0.00
+Highest Test: 82.64 ± 0.94
+Highest Valid: 82.20 ± 2.23
+  Final Train: 98.80 ± 3.57
+   Final Test: 81.50 ± 1.76
+Saving results to results/lowlabel/pubmed/MPNN_gcn.csv
+--- oracle_reg | lambda=1.6 ---
+Namespace(bn=False, budget_tag='50', count_reg=False, count_smoothing=1.0, cpu=False, data_dir='./data/', dataset='pubmed', device=0, display_step=100, dropout=0.7, epochs=500, gnn='gcn', hidden_channels=256, jk=False, label_num_per_class=50, lambda_val=1.6, ln=False, local_layers=2, lr=0.005, metric='acc', mlp_epochs=500, mlp_reg=False, model='MPNN', model_dir='models', num_heads=1, oracle_reg=True, paired_seeds=True, penalty_transform='none', pre_linear=False, pre_ln=False, rand_split=False, rand_split_class=True, reg_start_epoch=10, reg_update_freq=5, res=False, resample_split_per_run=True, result_dir='results/lowlabel', runs=10, save_model=False, seed=123, test_num=1000, train_per_class=0, train_prop=0.5, use_reg=True, valid_num=500, valid_per_class=0, valid_prop=0.25, weight_decay=0.0005)
+pubmed
+Num nodes: 19717
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+dataset pubmed | num nodes 19717 | num edge 88648 | num node feats 500 | num classes 3
+MODEL: MPNNs(
+  (h_lins): ModuleList()
+  (local_convs): ModuleList(
+    (0): GCNConv(500, 256)
+    (1): GCNConv(256, 256)
+  )
+  (lins): ModuleList(
+    (0): Linear(in_features=500, out_features=256, bias=True)
+    (1): Linear(in_features=256, out_features=256, bias=True)
+  )
+  (lns): ModuleList(
+    (0): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+    (1): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+  )
+  (bns): ModuleList(
+    (0): BatchNorm1d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (1): BatchNorm1d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (lin_in): Linear(in_features=500, out_features=256, bias=True)
+  (pred_local): Linear(in_features=256, out_features=3, bias=True)
+)
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 2.8574, Train: 33.33%, Valid: 42.00%, Test: 36.30%, Best Valid: 42.00%, Best Test: 36.30%
+Epoch: 100, Loss: 0.9500, Train: 86.00%, Valid: 44.40%, Test: 37.70%, Best Valid: 44.40%, Best Test: 37.70%
+Epoch: 200, Loss: 0.0807, Train: 100.00%, Valid: 61.60%, Test: 56.80%, Best Valid: 62.60%, Best Test: 60.10%
+Epoch: 300, Loss: 0.0522, Train: 100.00%, Valid: 75.60%, Test: 80.60%, Best Valid: 75.80%, Best Test: 80.20%
+Epoch: 400, Loss: 0.0351, Train: 100.00%, Valid: 77.20%, Test: 81.60%, Best Valid: 77.40%, Best Test: 80.90%
+Run 01:
+Highest Train: 100.00
+Highest Valid: 77.40
+Highest Test: 81.80
+Chosen epoch: 344
+Final Train: 100.00
+Final Test: 80.90
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 2.8594, Train: 33.33%, Valid: 40.40%, Test: 40.10%, Best Valid: 40.40%, Best Test: 40.10%
+Epoch: 100, Loss: 0.5914, Train: 97.33%, Valid: 44.20%, Test: 42.90%, Best Valid: 44.40%, Best Test: 43.30%
+Epoch: 200, Loss: 0.0944, Train: 100.00%, Valid: 62.20%, Test: 61.90%, Best Valid: 62.20%, Best Test: 61.90%
+Epoch: 300, Loss: 0.0600, Train: 100.00%, Valid: 80.00%, Test: 78.90%, Best Valid: 80.00%, Best Test: 79.10%
+Epoch: 400, Loss: 0.0480, Train: 100.00%, Valid: 82.20%, Test: 81.60%, Best Valid: 83.20%, Best Test: 82.10%
+Run 02:
+Highest Train: 100.00
+Highest Valid: 84.20
+Highest Test: 82.80
+Chosen epoch: 440
+Final Train: 100.00
+Final Test: 82.80
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 2.8583, Train: 33.33%, Valid: 40.60%, Test: 41.50%, Best Valid: 40.60%, Best Test: 41.50%
+Epoch: 100, Loss: 1.6708, Train: 81.33%, Valid: 42.00%, Test: 43.50%, Best Valid: 42.00%, Best Test: 43.50%
+Epoch: 200, Loss: 0.0876, Train: 100.00%, Valid: 60.40%, Test: 57.90%, Best Valid: 61.60%, Best Test: 57.80%
+Epoch: 300, Loss: 0.1073, Train: 100.00%, Valid: 64.00%, Test: 62.80%, Best Valid: 66.80%, Best Test: 65.80%
+Epoch: 400, Loss: 0.0920, Train: 100.00%, Valid: 66.60%, Test: 66.70%, Best Valid: 72.20%, Best Test: 70.60%
+Run 03:
+Highest Train: 100.00
+Highest Valid: 76.00
+Highest Test: 76.60
+Chosen epoch: 489
+Final Train: 100.00
+Final Test: 76.30
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 2.8550, Train: 50.00%, Valid: 54.40%, Test: 48.40%, Best Valid: 54.40%, Best Test: 48.40%
+Epoch: 100, Loss: 1.2519, Train: 80.67%, Valid: 47.20%, Test: 39.70%, Best Valid: 54.40%, Best Test: 48.40%
+Epoch: 200, Loss: 0.0939, Train: 100.00%, Valid: 63.40%, Test: 59.30%, Best Valid: 64.60%, Best Test: 60.60%
+Epoch: 300, Loss: 0.0711, Train: 100.00%, Valid: 78.40%, Test: 78.10%, Best Valid: 79.20%, Best Test: 79.20%
+Epoch: 400, Loss: 0.0529, Train: 100.00%, Valid: 79.40%, Test: 80.60%, Best Valid: 80.20%, Best Test: 80.10%
+Run 04:
+Highest Train: 100.00
+Highest Valid: 80.80
+Highest Test: 81.20
+Chosen epoch: 488
+Final Train: 100.00
+Final Test: 79.90
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 2.8581, Train: 33.33%, Valid: 38.80%, Test: 38.00%, Best Valid: 38.80%, Best Test: 38.00%
+Epoch: 100, Loss: 1.3594, Train: 78.67%, Valid: 39.60%, Test: 40.30%, Best Valid: 39.60%, Best Test: 40.30%
+Epoch: 200, Loss: 0.0724, Train: 100.00%, Valid: 66.40%, Test: 65.50%, Best Valid: 66.40%, Best Test: 65.50%
+Epoch: 300, Loss: 0.0603, Train: 100.00%, Valid: 76.80%, Test: 80.60%, Best Valid: 77.40%, Best Test: 79.20%
+Epoch: 400, Loss: 0.0550, Train: 100.00%, Valid: 81.60%, Test: 81.30%, Best Valid: 82.20%, Best Test: 81.80%
+Run 05:
+Highest Train: 100.00
+Highest Valid: 82.20
+Highest Test: 82.50
+Chosen epoch: 384
+Final Train: 100.00
+Final Test: 81.80
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 2.8566, Train: 37.33%, Valid: 28.20%, Test: 25.00%, Best Valid: 28.20%, Best Test: 25.00%
+Epoch: 100, Loss: 1.9218, Train: 67.33%, Valid: 41.00%, Test: 42.40%, Best Valid: 44.00%, Best Test: 45.80%
+Epoch: 200, Loss: 0.1114, Train: 100.00%, Valid: 51.00%, Test: 51.60%, Best Valid: 51.20%, Best Test: 51.40%
+Epoch: 300, Loss: 0.0842, Train: 100.00%, Valid: 64.00%, Test: 61.70%, Best Valid: 64.00%, Best Test: 61.70%
+Epoch: 400, Loss: 0.0764, Train: 100.00%, Valid: 76.60%, Test: 74.50%, Best Valid: 78.00%, Best Test: 74.90%
+Run 06:
+Highest Train: 100.00
+Highest Valid: 81.80
+Highest Test: 79.10
+Chosen epoch: 480
+Final Train: 100.00
+Final Test: 78.50
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 2.8614, Train: 33.33%, Valid: 39.00%, Test: 42.10%, Best Valid: 39.00%, Best Test: 42.10%
+Epoch: 100, Loss: 1.5842, Train: 66.67%, Valid: 39.20%, Test: 43.40%, Best Valid: 39.40%, Best Test: 42.60%
+Epoch: 200, Loss: 0.0911, Train: 100.00%, Valid: 61.40%, Test: 64.40%, Best Valid: 61.40%, Best Test: 64.40%
+Epoch: 300, Loss: 0.1104, Train: 100.00%, Valid: 81.20%, Test: 80.20%, Best Valid: 82.40%, Best Test: 79.70%
+Epoch: 400, Loss: 0.0475, Train: 100.00%, Valid: 82.80%, Test: 78.70%, Best Valid: 84.00%, Best Test: 79.20%
+Run 07:
+Highest Train: 100.00
+Highest Valid: 84.20
+Highest Test: 80.70
+Chosen epoch: 474
+Final Train: 100.00
+Final Test: 79.70
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 2.8610, Train: 33.33%, Valid: 38.40%, Test: 39.30%, Best Valid: 38.40%, Best Test: 39.30%
+Epoch: 100, Loss: 2.1784, Train: 58.00%, Valid: 38.40%, Test: 40.50%, Best Valid: 38.40%, Best Test: 39.30%
+Epoch: 200, Loss: 0.2350, Train: 99.33%, Valid: 48.40%, Test: 49.80%, Best Valid: 48.40%, Best Test: 49.80%
+Epoch: 300, Loss: 0.0897, Train: 100.00%, Valid: 60.20%, Test: 60.00%, Best Valid: 60.20%, Best Test: 60.10%
+Epoch: 400, Loss: 0.0832, Train: 100.00%, Valid: 62.80%, Test: 63.90%, Best Valid: 63.40%, Best Test: 64.30%
+Run 08:
+Highest Train: 100.00
+Highest Valid: 73.00
+Highest Test: 70.70
+Chosen epoch: 487
+Final Train: 100.00
+Final Test: 70.60
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 2.8554, Train: 34.00%, Valid: 44.00%, Test: 40.60%, Best Valid: 44.00%, Best Test: 40.60%
+Epoch: 100, Loss: 0.8495, Train: 96.00%, Valid: 47.80%, Test: 44.20%, Best Valid: 48.00%, Best Test: 44.30%
+Epoch: 200, Loss: 0.1030, Train: 100.00%, Valid: 65.60%, Test: 61.60%, Best Valid: 68.20%, Best Test: 64.20%
+Epoch: 300, Loss: 0.0507, Train: 100.00%, Valid: 80.20%, Test: 81.20%, Best Valid: 80.60%, Best Test: 81.30%
+Epoch: 400, Loss: 0.0812, Train: 100.00%, Valid: 77.40%, Test: 81.40%, Best Valid: 80.60%, Best Test: 81.30%
+Run 09:
+Highest Train: 100.00
+Highest Valid: 80.60
+Highest Test: 81.80
+Chosen epoch: 284
+Final Train: 100.00
+Final Test: 81.30
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Computing oracle penalty matrix from true labels...
+Oracle penalty matrix frozen.
+Epoch: 00, Loss: 2.8585, Train: 37.33%, Valid: 42.40%, Test: 43.20%, Best Valid: 42.40%, Best Test: 43.20%
+Epoch: 100, Loss: 1.8972, Train: 65.33%, Valid: 43.80%, Test: 39.50%, Best Valid: 43.80%, Best Test: 39.50%
+Epoch: 200, Loss: 0.1533, Train: 100.00%, Valid: 62.80%, Test: 59.10%, Best Valid: 62.80%, Best Test: 59.10%
+Epoch: 300, Loss: 0.1180, Train: 100.00%, Valid: 81.00%, Test: 81.60%, Best Valid: 81.20%, Best Test: 79.80%
+Epoch: 400, Loss: 0.0492, Train: 100.00%, Valid: 82.80%, Test: 82.30%, Best Valid: 84.80%, Best Test: 83.30%
+Run 10:
+Highest Train: 100.00
+Highest Valid: 85.60
+Highest Test: 84.20
+Chosen epoch: 464
+Final Train: 100.00
+Final Test: 84.20
+All runs:
+Highest Train: 100.00 ± 0.00
+Highest Test: 80.14 ± 3.93
+Highest Valid: 80.58 ± 4.00
+  Final Train: 100.00 ± 0.00
+   Final Test: 79.60 ± 3.86
+Saving results to results/lowlabel/pubmed/MPNN_gcn.csv
+Low-label sweep completed.
+Task 123 done.
