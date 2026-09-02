@@ -1,0 +1,1347 @@
+Fri Aug 14 15:44:42 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.159.04             Driver Version: 580.159.04     CUDA Version: 13.0     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA A100-SXM4-80GB          On  |   00000000:01:00.0 Off |                   On |
+| N/A   59C    P0            284W /  500W |   38813MiB /  81920MiB |     N/A      Default |
+|                                         |                        |              Enabled |
++-----------------------------------------+------------------------+----------------------+
+|   1  NVIDIA A100-SXM4-80GB          On  |   00000000:41:00.0 Off |                   On |
+| N/A   48C    P0            224W /  500W |   39327MiB /  81920MiB |     N/A      Default |
+|                                         |                        |              Enabled |
++-----------------------------------------+------------------------+----------------------+
+|   2  NVIDIA A100-SXM4-80GB          On  |   00000000:81:00.0 Off |                   On |
+| N/A   59C    P0            296W /  500W |   40007MiB /  81920MiB |     N/A      Default |
+|                                         |                        |              Enabled |
++-----------------------------------------+------------------------+----------------------+
+|   3  NVIDIA A100-SXM4-80GB          On  |   00000000:C1:00.0 Off |                   On |
+| N/A   46C    P0            241W /  500W |   23643MiB /  81920MiB |     N/A      Default |
+|                                         |                        |              Enabled |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| MIG devices:                                                                            |
++------------------+----------------------------------+-----------+-----------------------+
+| GPU  GI  CI  MIG |              Shared Memory-Usage |        Vol|        Shared         |
+|      ID  ID  Dev |                Shared BAR1-Usage | SM     Unc| CE ENC  DEC  OFA  JPG |
+|                  |                                  |        ECC|                       |
+|==================+==================================+===========+=======================|
+|  0    5   0   0  |              71MiB / 19968MiB    | 28      0 |  2   0    1    0    0 |
+|                  |               0MiB / 12271MiB    |           |                       |
++------------------+----------------------------------+-----------+-----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    1   13    0          1181099      C   ...ware/symmetrix-env/bin/python        876MiB |
+|    1   14    0          1181106      C   ...ware/symmetrix-env/bin/python       1016MiB |
+|    1    1    0          1194552      C   python                                37100MiB |
+|    2    9    0          1181096      C   ...ware/symmetrix-env/bin/python       1156MiB |
+|    2   10    0          1181104      C   ...ware/symmetrix-env/bin/python       1416MiB |
+|    2    2    0          1194803      C   python                                37100MiB |
+|    3   13    0          1181107      C   ...ware/symmetrix-env/bin/python       1756MiB |
+|    3   14    0          1181108      C   ...ware/symmetrix-env/bin/python       2398MiB |
+|    3    1    0          1195382      C   python                                19156MiB |
++-----------------------------------------------------------------------------------------+
+Cell: pubmed / gcn / budget 50 per class / group 1
+python main.py --gnn gcn --dataset pubmed --lr 0.005 --local_layers 2 --hidden_channels 256 --weight_decay 5e-4 --dropout 0.7 --rand_split_class --valid_num 500 --test_num 1000 --seed 123 --device 0 --runs 5 --runs 10 --label_num_per_class 50 --resample_split_per_run --budget_tag 50
+==========================================================
+Low-label sweep: python main.py --gnn gcn --dataset pubmed --lr 0.005 --local_layers 2 --hidden_channels 256 --weight_decay 5e-4 --dropout 0.7 --rand_split_class --valid_num 500 --test_num 1000 --seed 123 --device 0 --runs 5 --runs 10 --label_num_per_class 50 --resample_split_per_run --budget_tag 50
+result_dir=results/lowlabel conditions=[count]
+==========================================================
+--- count_reg | lambda=0.01 ---
+Namespace(bn=False, budget_tag='50', count_reg=True, count_smoothing=1.0, cpu=False, data_dir='./data/', dataset='pubmed', device=0, display_step=100, dropout=0.7, epochs=500, gnn='gcn', hidden_channels=256, jk=False, label_num_per_class=50, lambda_val=0.01, ln=False, local_layers=2, lr=0.005, metric='acc', mlp_epochs=500, mlp_reg=False, model='MPNN', model_dir='models', num_heads=1, oracle_reg=False, paired_seeds=True, penalty_transform='none', pre_linear=False, pre_ln=False, rand_split=False, rand_split_class=True, reg_start_epoch=10, reg_update_freq=5, res=False, resample_split_per_run=True, result_dir='results/lowlabel', runs=10, save_model=False, seed=123, test_num=1000, train_per_class=0, train_prop=0.5, use_reg=True, valid_num=500, valid_per_class=0, valid_prop=0.25, weight_decay=0.0005)
+pubmed
+Num nodes: 19717
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+dataset pubmed | num nodes 19717 | num edge 88648 | num node feats 500 | num classes 3
+MODEL: MPNNs(
+  (h_lins): ModuleList()
+  (local_convs): ModuleList(
+    (0): GCNConv(500, 256)
+    (1): GCNConv(256, 256)
+  )
+  (lins): ModuleList(
+    (0): Linear(in_features=500, out_features=256, bias=True)
+    (1): Linear(in_features=256, out_features=256, bias=True)
+  )
+  (lns): ModuleList(
+    (0): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+    (1): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+  )
+  (bns): ModuleList(
+    (0): BatchNorm1d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (1): BatchNorm1d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (lin_in): Linear(in_features=500, out_features=256, bias=True)
+  (pred_local): Linear(in_features=256, out_features=3, bias=True)
+)
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (0 train-train edges).
+Epoch: 00, Loss: 1.1100, Train: 33.33%, Valid: 42.00%, Test: 36.30%, Best Valid: 42.00%, Best Test: 36.30%
+Epoch: 100, Loss: 0.0147, Train: 100.00%, Valid: 76.00%, Test: 79.90%, Best Valid: 77.60%, Best Test: 80.10%
+Epoch: 200, Loss: 0.0117, Train: 100.00%, Valid: 75.20%, Test: 80.10%, Best Valid: 77.60%, Best Test: 80.10%
+Epoch: 300, Loss: 0.0143, Train: 100.00%, Valid: 76.40%, Test: 80.30%, Best Valid: 77.60%, Best Test: 80.10%
+Epoch: 400, Loss: 0.0169, Train: 100.00%, Valid: 75.80%, Test: 79.80%, Best Valid: 77.60%, Best Test: 80.10%
+Run 01:
+Highest Train: 100.00
+Highest Valid: 77.60
+Highest Test: 82.10
+Chosen epoch: 40
+Final Train: 100.00
+Final Test: 80.10
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (0 train-train edges).
+Epoch: 00, Loss: 1.1108, Train: 48.00%, Valid: 32.40%, Test: 35.20%, Best Valid: 32.40%, Best Test: 35.20%
+Epoch: 100, Loss: 0.0192, Train: 100.00%, Valid: 81.80%, Test: 81.00%, Best Valid: 83.60%, Best Test: 81.70%
+Epoch: 200, Loss: 0.0177, Train: 100.00%, Valid: 81.60%, Test: 81.40%, Best Valid: 83.60%, Best Test: 81.70%
+Epoch: 300, Loss: 0.0142, Train: 100.00%, Valid: 81.40%, Test: 81.40%, Best Valid: 83.60%, Best Test: 81.70%
+Epoch: 400, Loss: 0.0078, Train: 100.00%, Valid: 80.60%, Test: 81.10%, Best Valid: 83.60%, Best Test: 81.70%
+Run 02:
+Highest Train: 100.00
+Highest Valid: 83.60
+Highest Test: 83.40
+Chosen epoch: 65
+Final Train: 100.00
+Final Test: 81.70
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (14 train-train edges).
+Epoch: 00, Loss: 1.1103, Train: 54.67%, Valid: 59.20%, Test: 56.90%, Best Valid: 59.20%, Best Test: 56.90%
+Epoch: 100, Loss: 0.0371, Train: 100.00%, Valid: 77.00%, Test: 78.30%, Best Valid: 79.80%, Best Test: 81.10%
+Epoch: 200, Loss: 0.0227, Train: 100.00%, Valid: 76.40%, Test: 77.40%, Best Valid: 79.80%, Best Test: 81.10%
+Epoch: 300, Loss: 0.0183, Train: 100.00%, Valid: 76.40%, Test: 77.10%, Best Valid: 79.80%, Best Test: 81.10%
+Epoch: 400, Loss: 0.0181, Train: 100.00%, Valid: 74.20%, Test: 76.10%, Best Valid: 79.80%, Best Test: 81.10%
+Run 03:
+Highest Train: 100.00
+Highest Valid: 79.80
+Highest Test: 82.30
+Chosen epoch: 30
+Final Train: 97.33
+Final Test: 81.10
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (6 train-train edges).
+Epoch: 00, Loss: 1.1091, Train: 34.00%, Valid: 22.40%, Test: 22.60%, Best Valid: 22.40%, Best Test: 22.60%
+Epoch: 100, Loss: 0.0287, Train: 100.00%, Valid: 75.60%, Test: 79.40%, Best Valid: 78.00%, Best Test: 81.10%
+Epoch: 200, Loss: 0.0157, Train: 100.00%, Valid: 76.40%, Test: 79.30%, Best Valid: 78.00%, Best Test: 81.10%
+Epoch: 300, Loss: 0.0110, Train: 100.00%, Valid: 75.60%, Test: 78.40%, Best Valid: 78.00%, Best Test: 81.10%
+Epoch: 400, Loss: 0.0104, Train: 100.00%, Valid: 74.00%, Test: 77.60%, Best Valid: 78.80%, Best Test: 79.80%
+Run 04:
+Highest Train: 100.00
+Highest Valid: 78.80
+Highest Test: 81.90
+Chosen epoch: 311
+Final Train: 100.00
+Final Test: 79.80
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (6 train-train edges).
+Epoch: 00, Loss: 1.1103, Train: 39.33%, Valid: 43.00%, Test: 46.80%, Best Valid: 43.00%, Best Test: 46.80%
+Epoch: 100, Loss: 0.0292, Train: 100.00%, Valid: 80.00%, Test: 80.10%, Best Valid: 81.00%, Best Test: 82.20%
+Epoch: 200, Loss: 0.0182, Train: 100.00%, Valid: 78.80%, Test: 79.90%, Best Valid: 81.00%, Best Test: 82.20%
+Epoch: 300, Loss: 0.0113, Train: 100.00%, Valid: 78.00%, Test: 80.00%, Best Valid: 81.00%, Best Test: 82.20%
+Epoch: 400, Loss: 0.0104, Train: 100.00%, Valid: 80.00%, Test: 80.00%, Best Valid: 81.00%, Best Test: 82.20%
+Run 05:
+Highest Train: 100.00
+Highest Valid: 81.00
+Highest Test: 82.60
+Chosen epoch: 25
+Final Train: 97.33
+Final Test: 82.20
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (6 train-train edges).
+Epoch: 00, Loss: 1.1097, Train: 33.33%, Valid: 24.60%, Test: 20.60%, Best Valid: 24.60%, Best Test: 20.60%
+Epoch: 100, Loss: 0.0282, Train: 100.00%, Valid: 77.80%, Test: 78.70%, Best Valid: 81.60%, Best Test: 80.40%
+Epoch: 200, Loss: 0.0128, Train: 100.00%, Valid: 77.60%, Test: 76.40%, Best Valid: 81.60%, Best Test: 80.40%
+Epoch: 300, Loss: 0.0160, Train: 100.00%, Valid: 78.80%, Test: 77.90%, Best Valid: 81.60%, Best Test: 80.40%
+Epoch: 400, Loss: 0.0159, Train: 100.00%, Valid: 76.00%, Test: 75.60%, Best Valid: 81.60%, Best Test: 80.40%
+Run 06:
+Highest Train: 100.00
+Highest Valid: 81.60
+Highest Test: 81.20
+Chosen epoch: 19
+Final Train: 90.00
+Final Test: 80.40
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (4 train-train edges).
+Epoch: 00, Loss: 1.1115, Train: 40.00%, Valid: 23.40%, Test: 25.60%, Best Valid: 23.40%, Best Test: 25.60%
+Epoch: 100, Loss: 0.0240, Train: 100.00%, Valid: 82.60%, Test: 80.10%, Best Valid: 84.20%, Best Test: 81.90%
+Epoch: 200, Loss: 0.0221, Train: 100.00%, Valid: 81.40%, Test: 80.20%, Best Valid: 84.20%, Best Test: 81.90%
+Epoch: 300, Loss: 0.0283, Train: 100.00%, Valid: 81.00%, Test: 80.40%, Best Valid: 84.20%, Best Test: 81.90%
+Epoch: 400, Loss: 0.0224, Train: 100.00%, Valid: 81.60%, Test: 79.80%, Best Valid: 84.20%, Best Test: 81.90%
+Run 07:
+Highest Train: 100.00
+Highest Valid: 84.20
+Highest Test: 82.70
+Chosen epoch: 28
+Final Train: 97.33
+Final Test: 81.90
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (6 train-train edges).
+Epoch: 00, Loss: 1.1114, Train: 33.33%, Valid: 38.40%, Test: 39.30%, Best Valid: 38.40%, Best Test: 39.30%
+Epoch: 100, Loss: 0.0321, Train: 100.00%, Valid: 77.20%, Test: 75.50%, Best Valid: 80.80%, Best Test: 80.10%
+Epoch: 200, Loss: 0.0410, Train: 100.00%, Valid: 79.00%, Test: 77.60%, Best Valid: 80.80%, Best Test: 80.10%
+Epoch: 300, Loss: 0.0154, Train: 100.00%, Valid: 76.40%, Test: 75.60%, Best Valid: 80.80%, Best Test: 80.10%
+Epoch: 400, Loss: 0.0285, Train: 100.00%, Valid: 77.80%, Test: 76.50%, Best Valid: 80.80%, Best Test: 80.10%
+Run 08:
+Highest Train: 100.00
+Highest Valid: 80.80
+Highest Test: 80.80
+Chosen epoch: 34
+Final Train: 96.67
+Final Test: 80.10
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (2 train-train edges).
+Epoch: 00, Loss: 1.1092, Train: 36.00%, Valid: 40.20%, Test: 39.80%, Best Valid: 40.20%, Best Test: 39.80%
+Epoch: 100, Loss: 0.0277, Train: 100.00%, Valid: 79.40%, Test: 81.40%, Best Valid: 81.00%, Best Test: 81.90%
+Epoch: 200, Loss: 0.0215, Train: 100.00%, Valid: 79.00%, Test: 81.20%, Best Valid: 81.00%, Best Test: 81.90%
+Epoch: 300, Loss: 0.0111, Train: 100.00%, Valid: 78.20%, Test: 80.30%, Best Valid: 81.00%, Best Test: 81.90%
+Epoch: 400, Loss: 0.0152, Train: 100.00%, Valid: 78.00%, Test: 80.10%, Best Valid: 81.00%, Best Test: 81.90%
+Run 09:
+Highest Train: 100.00
+Highest Valid: 81.00
+Highest Test: 83.00
+Chosen epoch: 73
+Final Train: 100.00
+Final Test: 81.90
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (2 train-train edges).
+Epoch: 00, Loss: 1.1104, Train: 33.33%, Valid: 38.60%, Test: 40.80%, Best Valid: 38.60%, Best Test: 40.80%
+Epoch: 100, Loss: 0.0169, Train: 100.00%, Valid: 81.80%, Test: 81.20%, Best Valid: 85.20%, Best Test: 82.60%
+Epoch: 200, Loss: 0.0253, Train: 100.00%, Valid: 83.00%, Test: 81.20%, Best Valid: 85.20%, Best Test: 82.60%
+Epoch: 300, Loss: 0.0105, Train: 100.00%, Valid: 82.40%, Test: 81.60%, Best Valid: 85.20%, Best Test: 82.60%
+Epoch: 400, Loss: 0.0130, Train: 100.00%, Valid: 83.60%, Test: 81.40%, Best Valid: 85.20%, Best Test: 82.60%
+Run 10:
+Highest Train: 100.00
+Highest Valid: 85.20
+Highest Test: 83.10
+Chosen epoch: 79
+Final Train: 100.00
+Final Test: 82.60
+All runs:
+Highest Train: 100.00 ± 0.00
+Highest Test: 82.31 ± 0.83
+Highest Valid: 81.36 ± 2.39
+  Final Train: 97.87 ± 3.11
+   Final Test: 81.18 ± 1.01
+Saving results to results/lowlabel/pubmed/MPNN_gcn.csv
+--- count_reg | lambda=0.05 ---
+Namespace(bn=False, budget_tag='50', count_reg=True, count_smoothing=1.0, cpu=False, data_dir='./data/', dataset='pubmed', device=0, display_step=100, dropout=0.7, epochs=500, gnn='gcn', hidden_channels=256, jk=False, label_num_per_class=50, lambda_val=0.05, ln=False, local_layers=2, lr=0.005, metric='acc', mlp_epochs=500, mlp_reg=False, model='MPNN', model_dir='models', num_heads=1, oracle_reg=False, paired_seeds=True, penalty_transform='none', pre_linear=False, pre_ln=False, rand_split=False, rand_split_class=True, reg_start_epoch=10, reg_update_freq=5, res=False, resample_split_per_run=True, result_dir='results/lowlabel', runs=10, save_model=False, seed=123, test_num=1000, train_per_class=0, train_prop=0.5, use_reg=True, valid_num=500, valid_per_class=0, valid_prop=0.25, weight_decay=0.0005)
+pubmed
+Num nodes: 19717
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+dataset pubmed | num nodes 19717 | num edge 88648 | num node feats 500 | num classes 3
+MODEL: MPNNs(
+  (h_lins): ModuleList()
+  (local_convs): ModuleList(
+    (0): GCNConv(500, 256)
+    (1): GCNConv(256, 256)
+  )
+  (lins): ModuleList(
+    (0): Linear(in_features=500, out_features=256, bias=True)
+    (1): Linear(in_features=256, out_features=256, bias=True)
+  )
+  (lns): ModuleList(
+    (0): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+    (1): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+  )
+  (bns): ModuleList(
+    (0): BatchNorm1d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (1): BatchNorm1d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (lin_in): Linear(in_features=500, out_features=256, bias=True)
+  (pred_local): Linear(in_features=256, out_features=3, bias=True)
+)
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (0 train-train edges).
+Epoch: 00, Loss: 1.1540, Train: 33.33%, Valid: 42.00%, Test: 36.30%, Best Valid: 42.00%, Best Test: 36.30%
+Epoch: 100, Loss: 0.0153, Train: 100.00%, Valid: 76.00%, Test: 79.90%, Best Valid: 77.60%, Best Test: 80.10%
+Epoch: 200, Loss: 0.0122, Train: 100.00%, Valid: 75.20%, Test: 80.10%, Best Valid: 77.60%, Best Test: 80.10%
+Epoch: 300, Loss: 0.0149, Train: 100.00%, Valid: 76.40%, Test: 80.30%, Best Valid: 77.60%, Best Test: 80.10%
+Epoch: 400, Loss: 0.0176, Train: 100.00%, Valid: 75.80%, Test: 79.80%, Best Valid: 77.60%, Best Test: 80.10%
+Run 01:
+Highest Train: 100.00
+Highest Valid: 77.60
+Highest Test: 82.10
+Chosen epoch: 40
+Final Train: 100.00
+Final Test: 80.10
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (0 train-train edges).
+Epoch: 00, Loss: 1.1548, Train: 48.00%, Valid: 32.40%, Test: 35.20%, Best Valid: 32.40%, Best Test: 35.20%
+Epoch: 100, Loss: 0.0200, Train: 100.00%, Valid: 81.80%, Test: 81.00%, Best Valid: 83.60%, Best Test: 81.70%
+Epoch: 200, Loss: 0.0184, Train: 100.00%, Valid: 81.60%, Test: 81.40%, Best Valid: 83.60%, Best Test: 81.70%
+Epoch: 300, Loss: 0.0150, Train: 100.00%, Valid: 81.40%, Test: 81.50%, Best Valid: 83.60%, Best Test: 81.70%
+Epoch: 400, Loss: 0.0081, Train: 100.00%, Valid: 80.60%, Test: 81.10%, Best Valid: 83.60%, Best Test: 81.70%
+Run 02:
+Highest Train: 100.00
+Highest Valid: 83.60
+Highest Test: 83.40
+Chosen epoch: 65
+Final Train: 100.00
+Final Test: 81.70
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (14 train-train edges).
+Epoch: 00, Loss: 1.1543, Train: 54.00%, Valid: 59.20%, Test: 56.60%, Best Valid: 59.20%, Best Test: 56.60%
+Epoch: 100, Loss: 0.0356, Train: 100.00%, Valid: 75.80%, Test: 78.50%, Best Valid: 80.00%, Best Test: 80.70%
+Epoch: 200, Loss: 0.0226, Train: 100.00%, Valid: 76.20%, Test: 77.60%, Best Valid: 80.00%, Best Test: 80.70%
+Epoch: 300, Loss: 0.0180, Train: 100.00%, Valid: 76.80%, Test: 77.20%, Best Valid: 80.00%, Best Test: 80.70%
+Epoch: 400, Loss: 0.0385, Train: 100.00%, Valid: 74.80%, Test: 77.10%, Best Valid: 80.00%, Best Test: 80.70%
+Run 03:
+Highest Train: 100.00
+Highest Valid: 80.00
+Highest Test: 82.00
+Chosen epoch: 30
+Final Train: 97.33
+Final Test: 80.70
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (6 train-train edges).
+Epoch: 00, Loss: 1.1530, Train: 34.00%, Valid: 22.40%, Test: 22.60%, Best Valid: 22.40%, Best Test: 22.60%
+Epoch: 100, Loss: 0.0304, Train: 100.00%, Valid: 75.80%, Test: 79.30%, Best Valid: 78.40%, Best Test: 80.90%
+Epoch: 200, Loss: 0.0147, Train: 100.00%, Valid: 76.40%, Test: 79.70%, Best Valid: 78.40%, Best Test: 80.90%
+Epoch: 300, Loss: 0.0112, Train: 100.00%, Valid: 75.60%, Test: 78.60%, Best Valid: 78.40%, Best Test: 80.90%
+Epoch: 400, Loss: 0.0135, Train: 100.00%, Valid: 74.00%, Test: 76.90%, Best Valid: 78.80%, Best Test: 80.00%
+Run 04:
+Highest Train: 100.00
+Highest Valid: 79.00
+Highest Test: 81.60
+Chosen epoch: 420
+Final Train: 100.00
+Final Test: 79.70
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (6 train-train edges).
+Epoch: 00, Loss: 1.1542, Train: 39.33%, Valid: 43.00%, Test: 46.70%, Best Valid: 43.00%, Best Test: 46.70%
+Epoch: 100, Loss: 0.0281, Train: 100.00%, Valid: 80.00%, Test: 80.20%, Best Valid: 81.00%, Best Test: 82.00%
+Epoch: 200, Loss: 0.0185, Train: 100.00%, Valid: 78.20%, Test: 79.80%, Best Valid: 81.00%, Best Test: 82.00%
+Epoch: 300, Loss: 0.0109, Train: 100.00%, Valid: 76.60%, Test: 79.00%, Best Valid: 81.00%, Best Test: 82.00%
+Epoch: 400, Loss: 0.0125, Train: 100.00%, Valid: 79.00%, Test: 80.40%, Best Valid: 81.00%, Best Test: 82.00%
+Run 05:
+Highest Train: 100.00
+Highest Valid: 81.00
+Highest Test: 82.70
+Chosen epoch: 25
+Final Train: 97.33
+Final Test: 82.00
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (6 train-train edges).
+Epoch: 00, Loss: 1.1536, Train: 33.33%, Valid: 24.60%, Test: 20.60%, Best Valid: 24.60%, Best Test: 20.60%
+Epoch: 100, Loss: 0.0285, Train: 100.00%, Valid: 78.00%, Test: 78.60%, Best Valid: 81.80%, Best Test: 80.10%
+Epoch: 200, Loss: 0.0132, Train: 100.00%, Valid: 77.80%, Test: 77.50%, Best Valid: 81.80%, Best Test: 80.10%
+Epoch: 300, Loss: 0.0174, Train: 100.00%, Valid: 79.40%, Test: 77.90%, Best Valid: 81.80%, Best Test: 80.10%
+Epoch: 400, Loss: 0.0145, Train: 100.00%, Valid: 77.40%, Test: 76.90%, Best Valid: 81.80%, Best Test: 80.10%
+Run 06:
+Highest Train: 100.00
+Highest Valid: 81.80
+Highest Test: 81.20
+Chosen epoch: 20
+Final Train: 88.67
+Final Test: 80.10
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (4 train-train edges).
+Epoch: 00, Loss: 1.1556, Train: 39.33%, Valid: 22.40%, Test: 24.30%, Best Valid: 22.40%, Best Test: 24.30%
+Epoch: 100, Loss: 0.0236, Train: 100.00%, Valid: 82.60%, Test: 80.10%, Best Valid: 84.40%, Best Test: 81.80%
+Epoch: 200, Loss: 0.0224, Train: 100.00%, Valid: 81.20%, Test: 80.10%, Best Valid: 84.40%, Best Test: 81.80%
+Epoch: 300, Loss: 0.0292, Train: 100.00%, Valid: 81.40%, Test: 79.90%, Best Valid: 84.40%, Best Test: 81.80%
+Epoch: 400, Loss: 0.0300, Train: 100.00%, Valid: 81.20%, Test: 80.00%, Best Valid: 84.40%, Best Test: 81.80%
+Run 07:
+Highest Train: 100.00
+Highest Valid: 84.40
+Highest Test: 82.70
+Chosen epoch: 28
+Final Train: 97.33
+Final Test: 81.80
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (6 train-train edges).
+Epoch: 00, Loss: 1.1554, Train: 33.33%, Valid: 38.40%, Test: 39.30%, Best Valid: 38.40%, Best Test: 39.30%
+Epoch: 100, Loss: 0.0360, Train: 100.00%, Valid: 77.40%, Test: 76.20%, Best Valid: 80.20%, Best Test: 78.80%
+Epoch: 200, Loss: 0.0368, Train: 100.00%, Valid: 78.20%, Test: 77.10%, Best Valid: 80.40%, Best Test: 79.50%
+Epoch: 300, Loss: 0.0153, Train: 100.00%, Valid: 77.00%, Test: 76.20%, Best Valid: 80.40%, Best Test: 79.50%
+Epoch: 400, Loss: 0.0211, Train: 100.00%, Valid: 78.00%, Test: 76.00%, Best Valid: 80.40%, Best Test: 79.50%
+Run 08:
+Highest Train: 100.00
+Highest Valid: 80.40
+Highest Test: 81.30
+Chosen epoch: 129
+Final Train: 100.00
+Final Test: 79.50
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (2 train-train edges).
+Epoch: 00, Loss: 1.1531, Train: 37.33%, Valid: 41.00%, Test: 41.50%, Best Valid: 41.00%, Best Test: 41.50%
+Epoch: 100, Loss: 0.0297, Train: 100.00%, Valid: 79.20%, Test: 81.60%, Best Valid: 81.00%, Best Test: 81.90%
+Epoch: 200, Loss: 0.0207, Train: 100.00%, Valid: 78.40%, Test: 81.20%, Best Valid: 81.00%, Best Test: 81.90%
+Epoch: 300, Loss: 0.0099, Train: 100.00%, Valid: 78.20%, Test: 80.20%, Best Valid: 81.00%, Best Test: 81.90%
+Epoch: 400, Loss: 0.0172, Train: 100.00%, Valid: 78.40%, Test: 80.30%, Best Valid: 81.00%, Best Test: 81.90%
+Run 09:
+Highest Train: 100.00
+Highest Valid: 81.00
+Highest Test: 83.00
+Chosen epoch: 73
+Final Train: 100.00
+Final Test: 81.90
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (2 train-train edges).
+Epoch: 00, Loss: 1.1544, Train: 33.33%, Valid: 38.60%, Test: 40.80%, Best Valid: 38.60%, Best Test: 40.80%
+Epoch: 100, Loss: 0.0187, Train: 100.00%, Valid: 81.00%, Test: 80.50%, Best Valid: 85.40%, Best Test: 82.70%
+Epoch: 200, Loss: 0.0291, Train: 100.00%, Valid: 81.60%, Test: 80.40%, Best Valid: 85.40%, Best Test: 82.70%
+Epoch: 300, Loss: 0.0122, Train: 100.00%, Valid: 82.00%, Test: 81.70%, Best Valid: 85.40%, Best Test: 82.70%
+Epoch: 400, Loss: 0.0222, Train: 100.00%, Valid: 83.00%, Test: 81.10%, Best Valid: 85.40%, Best Test: 82.70%
+Run 10:
+Highest Train: 100.00
+Highest Valid: 85.40
+Highest Test: 83.00
+Chosen epoch: 79
+Final Train: 100.00
+Final Test: 82.70
+All runs:
+Highest Train: 100.00 ± 0.00
+Highest Test: 82.30 ± 0.77
+Highest Valid: 81.42 ± 2.44
+  Final Train: 98.07 ± 3.53
+   Final Test: 81.02 ± 1.13
+Saving results to results/lowlabel/pubmed/MPNN_gcn.csv
+--- count_reg | lambda=0.1 ---
+Namespace(bn=False, budget_tag='50', count_reg=True, count_smoothing=1.0, cpu=False, data_dir='./data/', dataset='pubmed', device=0, display_step=100, dropout=0.7, epochs=500, gnn='gcn', hidden_channels=256, jk=False, label_num_per_class=50, lambda_val=0.1, ln=False, local_layers=2, lr=0.005, metric='acc', mlp_epochs=500, mlp_reg=False, model='MPNN', model_dir='models', num_heads=1, oracle_reg=False, paired_seeds=True, penalty_transform='none', pre_linear=False, pre_ln=False, rand_split=False, rand_split_class=True, reg_start_epoch=10, reg_update_freq=5, res=False, resample_split_per_run=True, result_dir='results/lowlabel', runs=10, save_model=False, seed=123, test_num=1000, train_per_class=0, train_prop=0.5, use_reg=True, valid_num=500, valid_per_class=0, valid_prop=0.25, weight_decay=0.0005)
+pubmed
+Num nodes: 19717
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+dataset pubmed | num nodes 19717 | num edge 88648 | num node feats 500 | num classes 3
+MODEL: MPNNs(
+  (h_lins): ModuleList()
+  (local_convs): ModuleList(
+    (0): GCNConv(500, 256)
+    (1): GCNConv(256, 256)
+  )
+  (lins): ModuleList(
+    (0): Linear(in_features=500, out_features=256, bias=True)
+    (1): Linear(in_features=256, out_features=256, bias=True)
+  )
+  (lns): ModuleList(
+    (0): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+    (1): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+  )
+  (bns): ModuleList(
+    (0): BatchNorm1d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (1): BatchNorm1d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (lin_in): Linear(in_features=500, out_features=256, bias=True)
+  (pred_local): Linear(in_features=256, out_features=3, bias=True)
+)
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (0 train-train edges).
+Epoch: 00, Loss: 1.2089, Train: 33.33%, Valid: 42.00%, Test: 36.30%, Best Valid: 42.00%, Best Test: 36.30%
+Epoch: 100, Loss: 0.0161, Train: 100.00%, Valid: 76.00%, Test: 79.90%, Best Valid: 77.60%, Best Test: 80.10%
+Epoch: 200, Loss: 0.0127, Train: 100.00%, Valid: 75.20%, Test: 80.10%, Best Valid: 77.60%, Best Test: 80.10%
+Epoch: 300, Loss: 0.0157, Train: 100.00%, Valid: 76.40%, Test: 80.30%, Best Valid: 77.60%, Best Test: 80.10%
+Epoch: 400, Loss: 0.0181, Train: 100.00%, Valid: 75.80%, Test: 80.10%, Best Valid: 77.60%, Best Test: 80.10%
+Run 01:
+Highest Train: 100.00
+Highest Valid: 77.60
+Highest Test: 82.10
+Chosen epoch: 40
+Final Train: 100.00
+Final Test: 80.10
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (0 train-train edges).
+Epoch: 00, Loss: 1.2097, Train: 48.00%, Valid: 32.40%, Test: 35.20%, Best Valid: 32.40%, Best Test: 35.20%
+Epoch: 100, Loss: 0.0209, Train: 100.00%, Valid: 81.80%, Test: 81.00%, Best Valid: 83.60%, Best Test: 81.70%
+Epoch: 200, Loss: 0.0193, Train: 100.00%, Valid: 81.60%, Test: 81.40%, Best Valid: 83.60%, Best Test: 81.70%
+Epoch: 300, Loss: 0.0155, Train: 100.00%, Valid: 81.40%, Test: 81.60%, Best Valid: 83.60%, Best Test: 81.70%
+Epoch: 400, Loss: 0.0084, Train: 100.00%, Valid: 81.00%, Test: 81.40%, Best Valid: 83.60%, Best Test: 81.70%
+Run 02:
+Highest Train: 100.00
+Highest Valid: 83.60
+Highest Test: 83.40
+Chosen epoch: 65
+Final Train: 100.00
+Final Test: 81.70
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (14 train-train edges).
+Epoch: 00, Loss: 1.2093, Train: 54.00%, Valid: 59.40%, Test: 56.50%, Best Valid: 59.40%, Best Test: 56.50%
+Epoch: 100, Loss: 0.0389, Train: 100.00%, Valid: 76.20%, Test: 78.40%, Best Valid: 80.00%, Best Test: 80.90%
+Epoch: 200, Loss: 0.0206, Train: 100.00%, Valid: 76.40%, Test: 77.20%, Best Valid: 80.00%, Best Test: 80.90%
+Epoch: 300, Loss: 0.0325, Train: 100.00%, Valid: 74.00%, Test: 74.20%, Best Valid: 80.00%, Best Test: 80.90%
+Epoch: 400, Loss: 0.0489, Train: 100.00%, Valid: 75.60%, Test: 77.40%, Best Valid: 80.00%, Best Test: 80.90%
+Run 03:
+Highest Train: 100.00
+Highest Valid: 80.00
+Highest Test: 81.90
+Chosen epoch: 30
+Final Train: 97.33
+Final Test: 80.90
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (6 train-train edges).
+Epoch: 00, Loss: 1.2079, Train: 34.00%, Valid: 22.40%, Test: 22.70%, Best Valid: 22.40%, Best Test: 22.70%
+Epoch: 100, Loss: 0.0298, Train: 100.00%, Valid: 75.80%, Test: 79.10%, Best Valid: 78.40%, Best Test: 80.60%
+Epoch: 200, Loss: 0.0157, Train: 100.00%, Valid: 76.60%, Test: 80.00%, Best Valid: 78.40%, Best Test: 80.60%
+Epoch: 300, Loss: 0.0144, Train: 100.00%, Valid: 75.80%, Test: 79.20%, Best Valid: 78.40%, Best Test: 80.60%
+Epoch: 400, Loss: 0.0112, Train: 100.00%, Valid: 75.00%, Test: 77.50%, Best Valid: 78.40%, Best Test: 80.60%
+Run 04:
+Highest Train: 100.00
+Highest Valid: 79.40
+Highest Test: 81.30
+Chosen epoch: 405
+Final Train: 100.00
+Final Test: 80.30
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (6 train-train edges).
+Epoch: 00, Loss: 1.2092, Train: 39.33%, Valid: 42.80%, Test: 45.80%, Best Valid: 42.80%, Best Test: 45.80%
+Epoch: 100, Loss: 0.0290, Train: 100.00%, Valid: 79.40%, Test: 80.30%, Best Valid: 81.00%, Best Test: 82.00%
+Epoch: 200, Loss: 0.0202, Train: 100.00%, Valid: 78.20%, Test: 79.90%, Best Valid: 81.00%, Best Test: 82.00%
+Epoch: 300, Loss: 0.0124, Train: 100.00%, Valid: 77.60%, Test: 79.70%, Best Valid: 81.00%, Best Test: 82.00%
+Epoch: 400, Loss: 0.0105, Train: 100.00%, Valid: 80.00%, Test: 80.60%, Best Valid: 81.00%, Best Test: 82.00%
+Run 05:
+Highest Train: 100.00
+Highest Valid: 81.00
+Highest Test: 82.80
+Chosen epoch: 24
+Final Train: 96.67
+Final Test: 82.00
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (6 train-train edges).
+Epoch: 00, Loss: 1.2085, Train: 33.33%, Valid: 24.60%, Test: 20.60%, Best Valid: 24.60%, Best Test: 20.60%
+Epoch: 100, Loss: 0.0286, Train: 100.00%, Valid: 78.60%, Test: 79.00%, Best Valid: 81.60%, Best Test: 80.10%
+Epoch: 200, Loss: 0.0135, Train: 100.00%, Valid: 78.40%, Test: 76.40%, Best Valid: 81.60%, Best Test: 80.10%
+Epoch: 300, Loss: 0.0170, Train: 100.00%, Valid: 78.20%, Test: 77.90%, Best Valid: 81.60%, Best Test: 80.10%
+Epoch: 400, Loss: 0.0152, Train: 100.00%, Valid: 76.60%, Test: 76.30%, Best Valid: 81.60%, Best Test: 80.10%
+Run 06:
+Highest Train: 100.00
+Highest Valid: 81.60
+Highest Test: 81.20
+Chosen epoch: 20
+Final Train: 88.67
+Final Test: 80.10
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (4 train-train edges).
+Epoch: 00, Loss: 1.2106, Train: 38.00%, Valid: 21.20%, Test: 23.20%, Best Valid: 21.20%, Best Test: 23.20%
+Epoch: 100, Loss: 0.0250, Train: 100.00%, Valid: 82.20%, Test: 80.60%, Best Valid: 84.20%, Best Test: 81.60%
+Epoch: 200, Loss: 0.0220, Train: 100.00%, Valid: 82.20%, Test: 80.40%, Best Valid: 84.20%, Best Test: 81.60%
+Epoch: 300, Loss: 0.0332, Train: 100.00%, Valid: 80.20%, Test: 79.70%, Best Valid: 84.20%, Best Test: 81.60%
+Epoch: 400, Loss: 0.0248, Train: 100.00%, Valid: 81.20%, Test: 79.70%, Best Valid: 84.20%, Best Test: 81.60%
+Run 07:
+Highest Train: 100.00
+Highest Valid: 84.20
+Highest Test: 82.80
+Chosen epoch: 27
+Final Train: 96.67
+Final Test: 81.60
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (6 train-train edges).
+Epoch: 00, Loss: 1.2104, Train: 33.33%, Valid: 38.40%, Test: 39.30%, Best Valid: 38.40%, Best Test: 39.30%
+Epoch: 100, Loss: 0.0438, Train: 100.00%, Valid: 77.20%, Test: 76.00%, Best Valid: 80.20%, Best Test: 78.50%
+Epoch: 200, Loss: 0.0399, Train: 100.00%, Valid: 77.80%, Test: 76.10%, Best Valid: 80.20%, Best Test: 78.50%
+Epoch: 300, Loss: 0.0169, Train: 100.00%, Valid: 76.40%, Test: 74.90%, Best Valid: 80.20%, Best Test: 78.50%
+Epoch: 400, Loss: 0.0211, Train: 100.00%, Valid: 78.80%, Test: 76.10%, Best Valid: 80.20%, Best Test: 78.50%
+Run 08:
+Highest Train: 100.00
+Highest Valid: 80.20
+Highest Test: 81.20
+Chosen epoch: 39
+Final Train: 99.33
+Final Test: 78.50
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (2 train-train edges).
+Epoch: 00, Loss: 1.2080, Train: 38.00%, Valid: 41.40%, Test: 41.90%, Best Valid: 41.40%, Best Test: 41.90%
+Epoch: 100, Loss: 0.0306, Train: 100.00%, Valid: 79.40%, Test: 81.40%, Best Valid: 81.20%, Best Test: 81.60%
+Epoch: 200, Loss: 0.0205, Train: 100.00%, Valid: 77.80%, Test: 81.00%, Best Valid: 81.20%, Best Test: 81.60%
+Epoch: 300, Loss: 0.0106, Train: 100.00%, Valid: 78.80%, Test: 80.40%, Best Valid: 81.20%, Best Test: 81.60%
+Epoch: 400, Loss: 0.0171, Train: 100.00%, Valid: 78.20%, Test: 80.00%, Best Valid: 81.20%, Best Test: 81.60%
+Run 09:
+Highest Train: 100.00
+Highest Valid: 81.20
+Highest Test: 83.00
+Chosen epoch: 73
+Final Train: 100.00
+Final Test: 81.60
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (2 train-train edges).
+Epoch: 00, Loss: 1.2094, Train: 33.33%, Valid: 38.60%, Test: 40.80%, Best Valid: 38.60%, Best Test: 40.80%
+Epoch: 100, Loss: 0.0196, Train: 100.00%, Valid: 81.00%, Test: 80.40%, Best Valid: 85.40%, Best Test: 82.70%
+Epoch: 200, Loss: 0.0365, Train: 100.00%, Valid: 81.80%, Test: 80.20%, Best Valid: 85.40%, Best Test: 82.70%
+Epoch: 300, Loss: 0.0132, Train: 100.00%, Valid: 82.00%, Test: 81.40%, Best Valid: 85.40%, Best Test: 82.70%
+Epoch: 400, Loss: 0.0193, Train: 100.00%, Valid: 83.00%, Test: 81.10%, Best Valid: 85.60%, Best Test: 81.80%
+Run 10:
+Highest Train: 100.00
+Highest Valid: 85.60
+Highest Test: 83.20
+Chosen epoch: 348
+Final Train: 100.00
+Final Test: 81.80
+All runs:
+Highest Train: 100.00 ± 0.00
+Highest Test: 82.29 ± 0.86
+Highest Valid: 81.44 ± 2.41
+  Final Train: 97.87 ± 3.54
+   Final Test: 80.86 ± 1.11
+Saving results to results/lowlabel/pubmed/MPNN_gcn.csv
+--- count_reg | lambda=0.2 ---
+Namespace(bn=False, budget_tag='50', count_reg=True, count_smoothing=1.0, cpu=False, data_dir='./data/', dataset='pubmed', device=0, display_step=100, dropout=0.7, epochs=500, gnn='gcn', hidden_channels=256, jk=False, label_num_per_class=50, lambda_val=0.2, ln=False, local_layers=2, lr=0.005, metric='acc', mlp_epochs=500, mlp_reg=False, model='MPNN', model_dir='models', num_heads=1, oracle_reg=False, paired_seeds=True, penalty_transform='none', pre_linear=False, pre_ln=False, rand_split=False, rand_split_class=True, reg_start_epoch=10, reg_update_freq=5, res=False, resample_split_per_run=True, result_dir='results/lowlabel', runs=10, save_model=False, seed=123, test_num=1000, train_per_class=0, train_prop=0.5, use_reg=True, valid_num=500, valid_per_class=0, valid_prop=0.25, weight_decay=0.0005)
+pubmed
+Num nodes: 19717
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+dataset pubmed | num nodes 19717 | num edge 88648 | num node feats 500 | num classes 3
+MODEL: MPNNs(
+  (h_lins): ModuleList()
+  (local_convs): ModuleList(
+    (0): GCNConv(500, 256)
+    (1): GCNConv(256, 256)
+  )
+  (lins): ModuleList(
+    (0): Linear(in_features=500, out_features=256, bias=True)
+    (1): Linear(in_features=256, out_features=256, bias=True)
+  )
+  (lns): ModuleList(
+    (0): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+    (1): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+  )
+  (bns): ModuleList(
+    (0): BatchNorm1d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (1): BatchNorm1d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (lin_in): Linear(in_features=500, out_features=256, bias=True)
+  (pred_local): Linear(in_features=256, out_features=3, bias=True)
+)
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (0 train-train edges).
+Epoch: 00, Loss: 1.3188, Train: 33.33%, Valid: 42.00%, Test: 36.30%, Best Valid: 42.00%, Best Test: 36.30%
+Epoch: 100, Loss: 0.0175, Train: 100.00%, Valid: 76.00%, Test: 79.90%, Best Valid: 77.60%, Best Test: 80.10%
+Epoch: 200, Loss: 0.0138, Train: 100.00%, Valid: 75.20%, Test: 80.10%, Best Valid: 77.60%, Best Test: 80.10%
+Epoch: 300, Loss: 0.0171, Train: 100.00%, Valid: 76.80%, Test: 80.00%, Best Valid: 77.60%, Best Test: 80.10%
+Epoch: 400, Loss: 0.0182, Train: 100.00%, Valid: 76.00%, Test: 80.40%, Best Valid: 77.60%, Best Test: 80.10%
+Run 01:
+Highest Train: 100.00
+Highest Valid: 77.60
+Highest Test: 82.10
+Chosen epoch: 40
+Final Train: 100.00
+Final Test: 80.10
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (0 train-train edges).
+Epoch: 00, Loss: 1.3197, Train: 48.00%, Valid: 32.40%, Test: 35.20%, Best Valid: 32.40%, Best Test: 35.20%
+Epoch: 100, Loss: 0.0228, Train: 100.00%, Valid: 81.80%, Test: 81.00%, Best Valid: 83.60%, Best Test: 81.70%
+Epoch: 200, Loss: 0.0211, Train: 100.00%, Valid: 81.60%, Test: 81.40%, Best Valid: 83.60%, Best Test: 81.70%
+Epoch: 300, Loss: 0.0171, Train: 100.00%, Valid: 81.40%, Test: 81.50%, Best Valid: 83.60%, Best Test: 81.70%
+Epoch: 400, Loss: 0.0092, Train: 100.00%, Valid: 80.40%, Test: 81.00%, Best Valid: 83.60%, Best Test: 81.70%
+Run 02:
+Highest Train: 100.00
+Highest Valid: 83.60
+Highest Test: 83.40
+Chosen epoch: 65
+Final Train: 100.00
+Final Test: 81.70
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (14 train-train edges).
+Epoch: 00, Loss: 1.3192, Train: 54.00%, Valid: 59.40%, Test: 56.40%, Best Valid: 59.40%, Best Test: 56.40%
+Epoch: 100, Loss: 0.0409, Train: 100.00%, Valid: 75.80%, Test: 78.00%, Best Valid: 80.00%, Best Test: 80.10%
+Epoch: 200, Loss: 0.0272, Train: 100.00%, Valid: 77.80%, Test: 77.70%, Best Valid: 80.00%, Best Test: 80.10%
+Epoch: 300, Loss: 0.0309, Train: 100.00%, Valid: 74.40%, Test: 74.40%, Best Valid: 80.00%, Best Test: 80.10%
+Epoch: 400, Loss: 0.0490, Train: 100.00%, Valid: 74.80%, Test: 76.60%, Best Valid: 80.00%, Best Test: 80.10%
+Run 03:
+Highest Train: 100.00
+Highest Valid: 80.00
+Highest Test: 81.60
+Chosen epoch: 30
+Final Train: 96.00
+Final Test: 80.10
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (6 train-train edges).
+Epoch: 00, Loss: 1.3177, Train: 33.33%, Valid: 21.60%, Test: 22.20%, Best Valid: 21.60%, Best Test: 22.20%
+Epoch: 100, Loss: 0.0381, Train: 100.00%, Valid: 75.80%, Test: 79.30%, Best Valid: 78.60%, Best Test: 80.60%
+Epoch: 200, Loss: 0.0160, Train: 100.00%, Valid: 76.00%, Test: 79.30%, Best Valid: 78.60%, Best Test: 80.60%
+Epoch: 300, Loss: 0.0138, Train: 100.00%, Valid: 75.00%, Test: 78.20%, Best Valid: 78.60%, Best Test: 80.60%
+Epoch: 400, Loss: 0.0142, Train: 100.00%, Valid: 74.60%, Test: 77.10%, Best Valid: 78.60%, Best Test: 80.60%
+Run 04:
+Highest Train: 100.00
+Highest Valid: 78.60
+Highest Test: 80.80
+Chosen epoch: 21
+Final Train: 94.67
+Final Test: 80.60
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (6 train-train edges).
+Epoch: 00, Loss: 1.3191, Train: 38.00%, Valid: 41.40%, Test: 44.80%, Best Valid: 41.40%, Best Test: 44.80%
+Epoch: 100, Loss: 0.0328, Train: 100.00%, Valid: 79.60%, Test: 80.50%, Best Valid: 81.20%, Best Test: 82.10%
+Epoch: 200, Loss: 0.0261, Train: 100.00%, Valid: 78.60%, Test: 80.30%, Best Valid: 81.20%, Best Test: 82.10%
+Epoch: 300, Loss: 0.0135, Train: 100.00%, Valid: 76.40%, Test: 80.30%, Best Valid: 81.20%, Best Test: 82.10%
+Epoch: 400, Loss: 0.0132, Train: 100.00%, Valid: 78.60%, Test: 80.50%, Best Valid: 81.20%, Best Test: 82.10%
+Run 05:
+Highest Train: 100.00
+Highest Valid: 81.20
+Highest Test: 82.70
+Chosen epoch: 25
+Final Train: 97.33
+Final Test: 82.10
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (6 train-train edges).
+Epoch: 00, Loss: 1.3184, Train: 33.33%, Valid: 24.60%, Test: 20.60%, Best Valid: 24.60%, Best Test: 20.60%
+Epoch: 100, Loss: 0.0326, Train: 100.00%, Valid: 78.00%, Test: 79.10%, Best Valid: 81.40%, Best Test: 80.80%
+Epoch: 200, Loss: 0.0156, Train: 100.00%, Valid: 78.00%, Test: 76.20%, Best Valid: 81.40%, Best Test: 80.80%
+Epoch: 300, Loss: 0.0195, Train: 100.00%, Valid: 77.60%, Test: 78.10%, Best Valid: 81.40%, Best Test: 80.80%
+Epoch: 400, Loss: 0.0188, Train: 100.00%, Valid: 77.60%, Test: 78.00%, Best Valid: 81.40%, Best Test: 80.80%
+Run 06:
+Highest Train: 100.00
+Highest Valid: 81.40
+Highest Test: 81.00
+Chosen epoch: 20
+Final Train: 88.67
+Final Test: 80.80
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (4 train-train edges).
+Epoch: 00, Loss: 1.3206, Train: 36.67%, Valid: 20.60%, Test: 22.00%, Best Valid: 20.60%, Best Test: 22.00%
+Epoch: 100, Loss: 0.0255, Train: 100.00%, Valid: 82.20%, Test: 80.50%, Best Valid: 84.20%, Best Test: 82.40%
+Epoch: 200, Loss: 0.0218, Train: 100.00%, Valid: 81.60%, Test: 80.20%, Best Valid: 84.20%, Best Test: 82.40%
+Epoch: 300, Loss: 0.0222, Train: 100.00%, Valid: 81.20%, Test: 79.80%, Best Valid: 84.20%, Best Test: 82.40%
+Epoch: 400, Loss: 0.0238, Train: 100.00%, Valid: 81.40%, Test: 79.00%, Best Valid: 84.20%, Best Test: 82.40%
+Run 07:
+Highest Train: 100.00
+Highest Valid: 84.20
+Highest Test: 82.60
+Chosen epoch: 25
+Final Train: 96.00
+Final Test: 82.40
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (6 train-train edges).
+Epoch: 00, Loss: 1.3205, Train: 33.33%, Valid: 38.40%, Test: 39.30%, Best Valid: 38.40%, Best Test: 39.30%
+Epoch: 100, Loss: 0.0428, Train: 100.00%, Valid: 77.60%, Test: 77.00%, Best Valid: 80.20%, Best Test: 79.00%
+Epoch: 200, Loss: 0.0414, Train: 100.00%, Valid: 78.80%, Test: 78.20%, Best Valid: 80.20%, Best Test: 79.00%
+Epoch: 300, Loss: 0.0157, Train: 100.00%, Valid: 77.00%, Test: 76.80%, Best Valid: 80.20%, Best Test: 79.00%
+Epoch: 400, Loss: 0.0217, Train: 100.00%, Valid: 79.00%, Test: 76.60%, Best Valid: 80.20%, Best Test: 79.00%
+Run 08:
+Highest Train: 100.00
+Highest Valid: 80.20
+Highest Test: 81.60
+Chosen epoch: 58
+Final Train: 100.00
+Final Test: 79.00
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (2 train-train edges).
+Epoch: 00, Loss: 1.3179, Train: 38.67%, Valid: 41.80%, Test: 42.40%, Best Valid: 41.80%, Best Test: 42.40%
+Epoch: 100, Loss: 0.0352, Train: 100.00%, Valid: 79.40%, Test: 81.50%, Best Valid: 81.20%, Best Test: 81.80%
+Epoch: 200, Loss: 0.0260, Train: 100.00%, Valid: 79.00%, Test: 81.10%, Best Valid: 81.20%, Best Test: 81.80%
+Epoch: 300, Loss: 0.0117, Train: 100.00%, Valid: 79.00%, Test: 80.20%, Best Valid: 81.20%, Best Test: 81.80%
+Epoch: 400, Loss: 0.0196, Train: 100.00%, Valid: 78.20%, Test: 80.50%, Best Valid: 81.20%, Best Test: 81.80%
+Run 09:
+Highest Train: 100.00
+Highest Valid: 81.20
+Highest Test: 83.10
+Chosen epoch: 73
+Final Train: 100.00
+Final Test: 81.80
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (2 train-train edges).
+Epoch: 00, Loss: 1.3193, Train: 33.33%, Valid: 38.60%, Test: 40.80%, Best Valid: 38.60%, Best Test: 40.80%
+Epoch: 100, Loss: 0.0200, Train: 100.00%, Valid: 81.80%, Test: 80.70%, Best Valid: 85.20%, Best Test: 82.60%
+Epoch: 200, Loss: 0.0330, Train: 100.00%, Valid: 82.20%, Test: 80.70%, Best Valid: 85.60%, Best Test: 82.30%
+Epoch: 300, Loss: 0.0146, Train: 100.00%, Valid: 83.00%, Test: 81.20%, Best Valid: 85.60%, Best Test: 82.30%
+Epoch: 400, Loss: 0.0165, Train: 100.00%, Valid: 82.80%, Test: 80.80%, Best Valid: 85.60%, Best Test: 82.30%
+Run 10:
+Highest Train: 100.00
+Highest Valid: 85.60
+Highest Test: 83.10
+Chosen epoch: 133
+Final Train: 100.00
+Final Test: 82.30
+All runs:
+Highest Train: 100.00 ± 0.00
+Highest Test: 82.20 ± 0.92
+Highest Valid: 81.36 ± 2.50
+  Final Train: 97.27 ± 3.67
+   Final Test: 81.09 ± 1.14
+Saving results to results/lowlabel/pubmed/MPNN_gcn.csv
+--- count_reg | lambda=0.4 ---
+Namespace(bn=False, budget_tag='50', count_reg=True, count_smoothing=1.0, cpu=False, data_dir='./data/', dataset='pubmed', device=0, display_step=100, dropout=0.7, epochs=500, gnn='gcn', hidden_channels=256, jk=False, label_num_per_class=50, lambda_val=0.4, ln=False, local_layers=2, lr=0.005, metric='acc', mlp_epochs=500, mlp_reg=False, model='MPNN', model_dir='models', num_heads=1, oracle_reg=False, paired_seeds=True, penalty_transform='none', pre_linear=False, pre_ln=False, rand_split=False, rand_split_class=True, reg_start_epoch=10, reg_update_freq=5, res=False, resample_split_per_run=True, result_dir='results/lowlabel', runs=10, save_model=False, seed=123, test_num=1000, train_per_class=0, train_prop=0.5, use_reg=True, valid_num=500, valid_per_class=0, valid_prop=0.25, weight_decay=0.0005)
+pubmed
+Num nodes: 19717
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+dataset pubmed | num nodes 19717 | num edge 88648 | num node feats 500 | num classes 3
+MODEL: MPNNs(
+  (h_lins): ModuleList()
+  (local_convs): ModuleList(
+    (0): GCNConv(500, 256)
+    (1): GCNConv(256, 256)
+  )
+  (lins): ModuleList(
+    (0): Linear(in_features=500, out_features=256, bias=True)
+    (1): Linear(in_features=256, out_features=256, bias=True)
+  )
+  (lns): ModuleList(
+    (0): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+    (1): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+  )
+  (bns): ModuleList(
+    (0): BatchNorm1d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (1): BatchNorm1d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (lin_in): Linear(in_features=500, out_features=256, bias=True)
+  (pred_local): Linear(in_features=256, out_features=3, bias=True)
+)
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (0 train-train edges).
+Epoch: 00, Loss: 1.5386, Train: 33.33%, Valid: 42.00%, Test: 36.30%, Best Valid: 42.00%, Best Test: 36.30%
+Epoch: 100, Loss: 0.0204, Train: 100.00%, Valid: 76.00%, Test: 79.90%, Best Valid: 77.60%, Best Test: 80.10%
+Epoch: 200, Loss: 0.0162, Train: 100.00%, Valid: 75.20%, Test: 80.10%, Best Valid: 77.60%, Best Test: 80.10%
+Epoch: 300, Loss: 0.0202, Train: 100.00%, Valid: 76.40%, Test: 80.30%, Best Valid: 77.60%, Best Test: 80.10%
+Epoch: 400, Loss: 0.0230, Train: 100.00%, Valid: 75.40%, Test: 80.00%, Best Valid: 77.60%, Best Test: 80.10%
+Run 01:
+Highest Train: 100.00
+Highest Valid: 77.60
+Highest Test: 82.10
+Chosen epoch: 40
+Final Train: 100.00
+Final Test: 80.10
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (0 train-train edges).
+Epoch: 00, Loss: 1.5397, Train: 48.00%, Valid: 32.40%, Test: 35.20%, Best Valid: 32.40%, Best Test: 35.20%
+Epoch: 100, Loss: 0.0266, Train: 100.00%, Valid: 81.80%, Test: 81.00%, Best Valid: 83.60%, Best Test: 81.70%
+Epoch: 200, Loss: 0.0246, Train: 100.00%, Valid: 81.60%, Test: 81.40%, Best Valid: 83.60%, Best Test: 81.70%
+Epoch: 300, Loss: 0.0197, Train: 100.00%, Valid: 81.40%, Test: 81.40%, Best Valid: 83.60%, Best Test: 81.70%
+Epoch: 400, Loss: 0.0108, Train: 100.00%, Valid: 80.40%, Test: 81.20%, Best Valid: 83.60%, Best Test: 81.70%
+Run 02:
+Highest Train: 100.00
+Highest Valid: 83.60
+Highest Test: 83.40
+Chosen epoch: 65
+Final Train: 100.00
+Final Test: 81.70
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (14 train-train edges).
+Epoch: 00, Loss: 1.5391, Train: 53.33%, Valid: 59.00%, Test: 55.30%, Best Valid: 59.00%, Best Test: 55.30%
+Epoch: 100, Loss: 0.0527, Train: 100.00%, Valid: 77.80%, Test: 78.80%, Best Valid: 79.80%, Best Test: 80.50%
+Epoch: 200, Loss: 0.0219, Train: 100.00%, Valid: 77.60%, Test: 77.70%, Best Valid: 79.80%, Best Test: 80.50%
+Epoch: 300, Loss: 0.0410, Train: 100.00%, Valid: 74.00%, Test: 74.20%, Best Valid: 79.80%, Best Test: 80.50%
+Epoch: 400, Loss: 0.0437, Train: 100.00%, Valid: 75.20%, Test: 76.40%, Best Valid: 79.80%, Best Test: 80.50%
+Run 03:
+Highest Train: 100.00
+Highest Valid: 79.80
+Highest Test: 80.90
+Chosen epoch: 30
+Final Train: 96.67
+Final Test: 80.50
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (6 train-train edges).
+Epoch: 00, Loss: 1.5373, Train: 33.33%, Valid: 21.80%, Test: 22.20%, Best Valid: 21.80%, Best Test: 22.20%
+Epoch: 100, Loss: 0.0453, Train: 100.00%, Valid: 75.80%, Test: 79.20%, Best Valid: 78.20%, Best Test: 80.20%
+Epoch: 200, Loss: 0.0192, Train: 100.00%, Valid: 76.40%, Test: 79.40%, Best Valid: 78.20%, Best Test: 80.20%
+Epoch: 300, Loss: 0.0200, Train: 100.00%, Valid: 77.00%, Test: 79.10%, Best Valid: 78.20%, Best Test: 80.20%
+Epoch: 400, Loss: 0.0098, Train: 100.00%, Valid: 75.20%, Test: 77.70%, Best Valid: 78.20%, Best Test: 80.20%
+Run 04:
+Highest Train: 100.00
+Highest Valid: 78.20
+Highest Test: 80.70
+Chosen epoch: 20
+Final Train: 93.33
+Final Test: 80.20
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (6 train-train edges).
+Epoch: 00, Loss: 1.5390, Train: 33.33%, Valid: 39.60%, Test: 41.30%, Best Valid: 39.60%, Best Test: 41.30%
+Epoch: 100, Loss: 0.0351, Train: 100.00%, Valid: 79.40%, Test: 80.90%, Best Valid: 81.00%, Best Test: 82.30%
+Epoch: 200, Loss: 0.0249, Train: 100.00%, Valid: 79.00%, Test: 80.40%, Best Valid: 81.00%, Best Test: 82.30%
+Epoch: 300, Loss: 0.0158, Train: 100.00%, Valid: 78.20%, Test: 80.00%, Best Valid: 81.00%, Best Test: 82.30%
+Epoch: 400, Loss: 0.0125, Train: 100.00%, Valid: 78.20%, Test: 79.90%, Best Valid: 81.00%, Best Test: 82.30%
+Run 05:
+Highest Train: 100.00
+Highest Valid: 81.00
+Highest Test: 82.60
+Chosen epoch: 25
+Final Train: 97.33
+Final Test: 82.30
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (6 train-train edges).
+Epoch: 00, Loss: 1.5381, Train: 34.00%, Valid: 25.00%, Test: 21.00%, Best Valid: 25.00%, Best Test: 21.00%
+Epoch: 100, Loss: 0.0397, Train: 100.00%, Valid: 78.80%, Test: 79.60%, Best Valid: 81.20%, Best Test: 79.90%
+Epoch: 200, Loss: 0.0184, Train: 100.00%, Valid: 79.00%, Test: 77.10%, Best Valid: 81.20%, Best Test: 79.90%
+Epoch: 300, Loss: 0.0216, Train: 100.00%, Valid: 77.80%, Test: 77.40%, Best Valid: 81.20%, Best Test: 79.90%
+Epoch: 400, Loss: 0.0242, Train: 100.00%, Valid: 76.80%, Test: 77.20%, Best Valid: 81.20%, Best Test: 79.90%
+Run 06:
+Highest Train: 100.00
+Highest Valid: 81.20
+Highest Test: 81.50
+Chosen epoch: 27
+Final Train: 94.67
+Final Test: 79.90
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (4 train-train edges).
+Epoch: 00, Loss: 1.5408, Train: 34.00%, Valid: 20.80%, Test: 22.40%, Best Valid: 20.80%, Best Test: 22.40%
+Epoch: 100, Loss: 0.0299, Train: 100.00%, Valid: 81.80%, Test: 80.10%, Best Valid: 84.00%, Best Test: 82.20%
+Epoch: 200, Loss: 0.0270, Train: 100.00%, Valid: 81.40%, Test: 80.20%, Best Valid: 84.00%, Best Test: 82.20%
+Epoch: 300, Loss: 0.0255, Train: 100.00%, Valid: 82.00%, Test: 79.20%, Best Valid: 84.00%, Best Test: 82.20%
+Epoch: 400, Loss: 0.0261, Train: 100.00%, Valid: 81.80%, Test: 80.30%, Best Valid: 84.00%, Best Test: 82.20%
+Run 07:
+Highest Train: 100.00
+Highest Valid: 84.00
+Highest Test: 82.40
+Chosen epoch: 25
+Final Train: 96.00
+Final Test: 82.20
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (6 train-train edges).
+Epoch: 00, Loss: 1.5405, Train: 33.33%, Valid: 38.40%, Test: 39.30%, Best Valid: 38.40%, Best Test: 39.30%
+Epoch: 100, Loss: 0.0477, Train: 100.00%, Valid: 79.00%, Test: 78.10%, Best Valid: 80.80%, Best Test: 78.30%
+Epoch: 200, Loss: 0.0358, Train: 100.00%, Valid: 79.20%, Test: 78.10%, Best Valid: 80.80%, Best Test: 78.30%
+Epoch: 300, Loss: 0.0185, Train: 100.00%, Valid: 78.00%, Test: 77.20%, Best Valid: 80.80%, Best Test: 78.30%
+Epoch: 400, Loss: 0.0250, Train: 100.00%, Valid: 78.00%, Test: 73.80%, Best Valid: 80.80%, Best Test: 78.30%
+Run 08:
+Highest Train: 100.00
+Highest Valid: 80.80
+Highest Test: 81.50
+Chosen epoch: 57
+Final Train: 99.33
+Final Test: 78.30
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (2 train-train edges).
+Epoch: 00, Loss: 1.5375, Train: 44.67%, Valid: 44.60%, Test: 46.00%, Best Valid: 44.60%, Best Test: 46.00%
+Epoch: 100, Loss: 0.0394, Train: 100.00%, Valid: 79.20%, Test: 81.40%, Best Valid: 80.80%, Best Test: 82.00%
+Epoch: 200, Loss: 0.0245, Train: 100.00%, Valid: 78.40%, Test: 81.20%, Best Valid: 80.80%, Best Test: 82.00%
+Epoch: 300, Loss: 0.0131, Train: 100.00%, Valid: 78.40%, Test: 80.20%, Best Valid: 80.80%, Best Test: 82.00%
+Epoch: 400, Loss: 0.0276, Train: 100.00%, Valid: 77.60%, Test: 79.80%, Best Valid: 80.80%, Best Test: 82.00%
+Run 09:
+Highest Train: 100.00
+Highest Valid: 80.80
+Highest Test: 83.10
+Chosen epoch: 72
+Final Train: 100.00
+Final Test: 82.00
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (2 train-train edges).
+Epoch: 00, Loss: 1.5392, Train: 33.33%, Valid: 38.60%, Test: 40.80%, Best Valid: 38.60%, Best Test: 40.80%
+Epoch: 100, Loss: 0.0246, Train: 100.00%, Valid: 82.40%, Test: 80.90%, Best Valid: 85.20%, Best Test: 82.80%
+Epoch: 200, Loss: 0.0335, Train: 100.00%, Valid: 82.40%, Test: 80.60%, Best Valid: 85.40%, Best Test: 82.60%
+Epoch: 300, Loss: 0.0170, Train: 100.00%, Valid: 82.80%, Test: 82.00%, Best Valid: 85.40%, Best Test: 82.60%
+Epoch: 400, Loss: 0.0161, Train: 100.00%, Valid: 84.00%, Test: 81.60%, Best Valid: 85.40%, Best Test: 82.60%
+Run 10:
+Highest Train: 100.00
+Highest Valid: 85.40
+Highest Test: 83.00
+Chosen epoch: 128
+Final Train: 100.00
+Final Test: 82.60
+All runs:
+Highest Train: 100.00 ± 0.00
+Highest Test: 82.12 ± 0.94
+Highest Valid: 81.24 ± 2.48
+  Final Train: 97.73 ± 2.50
+   Final Test: 80.98 ± 1.39
+Saving results to results/lowlabel/pubmed/MPNN_gcn.csv
+--- count_reg | lambda=0.8 ---
+Namespace(bn=False, budget_tag='50', count_reg=True, count_smoothing=1.0, cpu=False, data_dir='./data/', dataset='pubmed', device=0, display_step=100, dropout=0.7, epochs=500, gnn='gcn', hidden_channels=256, jk=False, label_num_per_class=50, lambda_val=0.8, ln=False, local_layers=2, lr=0.005, metric='acc', mlp_epochs=500, mlp_reg=False, model='MPNN', model_dir='models', num_heads=1, oracle_reg=False, paired_seeds=True, penalty_transform='none', pre_linear=False, pre_ln=False, rand_split=False, rand_split_class=True, reg_start_epoch=10, reg_update_freq=5, res=False, resample_split_per_run=True, result_dir='results/lowlabel', runs=10, save_model=False, seed=123, test_num=1000, train_per_class=0, train_prop=0.5, use_reg=True, valid_num=500, valid_per_class=0, valid_prop=0.25, weight_decay=0.0005)
+pubmed
+Num nodes: 19717
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+dataset pubmed | num nodes 19717 | num edge 88648 | num node feats 500 | num classes 3
+MODEL: MPNNs(
+  (h_lins): ModuleList()
+  (local_convs): ModuleList(
+    (0): GCNConv(500, 256)
+    (1): GCNConv(256, 256)
+  )
+  (lins): ModuleList(
+    (0): Linear(in_features=500, out_features=256, bias=True)
+    (1): Linear(in_features=256, out_features=256, bias=True)
+  )
+  (lns): ModuleList(
+    (0): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+    (1): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+  )
+  (bns): ModuleList(
+    (0): BatchNorm1d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (1): BatchNorm1d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (lin_in): Linear(in_features=500, out_features=256, bias=True)
+  (pred_local): Linear(in_features=256, out_features=3, bias=True)
+)
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (0 train-train edges).
+Epoch: 00, Loss: 1.9782, Train: 33.33%, Valid: 42.00%, Test: 36.30%, Best Valid: 42.00%, Best Test: 36.30%
+Epoch: 100, Loss: 0.0263, Train: 100.00%, Valid: 76.00%, Test: 79.90%, Best Valid: 77.60%, Best Test: 80.10%
+Epoch: 200, Loss: 0.0209, Train: 100.00%, Valid: 75.20%, Test: 80.10%, Best Valid: 77.60%, Best Test: 80.10%
+Epoch: 300, Loss: 0.0255, Train: 100.00%, Valid: 76.40%, Test: 80.30%, Best Valid: 77.60%, Best Test: 80.10%
+Epoch: 400, Loss: 0.0302, Train: 100.00%, Valid: 75.80%, Test: 79.90%, Best Valid: 77.60%, Best Test: 80.10%
+Run 01:
+Highest Train: 100.00
+Highest Valid: 77.60
+Highest Test: 82.10
+Chosen epoch: 40
+Final Train: 100.00
+Final Test: 80.10
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (0 train-train edges).
+Epoch: 00, Loss: 1.9796, Train: 48.00%, Valid: 32.40%, Test: 35.20%, Best Valid: 32.40%, Best Test: 35.20%
+Epoch: 100, Loss: 0.0343, Train: 100.00%, Valid: 81.80%, Test: 81.00%, Best Valid: 83.60%, Best Test: 81.70%
+Epoch: 200, Loss: 0.0316, Train: 100.00%, Valid: 81.60%, Test: 81.40%, Best Valid: 83.60%, Best Test: 81.70%
+Epoch: 300, Loss: 0.0255, Train: 100.00%, Valid: 81.40%, Test: 81.50%, Best Valid: 83.60%, Best Test: 81.70%
+Epoch: 400, Loss: 0.0140, Train: 100.00%, Valid: 80.60%, Test: 81.00%, Best Valid: 83.60%, Best Test: 81.70%
+Run 02:
+Highest Train: 100.00
+Highest Valid: 83.60
+Highest Test: 83.40
+Chosen epoch: 65
+Final Train: 100.00
+Final Test: 81.70
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (14 train-train edges).
+Epoch: 00, Loss: 1.9788, Train: 52.00%, Valid: 59.60%, Test: 56.10%, Best Valid: 59.60%, Best Test: 56.10%
+Epoch: 100, Loss: 0.0615, Train: 100.00%, Valid: 77.40%, Test: 77.70%, Best Valid: 80.40%, Best Test: 80.70%
+Epoch: 200, Loss: 0.0294, Train: 100.00%, Valid: 77.00%, Test: 78.00%, Best Valid: 80.40%, Best Test: 80.70%
+Epoch: 300, Loss: 0.0367, Train: 100.00%, Valid: 76.60%, Test: 75.60%, Best Valid: 80.40%, Best Test: 80.70%
+Epoch: 400, Loss: 0.0476, Train: 100.00%, Valid: 76.20%, Test: 75.60%, Best Valid: 80.40%, Best Test: 80.70%
+Run 03:
+Highest Train: 100.00
+Highest Valid: 80.40
+Highest Test: 80.70
+Chosen epoch: 39
+Final Train: 98.67
+Final Test: 80.70
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (6 train-train edges).
+Epoch: 00, Loss: 1.9766, Train: 34.67%, Valid: 22.20%, Test: 23.20%, Best Valid: 22.20%, Best Test: 23.20%
+Epoch: 100, Loss: 0.0597, Train: 100.00%, Valid: 75.60%, Test: 78.70%, Best Valid: 77.00%, Best Test: 79.80%
+Epoch: 200, Loss: 0.0250, Train: 100.00%, Valid: 75.60%, Test: 78.60%, Best Valid: 77.40%, Best Test: 79.40%
+Epoch: 300, Loss: 0.0246, Train: 100.00%, Valid: 76.00%, Test: 78.60%, Best Valid: 78.80%, Best Test: 80.00%
+Epoch: 400, Loss: 0.0124, Train: 100.00%, Valid: 76.20%, Test: 78.70%, Best Valid: 78.80%, Best Test: 80.00%
+Run 04:
+Highest Train: 100.00
+Highest Valid: 78.80
+Highest Test: 80.20
+Chosen epoch: 217
+Final Train: 100.00
+Final Test: 80.00
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (6 train-train edges).
+Epoch: 00, Loss: 1.9787, Train: 33.33%, Valid: 39.60%, Test: 40.80%, Best Valid: 39.60%, Best Test: 40.80%
+Epoch: 100, Loss: 0.0386, Train: 100.00%, Valid: 79.20%, Test: 81.30%, Best Valid: 80.40%, Best Test: 82.10%
+Epoch: 200, Loss: 0.0284, Train: 100.00%, Valid: 80.20%, Test: 80.70%, Best Valid: 80.40%, Best Test: 82.10%
+Epoch: 300, Loss: 0.0185, Train: 100.00%, Valid: 77.80%, Test: 79.10%, Best Valid: 80.80%, Best Test: 81.10%
+Epoch: 400, Loss: 0.0172, Train: 100.00%, Valid: 78.20%, Test: 80.00%, Best Valid: 81.00%, Best Test: 80.90%
+Run 05:
+Highest Train: 100.00
+Highest Valid: 81.00
+Highest Test: 82.40
+Chosen epoch: 381
+Final Train: 100.00
+Final Test: 80.90
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (6 train-train edges).
+Epoch: 00, Loss: 1.9776, Train: 40.67%, Valid: 33.80%, Test: 32.10%, Best Valid: 33.80%, Best Test: 32.10%
+Epoch: 100, Loss: 0.0465, Train: 100.00%, Valid: 80.20%, Test: 79.40%, Best Valid: 82.20%, Best Test: 80.90%
+Epoch: 200, Loss: 0.0237, Train: 100.00%, Valid: 78.60%, Test: 76.40%, Best Valid: 82.20%, Best Test: 80.90%
+Epoch: 300, Loss: 0.0287, Train: 100.00%, Valid: 79.20%, Test: 78.90%, Best Valid: 82.20%, Best Test: 80.90%
+Epoch: 400, Loss: 0.0453, Train: 100.00%, Valid: 76.80%, Test: 77.20%, Best Valid: 82.20%, Best Test: 80.90%
+Run 06:
+Highest Train: 100.00
+Highest Valid: 82.20
+Highest Test: 82.60
+Chosen epoch: 19
+Final Train: 88.00
+Final Test: 80.90
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (4 train-train edges).
+Epoch: 00, Loss: 1.9810, Train: 45.33%, Valid: 31.80%, Test: 30.50%, Best Valid: 31.80%, Best Test: 30.50%
+Epoch: 100, Loss: 0.0437, Train: 100.00%, Valid: 82.00%, Test: 79.10%, Best Valid: 84.20%, Best Test: 81.70%
+Epoch: 200, Loss: 0.0436, Train: 100.00%, Valid: 80.80%, Test: 80.70%, Best Valid: 84.20%, Best Test: 81.70%
+Epoch: 300, Loss: 0.0237, Train: 100.00%, Valid: 81.40%, Test: 79.90%, Best Valid: 84.20%, Best Test: 81.70%
+Epoch: 400, Loss: 0.0485, Train: 100.00%, Valid: 81.60%, Test: 80.30%, Best Valid: 84.20%, Best Test: 81.70%
+Run 07:
+Highest Train: 100.00
+Highest Valid: 84.20
+Highest Test: 81.90
+Chosen epoch: 31
+Final Train: 98.67
+Final Test: 81.70
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (6 train-train edges).
+Epoch: 00, Loss: 1.9807, Train: 33.33%, Valid: 38.40%, Test: 39.30%, Best Valid: 38.40%, Best Test: 39.30%
+Epoch: 100, Loss: 0.0611, Train: 100.00%, Valid: 77.40%, Test: 77.40%, Best Valid: 79.20%, Best Test: 77.70%
+Epoch: 200, Loss: 0.0495, Train: 100.00%, Valid: 79.20%, Test: 77.30%, Best Valid: 79.60%, Best Test: 76.60%
+Epoch: 300, Loss: 0.0243, Train: 100.00%, Valid: 78.00%, Test: 76.80%, Best Valid: 79.80%, Best Test: 77.50%
+Epoch: 400, Loss: 0.0277, Train: 100.00%, Valid: 78.80%, Test: 76.60%, Best Valid: 80.20%, Best Test: 78.70%
+Run 08:
+Highest Train: 100.00
+Highest Valid: 80.60
+Highest Test: 80.00
+Chosen epoch: 414
+Final Train: 100.00
+Final Test: 76.60
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (2 train-train edges).
+Epoch: 00, Loss: 1.9768, Train: 48.00%, Valid: 47.60%, Test: 50.00%, Best Valid: 47.60%, Best Test: 50.00%
+Epoch: 100, Loss: 0.0475, Train: 100.00%, Valid: 79.20%, Test: 81.30%, Best Valid: 81.00%, Best Test: 81.70%
+Epoch: 200, Loss: 0.0394, Train: 100.00%, Valid: 78.60%, Test: 80.50%, Best Valid: 81.00%, Best Test: 81.70%
+Epoch: 300, Loss: 0.0183, Train: 100.00%, Valid: 78.40%, Test: 80.40%, Best Valid: 81.00%, Best Test: 81.70%
+Epoch: 400, Loss: 0.0336, Train: 100.00%, Valid: 78.40%, Test: 80.20%, Best Valid: 81.00%, Best Test: 81.70%
+Run 09:
+Highest Train: 100.00
+Highest Valid: 81.00
+Highest Test: 83.30
+Chosen epoch: 72
+Final Train: 100.00
+Final Test: 81.70
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (2 train-train edges).
+Epoch: 00, Loss: 1.9790, Train: 33.33%, Valid: 38.60%, Test: 40.80%, Best Valid: 38.60%, Best Test: 40.80%
+Epoch: 100, Loss: 0.0308, Train: 100.00%, Valid: 81.60%, Test: 80.50%, Best Valid: 85.00%, Best Test: 83.00%
+Epoch: 200, Loss: 0.0571, Train: 100.00%, Valid: 83.40%, Test: 80.70%, Best Valid: 85.40%, Best Test: 82.70%
+Epoch: 300, Loss: 0.0258, Train: 100.00%, Valid: 83.20%, Test: 82.00%, Best Valid: 85.40%, Best Test: 82.70%
+Epoch: 400, Loss: 0.0281, Train: 100.00%, Valid: 83.40%, Test: 82.30%, Best Valid: 85.40%, Best Test: 82.70%
+Run 10:
+Highest Train: 100.00
+Highest Valid: 85.40
+Highest Test: 83.10
+Chosen epoch: 132
+Final Train: 100.00
+Final Test: 82.70
+All runs:
+Highest Train: 100.00 ± 0.00
+Highest Test: 81.97 ± 1.26
+Highest Valid: 81.48 ± 2.41
+  Final Train: 98.53 ± 3.74
+   Final Test: 80.70 ± 1.66
+Saving results to results/lowlabel/pubmed/MPNN_gcn.csv
+--- count_reg | lambda=1.6 ---
+Namespace(bn=False, budget_tag='50', count_reg=True, count_smoothing=1.0, cpu=False, data_dir='./data/', dataset='pubmed', device=0, display_step=100, dropout=0.7, epochs=500, gnn='gcn', hidden_channels=256, jk=False, label_num_per_class=50, lambda_val=1.6, ln=False, local_layers=2, lr=0.005, metric='acc', mlp_epochs=500, mlp_reg=False, model='MPNN', model_dir='models', num_heads=1, oracle_reg=False, paired_seeds=True, penalty_transform='none', pre_linear=False, pre_ln=False, rand_split=False, rand_split_class=True, reg_start_epoch=10, reg_update_freq=5, res=False, resample_split_per_run=True, result_dir='results/lowlabel', runs=10, save_model=False, seed=123, test_num=1000, train_per_class=0, train_prop=0.5, use_reg=True, valid_num=500, valid_per_class=0, valid_prop=0.25, weight_decay=0.0005)
+pubmed
+Num nodes: 19717
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+dataset pubmed | num nodes 19717 | num edge 88648 | num node feats 500 | num classes 3
+MODEL: MPNNs(
+  (h_lins): ModuleList()
+  (local_convs): ModuleList(
+    (0): GCNConv(500, 256)
+    (1): GCNConv(256, 256)
+  )
+  (lins): ModuleList(
+    (0): Linear(in_features=500, out_features=256, bias=True)
+    (1): Linear(in_features=256, out_features=256, bias=True)
+  )
+  (lns): ModuleList(
+    (0): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+    (1): LayerNorm((256,), eps=1e-05, elementwise_affine=True)
+  )
+  (bns): ModuleList(
+    (0): BatchNorm1d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (1): BatchNorm1d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (lin_in): Linear(in_features=500, out_features=256, bias=True)
+  (pred_local): Linear(in_features=256, out_features=3, bias=True)
+)
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (0 train-train edges).
+Epoch: 00, Loss: 2.8574, Train: 33.33%, Valid: 42.00%, Test: 36.30%, Best Valid: 42.00%, Best Test: 36.30%
+Epoch: 100, Loss: 0.0379, Train: 100.00%, Valid: 76.00%, Test: 79.90%, Best Valid: 77.60%, Best Test: 80.10%
+Epoch: 200, Loss: 0.0301, Train: 100.00%, Valid: 75.20%, Test: 80.20%, Best Valid: 77.60%, Best Test: 80.10%
+Epoch: 300, Loss: 0.0377, Train: 100.00%, Valid: 76.60%, Test: 80.00%, Best Valid: 77.60%, Best Test: 80.10%
+Epoch: 400, Loss: 0.0389, Train: 100.00%, Valid: 75.80%, Test: 80.40%, Best Valid: 77.60%, Best Test: 80.10%
+Run 01:
+Highest Train: 100.00
+Highest Valid: 77.60
+Highest Test: 82.10
+Chosen epoch: 40
+Final Train: 100.00
+Final Test: 80.10
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (0 train-train edges).
+Epoch: 00, Loss: 2.8594, Train: 48.00%, Valid: 32.40%, Test: 35.20%, Best Valid: 32.40%, Best Test: 35.20%
+Epoch: 100, Loss: 0.0495, Train: 100.00%, Valid: 81.80%, Test: 81.00%, Best Valid: 83.60%, Best Test: 81.70%
+Epoch: 200, Loss: 0.0457, Train: 100.00%, Valid: 81.60%, Test: 81.40%, Best Valid: 83.60%, Best Test: 81.70%
+Epoch: 300, Loss: 0.0371, Train: 100.00%, Valid: 81.40%, Test: 81.50%, Best Valid: 83.60%, Best Test: 81.70%
+Epoch: 400, Loss: 0.0196, Train: 100.00%, Valid: 80.60%, Test: 81.10%, Best Valid: 83.60%, Best Test: 81.70%
+Run 02:
+Highest Train: 100.00
+Highest Valid: 83.60
+Highest Test: 83.40
+Chosen epoch: 65
+Final Train: 100.00
+Final Test: 81.70
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (14 train-train edges).
+Epoch: 00, Loss: 2.8583, Train: 57.33%, Valid: 59.20%, Test: 56.00%, Best Valid: 59.20%, Best Test: 56.00%
+Epoch: 100, Loss: 0.1003, Train: 100.00%, Valid: 77.20%, Test: 77.50%, Best Valid: 78.40%, Best Test: 78.70%
+Epoch: 200, Loss: 0.0530, Train: 100.00%, Valid: 78.00%, Test: 78.40%, Best Valid: 79.20%, Best Test: 79.10%
+Epoch: 300, Loss: 0.0589, Train: 100.00%, Valid: 76.20%, Test: 75.80%, Best Valid: 79.40%, Best Test: 79.40%
+Epoch: 400, Loss: 0.1092, Train: 100.00%, Valid: 75.80%, Test: 76.30%, Best Valid: 80.20%, Best Test: 78.30%
+Run 03:
+Highest Train: 100.00
+Highest Valid: 80.20
+Highest Test: 80.40
+Chosen epoch: 343
+Final Train: 100.00
+Final Test: 78.30
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (6 train-train edges).
+Epoch: 00, Loss: 2.8550, Train: 40.00%, Valid: 26.40%, Test: 28.10%, Best Valid: 26.40%, Best Test: 28.10%
+Epoch: 100, Loss: 0.0954, Train: 100.00%, Valid: 62.60%, Test: 64.80%, Best Valid: 63.00%, Best Test: 65.50%
+Epoch: 200, Loss: 0.0577, Train: 100.00%, Valid: 74.20%, Test: 77.20%, Best Valid: 74.20%, Best Test: 76.00%
+Epoch: 300, Loss: 0.0610, Train: 100.00%, Valid: 75.00%, Test: 77.80%, Best Valid: 77.20%, Best Test: 78.10%
+Epoch: 400, Loss: 0.0425, Train: 100.00%, Valid: 75.40%, Test: 78.00%, Best Valid: 77.20%, Best Test: 78.10%
+Run 04:
+Highest Train: 100.00
+Highest Valid: 77.60
+Highest Test: 79.70
+Chosen epoch: 499
+Final Train: 100.00
+Final Test: 79.30
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (6 train-train edges).
+Epoch: 00, Loss: 2.8581, Train: 33.33%, Valid: 39.60%, Test: 40.80%, Best Valid: 39.60%, Best Test: 40.80%
+Epoch: 100, Loss: 0.0637, Train: 100.00%, Valid: 79.20%, Test: 81.30%, Best Valid: 80.80%, Best Test: 81.10%
+Epoch: 200, Loss: 0.0507, Train: 100.00%, Valid: 80.00%, Test: 80.80%, Best Valid: 80.80%, Best Test: 81.10%
+Epoch: 300, Loss: 0.0350, Train: 100.00%, Valid: 77.80%, Test: 79.80%, Best Valid: 80.80%, Best Test: 81.10%
+Epoch: 400, Loss: 0.0332, Train: 100.00%, Valid: 78.40%, Test: 80.90%, Best Valid: 80.80%, Best Test: 81.10%
+Run 05:
+Highest Train: 100.00
+Highest Valid: 80.80
+Highest Test: 82.20
+Chosen epoch: 31
+Final Train: 98.00
+Final Test: 81.10
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (6 train-train edges).
+Epoch: 00, Loss: 2.8566, Train: 36.67%, Valid: 40.80%, Test: 42.20%, Best Valid: 40.80%, Best Test: 42.20%
+Epoch: 100, Loss: 0.0848, Train: 100.00%, Valid: 80.20%, Test: 79.40%, Best Valid: 83.60%, Best Test: 83.20%
+Epoch: 200, Loss: 0.0436, Train: 100.00%, Valid: 79.80%, Test: 77.70%, Best Valid: 83.60%, Best Test: 83.20%
+Epoch: 300, Loss: 0.0810, Train: 100.00%, Valid: 79.80%, Test: 80.00%, Best Valid: 83.60%, Best Test: 83.20%
+Epoch: 400, Loss: 0.0377, Train: 100.00%, Valid: 78.40%, Test: 78.20%, Best Valid: 83.60%, Best Test: 83.20%
+Run 06:
+Highest Train: 100.00
+Highest Valid: 83.60
+Highest Test: 83.30
+Chosen epoch: 31
+Final Train: 92.67
+Final Test: 83.20
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (4 train-train edges).
+Epoch: 00, Loss: 2.8614, Train: 36.00%, Valid: 42.40%, Test: 38.40%, Best Valid: 42.40%, Best Test: 38.40%
+Epoch: 100, Loss: 0.0842, Train: 100.00%, Valid: 82.60%, Test: 78.60%, Best Valid: 84.00%, Best Test: 79.70%
+Epoch: 200, Loss: 0.0458, Train: 100.00%, Valid: 81.40%, Test: 79.70%, Best Valid: 84.00%, Best Test: 79.70%
+Epoch: 300, Loss: 0.0289, Train: 100.00%, Valid: 82.40%, Test: 79.80%, Best Valid: 84.00%, Best Test: 79.70%
+Epoch: 400, Loss: 0.0708, Train: 100.00%, Valid: 81.40%, Test: 79.40%, Best Valid: 84.00%, Best Test: 79.70%
+Run 07:
+Highest Train: 100.00
+Highest Valid: 84.00
+Highest Test: 80.60
+Chosen epoch: 39
+Final Train: 98.67
+Final Test: 79.70
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (6 train-train edges).
+Epoch: 00, Loss: 2.8610, Train: 33.33%, Valid: 38.40%, Test: 39.30%, Best Valid: 38.40%, Best Test: 39.30%
+Epoch: 100, Loss: 0.1053, Train: 100.00%, Valid: 65.80%, Test: 66.10%, Best Valid: 69.40%, Best Test: 68.10%
+Epoch: 200, Loss: 0.1075, Train: 100.00%, Valid: 67.60%, Test: 68.20%, Best Valid: 73.80%, Best Test: 72.20%
+Epoch: 300, Loss: 0.0532, Train: 100.00%, Valid: 75.60%, Test: 75.60%, Best Valid: 76.40%, Best Test: 76.80%
+Epoch: 400, Loss: 0.0455, Train: 100.00%, Valid: 75.80%, Test: 75.30%, Best Valid: 77.80%, Best Test: 76.50%
+Run 08:
+Highest Train: 100.00
+Highest Valid: 78.40
+Highest Test: 78.20
+Chosen epoch: 410
+Final Train: 100.00
+Final Test: 76.80
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (2 train-train edges).
+Epoch: 00, Loss: 2.8554, Train: 60.67%, Valid: 56.40%, Test: 57.30%, Best Valid: 56.40%, Best Test: 57.30%
+Epoch: 100, Loss: 0.0608, Train: 100.00%, Valid: 78.20%, Test: 80.50%, Best Valid: 81.20%, Best Test: 81.60%
+Epoch: 200, Loss: 0.0479, Train: 100.00%, Valid: 78.60%, Test: 80.90%, Best Valid: 81.20%, Best Test: 81.60%
+Epoch: 300, Loss: 0.0329, Train: 100.00%, Valid: 78.40%, Test: 79.70%, Best Valid: 81.20%, Best Test: 81.60%
+Epoch: 400, Loss: 0.0431, Train: 100.00%, Valid: 79.20%, Test: 81.00%, Best Valid: 81.20%, Best Test: 81.60%
+Run 09:
+Highest Train: 100.00
+Highest Valid: 81.20
+Highest Test: 83.10
+Chosen epoch: 44
+Final Train: 99.33
+Final Test: 81.60
+train:torch.Size([150]), valid:torch.Size([500]), test:torch.Size([1000])
+Counting co-occurrence on train-train edges (leakage-free estimator)...
+Count penalty frozen (2 train-train edges).
+Epoch: 00, Loss: 2.8585, Train: 33.33%, Valid: 38.60%, Test: 40.80%, Best Valid: 38.60%, Best Test: 40.80%
+Epoch: 100, Loss: 0.0519, Train: 100.00%, Valid: 82.40%, Test: 80.70%, Best Valid: 85.60%, Best Test: 83.00%
+Epoch: 200, Loss: 0.0955, Train: 100.00%, Valid: 84.00%, Test: 81.20%, Best Valid: 85.60%, Best Test: 83.00%
+Epoch: 300, Loss: 0.0375, Train: 100.00%, Valid: 82.20%, Test: 82.10%, Best Valid: 85.60%, Best Test: 83.00%
+Epoch: 400, Loss: 0.0348, Train: 100.00%, Valid: 83.60%, Test: 81.60%, Best Valid: 85.60%, Best Test: 83.00%
+Run 10:
+Highest Train: 100.00
+Highest Valid: 85.60
+Highest Test: 83.20
+Chosen epoch: 78
+Final Train: 100.00
+Final Test: 83.00
+All runs:
+Highest Train: 100.00 ± 0.00
+Highest Test: 81.62 ± 1.80
+Highest Valid: 81.26 ± 2.86
+  Final Train: 98.87 ± 2.29
+   Final Test: 80.48 ± 2.04
+Saving results to results/lowlabel/pubmed/MPNN_gcn.csv
+Low-label sweep completed.
+Task 121 done.
