@@ -15,7 +15,10 @@
 #                (--label_num_per_class N --resample_split_per_run  or
 #                 --train_per_class N) and --budget_tag N
 #   RESULT_DIR : where runs_*.csv go (default results/lowlabel)
-#   CONDITIONS : space-separated subset of: baseline count mlp oracle shuffle
+#   CONDITIONS : space-separated subset of:
+#                baseline count mlp oracle shuffle homophily
+#                transfer transfer_shuffle   (need $COOC_FILE in the env;
+#                                             see TRANSFER_README.md)
 
 set -e
 
@@ -83,6 +86,24 @@ for cond in $CONDITIONS; do
             echo "--- mlp_reg/shuffle placebo | lambda=$l ---"
             run_condition "$BASE_CMD --paired_seeds --use_reg --mlp_reg --mlp_epochs 500 \
                 --lambda_val $l --penalty_transform shuffle --result_dir $RESULT_DIR"
+        done
+        ;;
+      homophily)
+        for l in $LAMBDAS; do
+            echo "--- mlp_reg/homophily control | lambda=$l ---"
+            run_condition "$BASE_CMD --paired_seeds --use_reg --mlp_reg --mlp_epochs 500 \
+                --lambda_val $l --penalty_transform homophily --result_dir $RESULT_DIR"
+        done
+        ;;
+      transfer|transfer_shuffle)
+        if [ -z "$COOC_FILE" ] || [ ! -f "$COOC_FILE" ]; then
+            echo "condition $cond needs COOC_FILE (got '$COOC_FILE')"; exit 1
+        fi
+        TR=""; [ "$cond" = "transfer_shuffle" ] && TR="--penalty_transform shuffle"
+        for l in $LAMBDAS; do
+            echo "--- transfer prior $COOC_FILE $TR | lambda=$l ---"
+            run_condition "$BASE_CMD --paired_seeds --use_reg --cooc_file $COOC_FILE \
+                --lambda_val $l $TR --result_dir $RESULT_DIR"
         done
         ;;
       *)

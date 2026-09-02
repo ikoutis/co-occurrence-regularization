@@ -8,7 +8,7 @@ from torch_geometric.utils import to_undirected, remove_self_loops, add_self_loo
 
 from logger import *
 from dataset import load_dataset
-from data_utils import eval_acc, eval_rocauc, load_fixed_splits, class_rand_splits
+from data_utils import eval_acc, eval_rocauc, load_fixed_splits, class_rand_splits, apply_year_split
 from eval import *
 from parse import parse_method, parser_add_main_args
 from regularization import estimate_cooccurrence_matrix, edge_loss, transform_cooccurrence_matrix, penalty_stats, count_cooccurrence_matrix
@@ -42,12 +42,19 @@ dataset = load_dataset(args.data_dir, args.dataset)
 if len(dataset.label.shape) == 1:
     dataset.label = dataset.label.unsqueeze(1)
 
+# E4 transfer experiment: temporal source/target pools (see TRANSFER_README.md)
+target_pool, source_idx = None, None
+if getattr(args, 'year_split', 0) > 0:
+    if not args.rand_split_class:
+        raise SystemExit('--year_split requires --rand_split_class (per-class sampling from the target pool)')
+    dataset, target_pool, source_idx = apply_year_split(dataset, args.year_split, args.source_mode)
+
 if args.rand_split:
     split_idx_lst = [dataset.get_idx_split(train_prop=args.train_prop, valid_prop=args.valid_prop)
                      for _ in range(args.runs)]
 elif args.rand_split_class:
     split_idx_lst = [class_rand_splits(
-        dataset.label, args.label_num_per_class, args.valid_num, args.test_num)]
+        dataset.label, args.label_num_per_class, args.valid_num, args.test_num, pool=target_pool)]
 else:
     split_idx_lst = load_fixed_splits(args.data_dir, dataset, name=args.dataset)
 
@@ -132,7 +139,8 @@ for run in range(args.runs):
         fix_seed(args.seed + run)
     if getattr(args, 'resample_split_per_run', False) and args.rand_split_class:
         split_idx = class_rand_splits(
-            dataset.label.cpu(), args.label_num_per_class, args.valid_num, args.test_num)
+            dataset.label.cpu(), args.label_num_per_class, args.valid_num, args.test_num,
+            pool=target_pool)
     elif args.dataset in ('coauthor-cs', 'coauthor-physics', 'amazon-computer', 'amazon-photo', 'cora', 'citeseer', 'pubmed'):
         split_idx = split_idx_lst[0]
     else:
@@ -141,6 +149,12 @@ for run in range(args.runs):
     if getattr(args, 'train_per_class', 0) > 0:
         train_idx = subsample_per_class(train_idx, dataset.label, args.train_per_class)
         print(f"Label budget: {args.train_per_class}/class -> {train_idx.numel()} train nodes")
+    if source_idx is not None and args.source_mode == 'labels':
+        # reference condition: the source pool's labels are simply added to
+        # the training set (what a practitioner who HAS the source labels,
+        # not just their K x K summary, would do)
+        train_idx = torch.cat([train_idx, source_idx.to(device)]).unique()
+        print(f"Source labels added to training: {train_idx.numel()} train nodes")
     if getattr(args, 'valid_per_class', 0) > 0:
         split_idx = dict(split_idx)
         split_idx['valid'] = subsample_per_class(
@@ -182,6 +196,31 @@ for run in range(args.runs):
             run_meta[run]['cooc_oracle_dist'] = ((co_matrix - co_oracle).norm()
                                                  / co_oracle.norm().clamp(min=1e-12)).item()
         print(f"Count penalty frozen ({n_prior_edges} train-train edges).")
+
+    if args.use_reg and getattr(args, 'cooc_file', ''):
+        # E4: precomputed prior from a legitimate source (make_cooc_prior.py).
+        # Nothing about the current split touches it — the only per-run
+        # element is the (seeded) placebo shuffle, if requested.
+        print(f"Loading precomputed co-occurrence prior from {args.cooc_file} ...")
+        with torch.no_grad():
+            obj = torch.load(args.cooc_file, map_location='cpu')
+            co_matrix = (obj['C'] if isinstance(obj, dict) else obj).float().to(device)
+            if co_matrix.shape != (c, c):
+                raise SystemExit(f'prior shape {tuple(co_matrix.shape)} != ({c}, {c})')
+            penalty_matrix = build_penalty(co_matrix, run, run_meta[run])
+            if isinstance(obj, dict) and 'n_edges' in obj.get('meta', {}):
+                run_meta[run]['n_prior_edges'] = obj['meta']['n_edges']
+            # distance to the all-label matrix of the graph AS TRAINED ON
+            # (target-only in --source_mode drop): the temporal drift of the prior
+            if args.dataset == 'questions' and dataset.label.shape[1] > 1:
+                true_probs = dataset.label.float()
+            else:
+                true_probs = F.one_hot(dataset.label.squeeze(1), c).float()
+            co_oracle = estimate_cooccurrence_matrix(true_probs, dataset.graph['edge_index'], c, device)
+            run_meta[run]['cooc_oracle_dist'] = ((co_matrix - co_oracle).norm()
+                                                 / co_oracle.norm().clamp(min=1e-12)).item()
+        print(f"Transferred prior frozen (rel. dist to this graph's oracle matrix: "
+              f"{run_meta[run]['cooc_oracle_dist']:.4f}).")
 
     if args.use_reg and getattr(args, 'mlp_reg', False):
         print(f"Pre-training MLP for {args.mlp_epochs} epochs to generate co-occurrence matrix...")
@@ -234,7 +273,7 @@ for run in range(args.runs):
 
     for epoch in range(args.epochs):
         
-        if args.use_reg and not getattr(args, 'mlp_reg', False) and not getattr(args, 'oracle_reg', False) and not getattr(args, 'count_reg', False) and epoch >= args.reg_start_epoch and (epoch - args.reg_start_epoch) % args.reg_update_freq == 0:
+        if args.use_reg and not getattr(args, 'mlp_reg', False) and not getattr(args, 'oracle_reg', False) and not getattr(args, 'count_reg', False) and not getattr(args, 'cooc_file', '') and epoch >= args.reg_start_epoch and (epoch - args.reg_start_epoch) % args.reg_update_freq == 0:
             with torch.no_grad():
                 model.eval()
                 current_out = model(dataset.graph['node_feat'], dataset.graph['edge_index'])

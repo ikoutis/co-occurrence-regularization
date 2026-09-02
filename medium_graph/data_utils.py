@@ -32,14 +32,22 @@ def rand_train_test_idx(label, train_prop=0.5, valid_prop=0.25, ignore_negative=
     return train_idx, valid_idx, test_idx
 
 
-def class_rand_splits(label, label_num_per_class, valid_num=500, test_num=1000):
-    """use all remaining data points as test data, so test_num will not be used"""
+def class_rand_splits(label, label_num_per_class, valid_num=500, test_num=1000, pool=None):
+    """use all remaining data points as test data, so test_num will not be used
+
+    pool: optional 1-D index tensor — when given, train/valid/test are drawn
+    from these nodes only (E4 transfer experiment: the target-year pool)."""
     train_idx, non_train_idx = [], []
-    idx = torch.arange(label.shape[0])
-    class_list = label.squeeze().unique()
+    if pool is None:
+        idx = torch.arange(label.shape[0])
+        lab = label.squeeze()
+    else:
+        idx = pool.cpu()
+        lab = label.squeeze().cpu()[idx]
+    class_list = lab.unique()
     for i in range(class_list.shape[0]):
         c_i = class_list[i]
-        idx_i = idx[label.squeeze() == c_i]
+        idx_i = idx[lab == c_i]
         n_i = idx_i.shape[0]
         rand_idx = idx_i[torch.randperm(n_i)]
         train_idx += rand_idx[:label_num_per_class].tolist()
@@ -54,6 +62,50 @@ def class_rand_splits(label, label_num_per_class, valid_num=500, test_num=1000):
     print(f"train:{train_idx.shape}, valid:{valid_idx.shape}, test:{test_idx.shape}")
     split_idx = {"train": train_idx, "valid": valid_idx, "test": test_idx}
     return split_idx
+
+def apply_year_split(dataset, year, source_mode):
+    """
+    E4 (transfer experiment): split a dataset that carries a per-node year
+    (ogbn-arxiv: graph['node_year']) into a SOURCE pool (year < `year`) and
+    a TARGET pool (year >= `year`). Train/valid/test are later drawn from
+    the target pool only; the source pool is the legitimate, non-leaky
+    origin of a co-occurrence prior (see make_cooc_prior.py).
+
+    source_mode:
+        'keep'   : source nodes stay in the graph, unlabeled (transductive;
+                   only their K x K summary may reach training via --cooc_file)
+        'drop'   : induced subgraph on the target pool — source nodes and
+                   their edges are removed entirely (the prior is the ONLY
+                   thing that crosses the split)
+        'labels' : like 'keep', but the source labels are added to the
+                   training set (the "just use the labels" reference)
+
+    Returns (dataset, target_pool, source_idx); indices refer to the
+    (possibly relabeled) returned dataset. source_idx is None for 'drop'.
+    """
+    if 'node_year' not in dataset.graph:
+        raise ValueError(f'dataset {dataset.name} has no node_year — --year_split needs a temporal graph')
+    years = torch.as_tensor(dataset.graph['node_year']).reshape(-1)
+    target_pool = torch.where(years >= year)[0]
+    source_idx = torch.where(years < year)[0]
+    print(f'Year split at {year}: source (<{year}) {source_idx.numel()} nodes | '
+          f'target (>={year}) {target_pool.numel()} nodes | mode={source_mode}')
+    if source_mode == 'drop':
+        from torch_geometric.utils import subgraph
+        n = dataset.graph['num_nodes']
+        ei, _ = subgraph(target_pool, dataset.graph['edge_index'],
+                         relabel_nodes=True, num_nodes=n)
+        dataset.graph['edge_index'] = ei
+        dataset.graph['node_feat'] = dataset.graph['node_feat'][target_pool]
+        dataset.graph['node_year'] = years[target_pool]
+        dataset.graph['num_nodes'] = target_pool.numel()
+        dataset.label = dataset.label[target_pool]
+        print(f'  induced target subgraph: {dataset.graph["num_nodes"]} nodes, '
+              f'{ei.shape[1]} directed edges')
+        return dataset, torch.arange(target_pool.numel()), None
+    if source_mode not in ('keep', 'labels'):
+        raise ValueError(f'unknown source_mode: {source_mode}')
+    return dataset, target_pool, source_idx
 
 def load_fixed_splits(data_dir, dataset, name):
     splits_lst = []

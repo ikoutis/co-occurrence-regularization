@@ -73,11 +73,21 @@ def analyze_dir(result_dir):
     fmt = lambda v, p: (f'{v:+.2f}' + ('*' if p == p and p < 0.05 else ' ')
                         + (f'(p={p:.2f})' if p == p else '(p= — )'))
     sig_rows = []
+    # condition columns, in display order; only those present are printed
+    COLS = [('count', 'Δcount'), ('mlp', 'Δmlp'), ('oracle', 'Δoracle†'),
+            ('mlp/shuffle', 'Δshuffle'), ('mlp/homophily', 'Δhomoph'),
+            ('transfer', 'Δtransfer'), ('transfer/shuffle', 'Δtr/shuf')]
+    present = set()
+    for (rt, tr), _ in df[df.reg_type != 'none'].groupby(['reg_type', 'penalty_transform']):
+        present.add(rt if tr in ('', 'none') else f'{rt}/{tr}')
+    cols = [(k, h) for k, h in COLS if k in present] + \
+           [(k, 'Δ' + k) for k in sorted(present) if k not in dict(COLS)]
     for (ds, model), g in df.groupby(['dataset', 'model']):
         print(f'\n===== {ds} / {model} =====')
-        header = (f"{'budget':>6} {'baseline':>14} {'Δcount':>16} {'Δmlp':>16} "
-                  f"{'Δoracle†':>16} {'Δshuffle':>16} {'count_dist':>10} "
-                  f"{'mlp_dist':>9} {'n_edges':>8}")
+        header = f"{'budget':>6} {'baseline':>14}"
+        for _, h in cols:
+            header += f' {h:>16}'
+        header += f" {'count_dist':>10} {'mlp_dist':>9} {'n_edges':>8}"
         print(header)
         for budget, gb in sorted(g.groupby('budget')):
             base = gb[gb.reg_type == 'none'].drop_duplicates(
@@ -111,7 +121,7 @@ def analyze_dir(result_dir):
                                      cells[key][1], lam))
             b = base['test_at_best_valid']
             row = f'{int(budget):>6} {b.mean():>8.2f}±{b.std():<5.2f}'
-            for key in ('count', 'mlp', 'oracle', 'mlp/shuffle'):
+            for key, _ in cols:
                 row += f" {fmt(*cells[key][:2]) if key in cells else '        —      ':>16}"
             row += (f" {covs['count_dist']:>10.3f}" if covs['count_dist'] == covs['count_dist'] else f" {'—':>10}")
             row += (f" {covs['mlp_dist']:>9.3f}" if covs['mlp_dist'] == covs['mlp_dist'] else f" {'—':>9}")

@@ -107,3 +107,18 @@ def parser_add_main_args(parser):
                              'one fixed sample for all runs')
     parser.add_argument('--budget_tag', type=str, default='',
                         help='free-form label budget tag written to the runs CSV')
+
+    # transfer experiment (E4) — see TRANSFER_README.md
+    parser.add_argument('--cooc_file', type=str, default='',
+                        help='penalty from a PRECOMPUTED row-normalized co-occurrence '
+                             'matrix (torch.save; see make_cooc_prior.py) — the '
+                             'legitimate-source condition')
+    parser.add_argument('--year_split', type=int, default=0,
+                        help='if >0, draw train/valid/test only from nodes with '
+                             'node_year >= this (target pool); nodes before it are '
+                             'the source pool (temporal graphs such as ogbn-arxiv)')
+    parser.add_argument('--source_mode', type=str, default='keep',
+                        choices=['keep', 'drop', 'labels'],
+                        help='with --year_split: keep source nodes unlabeled, drop '
+                             'them (induced target subgraph), or add their labels '
+                             'to the training set (reference)')

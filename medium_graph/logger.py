@@ -95,7 +95,9 @@ def config_string(args):
         f'll={args.local_layers}', f'gnn={getattr(args, "gnn", "")}',
         f'ln={args.ln}', f'bn={args.bn}', f'res={args.res}',
         f'jk={args.jk}', f'prelin={args.pre_linear}']
-        + ([f'vpc={args.valid_per_class}'] if getattr(args, 'valid_per_class', 0) else []))
+        + ([f'vpc={args.valid_per_class}'] if getattr(args, 'valid_per_class', 0) else [])
+        + ([f'ys={args.year_split}:{args.source_mode}'] if getattr(args, 'year_split', 0) else [])
+        + ([f'prior={os.path.basename(args.cooc_file)}'] if getattr(args, 'cooc_file', '') else []))
 
 def save_runs_detail(args, logger, run_meta=None):
     """
@@ -133,6 +135,8 @@ def save_runs_detail(args, logger, run_meta=None):
             reg_type = 'oracle'
         elif getattr(args, 'count_reg', False):
             reg_type = 'count'
+        elif getattr(args, 'cooc_file', ''):
+            reg_type = 'transfer'
         elif getattr(args, 'mlp_reg', False):
             reg_type = 'mlp'
         else:
@@ -181,6 +185,10 @@ def save_result(args, results):
         if getattr(args, 'use_reg', False):
             if getattr(args, 'oracle_reg', False):
                 reg_info = f"ORACLE_REG: {args.lambda_val} "
+            elif getattr(args, 'count_reg', False):
+                reg_info = f"COUNT_REG: {args.lambda_val} "
+            elif getattr(args, 'cooc_file', ''):
+                reg_info = f"TRANSFER_REG: {args.lambda_val} "
             elif getattr(args, 'mlp_reg', False):
                 reg_info = f"MLP_REG: {args.lambda_val} "
             elif getattr(args, 'reg_start_epoch', 10) >= 500:
