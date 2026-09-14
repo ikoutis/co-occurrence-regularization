@@ -36,7 +36,7 @@ def select(cond, base):
         return None
     d = (sel.loc[common, 'test_at_best_valid'] - base.loc[common, 'test_at_best_valid']).values
     dist = pd.to_numeric(sel.get('cooc_oracle_dist'), errors='coerce').mean()
-    return d, lam, dist, len(common)
+    return d, lam, dist, len(common), cond['lambda'].nunique()
 
 
 def main():
@@ -78,7 +78,7 @@ def main():
             common = bases['keep'].index.intersection(bases['labels'].index)
             d = (bases['labels'].loc[common, 'test_at_best_valid'] - bases['keep'].loc[common, 'test_at_best_valid']).values
             print(f'  value of the past AS LABELS (labels − keep, paired): {fmt(d.mean(), paired_pvalue(d))}')
-        print(f"\n  {'dir':<22} {'condition':<18} {'Δ vs own baseline':>18} {'λ*':>5} {'prior_dist':>10} {'n':>3}")
+        print(f"\n  {'dir':<22} {'condition':<18} {'Δ vs own baseline':>18} {'λ*':>5} {'prior_dist':>10} {'n':>3} {'nλ':>3}")
         for name, df in frames.items():
             mode = name.split('_')[1]
             if mode not in bases:
@@ -88,12 +88,13 @@ def main():
                 r = select(cond, bases[mode])
                 if r is None:
                     continue
-                d, lam, dist, n = r
+                d, lam, dist, n, nlam = r
                 label = rt if tr in ('', 'none') else f'{rt}/{tr}'
                 if rt == 'oracle':
                     label += '†'
                 print(f'  {name:<22} {label:<18} {fmt(d.mean(), paired_pvalue(d)):>18} {lam:>5} '
-                      f"{(f'{dist:.3f}' if dist == dist else '—'):>10} {n:>3}")
+                      f"{(f'{dist:.3f}' if dist == dist else '—'):>10} {n:>3} {nlam:>3}"
+                      + ('  (incomplete λ grid)' if nlam < 7 else ''))
         print('  † oracle uses all labels incl. test (and, in keep/labels mode, the past) — leaky diagnostic.')
         print('  prior_dist = rel. Frobenius distance of the penalty source to the all-label matrix of the graph as trained on.')
 

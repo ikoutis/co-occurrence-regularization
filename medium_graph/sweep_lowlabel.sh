@@ -30,7 +30,10 @@ fi
 BASE_CMD="$1"
 RESULT_DIR="${2:-results/lowlabel}"
 CONDITIONS="${3:-baseline count mlp oracle}"
-LAMBDAS="0.01 0.05 0.1 0.2 0.4 0.8 1.6"
+# LAMBDAS_OVERRIDE lets a per-lambda SLURM array run one lambda per task
+# (preemption-robust); the command strings — and hence the resume stamps —
+# are identical to a full sweep, so both granularities share progress.
+LAMBDAS="${LAMBDAS_OVERRIDE:-0.01 0.05 0.1 0.2 0.4 0.8 1.6}"
 
 echo "=========================================================="
 echo "Low-label sweep: $BASE_CMD"
